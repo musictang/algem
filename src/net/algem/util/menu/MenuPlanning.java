@@ -35,7 +35,7 @@ import net.algem.planning.AdministrativeScheduleCtrl;
 import net.algem.planning.CourseScheduleCtrl;
 import net.algem.planning.StudioScheduleCtrl;
 import net.algem.planning.TrainingScheduleCtrl;
-import net.algem.planning.WorkhopScheduleCtrl;
+import net.algem.planning.WorkshopScheduleCtrl;
 import net.algem.planning.day.DayScheduleCtrl;
 import net.algem.planning.month.MonthScheduleCtrl;
 import net.algem.planning.wishes.EnrolmentWishCtrl;
@@ -58,6 +58,8 @@ import net.algem.util.ui.ProgressMonitorHandler;
 public class MenuPlanning
         extends GemMenu
 {
+  public static final String MENU_DAY_KEY = "Menu.day.schedule";
+  public static final String MENU_MONTH_KEY = "Menu.month.schedule";
 
   private JMenuItem miDay;
   private JMenuItem miMonth;
@@ -73,13 +75,18 @@ public class MenuPlanning
   private CourseScheduleCtrl csCtrl;
   private EnrolmentWishCtrl ewCtrl;
 
-
   public MenuPlanning(GemDesktop desktop) {
+      this(desktop, 1);     //V3.0
+  }
+
+  public MenuPlanning(GemDesktop desktop, int version) {
 
     super(BundleUtil.getLabel("Menu.schedule.label"), desktop);
 
-    add(miDay = new JMenuItem(BundleUtil.getLabel("Menu.day.schedule.label")));
-    add(miMonth = new JMenuItem(BundleUtil.getLabel("Menu.month.schedule.label")));
+    if (version != 2) {
+        add(miDay = new JMenuItem(BundleUtil.getLabel("Menu.day.schedule.label")));
+        add(miMonth = new JMenuItem(BundleUtil.getLabel("Menu.month.schedule.label")));
+    }
 
     String manage = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey()).toLowerCase();
     if (manage != null && manage.startsWith("t")) {
@@ -118,22 +125,22 @@ public class MenuPlanning
     desktop.setWaitCursor();
 
     if (src == miDay) {
-      DayScheduleCtrl dsCtrl = new DayScheduleCtrl();
+      DayScheduleCtrl dsCtrl = new DayScheduleCtrl("TableauJour");
       desktop.addModule(dsCtrl);
       dsCtrl.getView().setLocation(PostitModule.POSTIT_MODULE_WIDTH, 0);
       dsCtrl.mayBeMaximize();
     } else if (src == miMonth) {
-      desktop.addModule(new MonthScheduleCtrl());
+      desktop.addModule(new MonthScheduleCtrl("PlanningMois"));
     } else if (src == miCourse) {// planification d'un cours
       CourseScheduleCtrl csCtrl = new CourseScheduleCtrl(desktop);
       csCtrl.addActionListener(this);
       csCtrl.init();
       desktop.addPanel(CourseScheduleCtrl.COURSE_SCHEDULING_KEY, csCtrl);
     } else if (src == miWorkshop) {
-      WorkhopScheduleCtrl wsCtrl = new WorkhopScheduleCtrl(desktop);
+      WorkshopScheduleCtrl wsCtrl = new WorkshopScheduleCtrl(desktop);
       wsCtrl.addActionListener(this);
       wsCtrl.init();
-      desktop.addPanel(WorkhopScheduleCtrl.WORKSHOP_SCHEDULING_KEY, wsCtrl);
+      desktop.addPanel(WorkshopScheduleCtrl.WORKSHOP_SCHEDULING_KEY, wsCtrl);
     } else if (src == miTraining) {
       TrainingScheduleCtrl tsCtrl = new TrainingScheduleCtrl(desktop);
       tsCtrl.addActionListener(this);

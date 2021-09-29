@@ -35,6 +35,7 @@ import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
 import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.module.GemDesktopCtrl;
 
 /**

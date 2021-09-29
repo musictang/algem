@@ -71,7 +71,9 @@ public class MenuSearch
     desktop.setWaitCursor();
 
     if (src == miSearchPerson) {
-      if (!desktop.hasModule(CONTACT_BROWSER_KEY)) {
+      if (desktop.hasModule(CONTACT_BROWSER_KEY)) {
+          desktop.showModule(CONTACT_BROWSER_KEY);
+      } else {
         contact = new PersonFileSearchCtrl(desktop, null);
         contact.addActionListener(this);
         contact.init();
@@ -83,14 +85,18 @@ public class MenuSearch
         }
       }
     } else if (src == miGroupBrowse) {
-      if (!desktop.hasModule(GroupSearchCtrl.GROUP_BROWSER_KEY)) {
+      if (desktop.hasModule(GroupSearchCtrl.GROUP_BROWSER_KEY)) {
+          desktop.showModule(GroupSearchCtrl.GROUP_BROWSER_KEY);
+      } else {
         group = new GroupSearchCtrl(desktop);
         group.addActionListener(this);
         group.init();
         desktop.addPanel(GroupSearchCtrl.GROUP_BROWSER_KEY, group, GemModule.S_SIZE);
       }
     } else if (src == miRoomBrowse) {
-      if (!desktop.hasModule(RoomSearchCtrl.ROOM_BROWSER_KEY)) {
+      if (desktop.hasModule(RoomSearchCtrl.ROOM_BROWSER_KEY)) {
+          desktop.showModule(RoomSearchCtrl.ROOM_BROWSER_KEY);
+      } else {
         RoomSearchCtrl sb = new RoomSearchCtrl(desktop);
         sb.addActionListener(this);
         sb.init();

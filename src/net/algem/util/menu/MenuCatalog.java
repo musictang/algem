@@ -61,10 +61,12 @@ public class MenuCatalog
         extends GemMenu
 {
 
-  private static final String ENROLMENT_BROWSER_KEY = "Enrolment.browser";
-  private static final String MODULE_BROWSER_KEY = "Module.browser";
-  private static final String COURSE_BROWSER_KEY = "Course.browser";
-  private static final String RENTAL_BROWSER_KEY = "Rentable.browser";
+  public static final String ENROLMENT_BROWSER_KEY = "Enrolment.browser";
+  public static final String MODULE_BROWSER_KEY = "Module.browser";
+  public static final String COURSE_BROWSER_KEY = "Course.browser";
+  public static final String RENTAL_BROWSER_KEY = "Rentable.browser";
+  public static final String ORDERED_BROWSER_KEY = "Modules.ordered";
+
   private JMenuItem miModule;
   private JMenuItem miModuleOrder;
   private JMenuItem miCoursBrowse;
@@ -76,6 +78,10 @@ public class MenuCatalog
   private final JMenuItem factsItem;
 
   public MenuCatalog(GemDesktop desktop) {
+      this(desktop,1);  //V3.0
+      
+  }
+  public MenuCatalog(GemDesktop desktop, int version) {
     super(BundleUtil.getLabel("Menu.catalog.label"), desktop);
     String course = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey());
     if (course != null && course.startsWith("t")) {
@@ -90,13 +96,16 @@ public class MenuCatalog
         miRentalBrowse.setToolTipText(BundleUtil.getLabel("Rental.tip"));
         add(miRentalBrowse);
       }
-      addSeparator();
+      if (version != 2)
+      {
+          addSeparator();
       
       add(miEnrolment = new JMenuItem(BundleUtil.getLabel("Menu.enrolment.label")));
       miEnrolment.setToolTipText(BundleUtil.getLabel("Enrolment.catalog.tip"));
       miModuleOrder = new JMenuItem(BundleUtil.getLabel("Modules.ordered.label"));
       miModuleOrder.setToolTipText(BundleUtil.getLabel("Modules.ordered.tip"));
       add(miModuleOrder);
+    }
     }
 
     scriptItem = new JMenuItem(BundleUtil.getLabel("Scripts.label"));
@@ -143,7 +152,7 @@ public class MenuCatalog
       final EnrolmentService service = new EnrolmentService(dataCache);
       final ExtendeModuleOrderListCtrl orderListCtrl = new ExtendeModuleOrderListCtrl(desktop, service, new ExtendedModuleOrderTableModel());
       orderListCtrl.load(dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate());
-      desktop.addPanel("Modules.ordered", orderListCtrl, GemModule.XXL_SIZE);
+      desktop.addPanel(ORDERED_BROWSER_KEY, orderListCtrl, GemModule.XXL_SIZE);
     } else if (src == miCoursBrowse) {
       CourseSearchCtrl coursCtrl = new CourseSearchCtrl(desktop);
       coursCtrl.addActionListener(this);

@@ -72,7 +72,7 @@ import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 import net.algem.util.module.FileEditor;
 import net.algem.util.module.FileTabView;
-import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.*;
 import org.passay.PasswordValidator;
 
@@ -355,7 +355,7 @@ public class PersonFileEditor
       hoursDlg.init(fileName, dc);
     } // clic sur le bouton/icone Fermer la fiche
     else if (GemCommand.CLOSE_CMD.equals(arg)) { // GemCommand.
-      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK;
+      savePrefs = (evt.getModifiers() & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK;
       try {
         close();
       } catch (GemCloseVetoException i) {
@@ -758,7 +758,7 @@ public class PersonFileEditor
 
       public void actionPerformed(ActionEvent evt) {
         PersonFile d = ((PersonFileMenuItem) evt.getSource()).getPersonFile();
-        PersonFileEditor m = ((GemDesktopCtrl) desktop).getPersonFileEditor(d.getId());
+        PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(d.getId());
         if (m == null) {
           PersonFileEditor editeur = new PersonFileEditor(d);
           desktop.addModule(editeur);
@@ -777,7 +777,7 @@ public class PersonFileEditor
       @Override
       public void actionPerformed(ActionEvent evt) {
         desktop.setWaitCursor();
-        PersonFileEditor m = ((GemDesktopCtrl) desktop).getPersonFileEditor(_dossier.getId());
+        PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(_dossier.getId());
         if (m == null) {
           PersonFileEditor editor = new PersonFileEditor(_dossier);
           desktop.addModule(editor);
@@ -796,7 +796,7 @@ public class PersonFileEditor
       @Override
       public void actionPerformed(ActionEvent evt) {
         desktop.setWaitCursor();
-        PersonFileEditor m = ((GemDesktopCtrl) desktop).getPersonFileEditor(_dossier.getId());
+        PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(_dossier.getId());
         if (m == null) {
           PersonFileEditor editor = new PersonFileEditor(_dossier);
           desktop.addModule(editor);
@@ -1310,7 +1310,16 @@ public class PersonFileEditor
     desktop.removeGemEventListener(this);
     desktop.removeGemEventListener(personFileView);
     personFileView.clear();
-    desktop.removeModule(this);
+    if (desktop.getDataCache().getUser().getDesktop() == 1) {
+        desktop.removeModule(this);
+    } else {
+        JFrame frame = (JFrame)SwingUtilities.getRoot(view.getContentPane());
+        if (frame.getClass().getName().equals("net.algem.util.ui.FrameDetach")) {
+            ((FrameDetach)frame).close();
+        } else {
+            desktop.removeModule(this);
+        }
+    }
   }
 
   /**

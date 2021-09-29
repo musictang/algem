@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import net.algem.security.UserService;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
-import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemPanel;
@@ -47,7 +47,7 @@ public class PostitCreateCtrl
 {
 
   public static final String POSTIT_CREATE_KEY="Postit.create";
-  private GemDesktopCtrl desktop;
+  private AbstractDesktopCtrl desktop;
   private PostitCreateView postit;
   private GemField status;
   private GemButton btCancel;
@@ -55,7 +55,7 @@ public class PostitCreateCtrl
   private ActionListener actionListener;
   private UserService service;
 
-  public PostitCreateCtrl(GemDesktopCtrl desktop, UserService service) {
+  public PostitCreateCtrl(AbstractDesktopCtrl desktop, UserService service) {
 
     this.setLayout(new BorderLayout());
     this.desktop = desktop;

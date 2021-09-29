@@ -41,6 +41,7 @@ public class User
   private transient String password;
   private int profile;
   private transient UserPass pass;
+  private int desktop;
 
   public User() {
   }
@@ -51,6 +52,14 @@ public class User
     firstName = p.getFirstName();
     gender = p.getGender();
   }
+
+    public int getDesktop() {
+        return desktop;
+    }
+
+    public void setDesktop(int desktop) {
+        this.desktop = desktop;
+    }
 
   @Override
   public boolean equals(Object obj) {

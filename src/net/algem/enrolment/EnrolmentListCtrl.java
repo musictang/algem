@@ -41,7 +41,7 @@ import net.algem.security.UserIO;
 import net.algem.util.*;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.MessagePopup;
@@ -171,7 +171,7 @@ public class EnrolmentListCtrl
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
     MemberOrder mo = (MemberOrder) orderTableModel.getItem(n);
-    PersonFileEditor editor = ((GemDesktopCtrl) desktop).getPersonFileEditor(mo.getMember());
+    PersonFileEditor editor = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(mo.getMember());
     if (editor != null) {
       desktop.setSelectedModule(editor);
     } else {

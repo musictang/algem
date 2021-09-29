@@ -32,6 +32,7 @@ import net.algem.room.RoomRateEnum;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.module.GemDesktopCtrl;
 
 /**

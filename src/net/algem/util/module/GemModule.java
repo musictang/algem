@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import net.algem.util.BundleUtil;
@@ -34,6 +35,7 @@ import net.algem.util.DataCache;
 import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
 import net.algem.util.model.GemCloseVetoException;
+import net.algem.util.ui.GemTreeNode;
 
 /**
  * Generic module.
@@ -61,6 +63,34 @@ public abstract class GemModule
   protected GemDesktop desktop;
   protected DataCache dataCache;
   protected Container container;
+
+  protected GemTreeNode node;
+  protected GemTreeNode treeNode;
+  protected boolean removable=true;
+
+    public boolean isRemovable() {
+        return removable;
+    }
+
+    public void setRemovable(boolean removable) {
+        this.removable = removable;
+    }
+
+    public GemTreeNode getTreeNode() {
+        return treeNode;
+    }
+
+    public void setTreeNode(GemTreeNode treeNode) {
+        this.treeNode = treeNode;
+    }
+
+    public GemTreeNode getNode() {
+        return node;
+    }
+
+    public void setNode(GemTreeNode node) {
+        this.node = node;
+    }
 
   public GemModule(String label) {
     this.label = label;
@@ -102,7 +132,7 @@ public abstract class GemModule
    * @see net.algem.util.module.GemDesktopCtrl#addModule(net.algem.util.module.GemModule) 
    * 
    */
-  public void setDesktop(GemDesktop desktop) {
+  public void setDesktop1(GemDesktop desktop) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
 
@@ -120,6 +150,13 @@ public abstract class GemModule
     });
   }
 
+  public void setDesktop2(GemDesktop desktop) {
+    this.desktop = desktop;
+    dataCache = desktop.getDataCache();
+
+    init();	// init module+IHM à redéfinir dans les modules
+  }
+  
   public GemDesktop getDesktop() {
     return desktop;
   }
@@ -176,7 +213,7 @@ public abstract class GemModule
   }
 
   public void setSize(Dimension d) {
-    view.setSize(d);
+      if (view != null)    view.setSize(d);
   }
 
   public static String getClassName(Class c) {

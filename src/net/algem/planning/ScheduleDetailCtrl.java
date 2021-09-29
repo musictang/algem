@@ -61,7 +61,7 @@ import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
 import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.*;
 
 /**
@@ -551,19 +551,18 @@ public class ScheduleDetailCtrl
         ScheduleRangeObject range = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
         if (Schedule.COURSE == schedule.getType()) {
           c = ((CourseSchedule) schedule).getCourse();
-          //if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) {
-          if ((evt.getModifiers() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK) {//ouverture du suivi élève touche MAJ
+          if ((evt.getModifiers() & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK) {//ouverture du suivi élève touche MAJ
             setFollowUp(range, c);
             return;
           }
         }
-        if ((evt.getModifiers() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK) {
+        if ((evt.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
           deleteRange(range);
           return;
         }
 
         Person p = range.getMember();
-        PersonFileEditor editor = ((GemDesktopCtrl) desktop).getPersonFileEditor(p.getId());
+        PersonFileEditor editor = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(p.getId());
         if (editor != null) {
           desktop.setSelectedModule(editor);
         } else {
@@ -578,7 +577,7 @@ public class ScheduleDetailCtrl
         Object src = ((GemMenuButton) evt.getSource()).getObject();
         if (src instanceof ScheduleRangeObject) {
           ScheduleRangeObject range = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
-          if ((evt.getModifiers() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK) {
+          if ((evt.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
             deleteRange(range);
             return;
           }
@@ -591,7 +590,7 @@ public class ScheduleDetailCtrl
         PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
         loadPersonFile(pf);
       } else if ("TeacherLink".equals(arg)) {
-        if (!(evt.getModifiers() == InputEvent.BUTTON1_DOWN_MASK)) {
+          if ((evt.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
           TeacherBreakDlg dlg = new TeacherBreakDlg(desktop, (CourseSchedule) schedule);
           dlg.entry();
           if (dlg.isValidation()) {
@@ -621,7 +620,7 @@ public class ScheduleDetailCtrl
       } else if ("CourseLink".equals(arg) || "WorkshopLink".equals(arg)) {
         setWaitCursor();
         c = (Course) ((GemMenuButton) evt.getSource()).getObject();
-        if (!(evt.getModifiers() == InputEvent.BUTTON1_DOWN_MASK)) { // ouverture du suivi cours touche majuscule
+        if ((evt.getModifiers() & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK) {// ouverture du suivi cours touche majuscule
           if (schedule.getNote() > 0) {
             ((ScheduleObject) schedule).setFollowUp(scheduleService.getFollowUp(schedule.getNote()));
           }
@@ -629,10 +628,12 @@ public class ScheduleDetailCtrl
           dlg.entry();
         } else {
           CourseCtrl courseCard = new CourseCtrl(desktop);
-          courseCard.addActionListener((GemDesktopCtrl) desktop);
+          courseCard.addActionListener((AbstractDesktopCtrl) desktop);
           courseCard.loadCard(c);
           desktop.addPanel("Cours " + c.getTitle(), courseCard);
+          if (desktop.getSelectedModule() != null && desktop.getSelectedModule().getView() != null) {
           frame.setLocation(getOffset(desktop.getSelectedModule().getView()));
+        }
         }
       } else if ("Mailing".equals(arg)) {
         Vector<ScheduleRangeObject> ranges = detailEvent.getRanges();//plages
@@ -734,7 +735,9 @@ public class ScheduleDetailCtrl
   private void loadPersonFile(PersonFile dossier) {
     PersonFileEditor editor = new PersonFileEditor(dossier);
     desktop.addModule(editor);
-    frame.setLocation(getOffset(editor.getView()));
+    if (editor.getView() != null) { //GemSPADesktop sans JInternalFrame
+        frame.setLocation(getOffset(editor.getView()));
+    }
   }
 
   /**
@@ -749,13 +752,18 @@ public class ScheduleDetailCtrl
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     int x = view.getX() + view.getWidth();
-    int y = view.getLocationOnScreen().y + view.getHeight();
     if (x > dw) {
       x = dw - 100;
     }
+    int y=0;
+    try {
+    y = view.getLocationOnScreen().y + view.getHeight();
     if (y + frame.getHeight() > screenSize.getHeight()) {
       y = view.getLocationOnScreen().y + 88;// don't mask close and save buttons
 //      y = (int) screenSize.getHeight() - frame.getHeight() - 100;// 100 = reserved space at bottom (for taskbar)
+    }
+    } catch (Exception ignore) {
+        System.out.println("ScheduleDetailCtrl.getOffset:"+ignore);
     }
     return new Point(x, y);
   }

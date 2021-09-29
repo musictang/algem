@@ -195,7 +195,7 @@ public class UserIO
 
   public List<User> find(String where) throws SQLException {
     List<User> v = new ArrayList<User>();
-    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef"
+    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef,u.desktop"
       + " FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " u ON (p.id = u.idper)";
     if (where != null) {
       query += " " + where;
@@ -216,6 +216,7 @@ public class UserIO
       u.setGender(g == null ? null : g.trim());
       u.setLogin(l == null ? null : l.trim());
       u.setProfile(rs.getInt(7));
+      u.setDesktop(rs.getInt(10));
 
       byte[] b64pass = Base64.decodeBase64(rs.getString(8));
       byte[] b64salt = Base64.decodeBase64(rs.getString(9));

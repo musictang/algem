@@ -238,7 +238,7 @@ public class DayPlanView
       hour.incMinute(30);
       y += step_y;
     }
-    bg.setColor(Color.gray);
+    bg.setColor(net.algem.Algem.BGCOLOR_TEST);
 
     x = 5 + fm.stringWidth(hour.toString()) + 5;
     y = TOP_MARGIN + step_y;

@@ -122,7 +122,7 @@ public class YearCanvasHorizontal
       if (m >= 12) {
         m -= 12;
       }
-      g.setColor(Color.gray);
+      g.setColor(net.algem.Algem.BGCOLOR_PLANNING);
       g.drawLine(x, y, x, MARGED + (pas_y * 37));
       g.setColor(Color.black);
       sz = fm.stringWidth(monthLabels[m]);
@@ -138,7 +138,7 @@ public class YearCanvasHorizontal
     for (i = 0, jj = Calendar.MONDAY; i < 37; i++) {
       g.drawString(dayLabels[jj], 2, y + (pas_y / 2) + 5);
       if (jj == 1) {
-        g.setColor(Color.gray);
+        g.setColor(net.algem.Algem.BGCOLOR_PLANNING);
         g.fillRect(MARGED + 1, y + 1, (pas_x * 12) - 1, pas_y - 1);
         g.setColor(Color.black);
       }

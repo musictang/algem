@@ -176,7 +176,7 @@ public class StandardScheduleColorizer
     if (p instanceof ScheduleRangeObject) {
       Person a = ((ScheduleRangeObject) p).getMember();
       if (a == null) {
-        c = Color.GRAY; // nobody color
+        c = net.algem.Algem.BGCOLOR_PLANNING;	//Color.GRAY; // nobody color
       } else if (a.getId() == 0) {
         c = c.darker();// break color
       }

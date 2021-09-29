@@ -40,7 +40,7 @@ import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.*;
 
 /**
@@ -124,7 +124,7 @@ public class HistoInvoice
         if (e.getClickCount() == 2) {
           int id = ((InvoiceListCtrl) invoiceListCtrl).getIdContact();
           if (id > 0) {
-            PersonFileEditor m = ((GemDesktopCtrl) desktop).getPersonFileEditor(id);
+            PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(id);
             if (m == null) {
               try {
                 desktop.setWaitCursor();

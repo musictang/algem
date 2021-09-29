@@ -90,8 +90,8 @@ public class DayScheduleCtrl
   private boolean savePrefs;
   private final Preferences prefs = Preferences.userRoot().node("/algem/ui");
 
-  public DayScheduleCtrl() {
-    super("TableauJour");
+  public DayScheduleCtrl(String s) {
+    super(s);
     cal = Calendar.getInstance(Locale.FRANCE);
   }
 
@@ -228,7 +228,7 @@ public class DayScheduleCtrl
     } else if (src == miPrint) {
       view.print();
     } else if (src == miQuit) {
-      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK;
+      savePrefs = (evt.getModifiers() & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK;
       try {
         close();
       } catch (GemCloseVetoException ex) {

@@ -25,7 +25,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
-import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.GemCommand;
+import net.algem.util.module.AbstractDesktopCtrl;
+import net.algem.util.module.GemModule;
 
 /**
  * comment
@@ -39,19 +41,21 @@ public class FrameDetach
         implements ActionListener
 {
 
-  private GemDesktopCtrl desktop;
+  private AbstractDesktopCtrl desktop;
   private String label;
   private Container panel;
   private GemButton btQuit;
+  private GemModule module;
 
-  public FrameDetach(GemDesktopCtrl _desktop, String _label, Container p) {
-    super("Algem " + _label);
+  public FrameDetach(AbstractDesktopCtrl _desktop, GemModule _module, Container p) {
+    super("Algem " + _module.getLabel());
 
     desktop = _desktop;
-    label = _label;
+    module = _module;
+    label = module.getLabel();
     panel = p;
 
-    btQuit = new GemButton("Menu.quit.label");
+    btQuit = new GemButton(GemCommand.CLOSE_CMD);
     btQuit.addActionListener(this);
 
     Container pan = getContentPane();
@@ -76,10 +80,12 @@ public class FrameDetach
   }
 
   public void close() {
+      System.out.println("FrameDetach.close");
     setVisible(false);
     dispose();
     if (desktop != null) {
-      desktop.addPanel(label, panel);
+        module.setNode(null);
+      desktop.retourModule(module, true);
     }
   }
 
@@ -97,7 +103,10 @@ public class FrameDetach
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getActionCommand().equals("Quitter")) {
+      System.out.println("FrameDetach.actionPerformed:"+evt);
+      if (evt.getActionCommand().equals("Menu.quit.label") 
+          || evt.getActionCommand().equals("Fermer"))
+      {
       if (canClose()) {
         close();
       }

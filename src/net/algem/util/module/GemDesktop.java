@@ -73,6 +73,10 @@ public interface GemDesktop
 
   public boolean hasModule(String key);
 
+  public void showModule(String key);
+
+  public void retourModule(GemModule module, boolean tree);
+
   public void removeModule(GemModule module);
 
   public void removeModule(String key);

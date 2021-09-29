@@ -51,10 +51,10 @@ public class PostitModule
 {
 
   public static final int POSTIT_MODULE_WIDTH = 110;
-  static final Dimension POSTIT_SIZE = new Dimension(POSTIT_MODULE_WIDTH, DAY_SCHEDULE_WINDOW_HEIGHT);
-  private int lastRead;
-  private PostitCanvas postitCanvas;
-  private UserService service;
+  static protected Dimension POSTIT_SIZE = new Dimension(POSTIT_MODULE_WIDTH, DAY_SCHEDULE_WINDOW_HEIGHT);
+  protected int lastRead;
+  protected PostitCanvas postitCanvas;
+  protected UserService service;
 
   public PostitModule(String label) {
     super(label);
@@ -93,7 +93,7 @@ public class PostitModule
    */
   public void loadPostits() {
 
-    int userId = dataCache.getUser().getId();
+      int userId = dataCache.getUser().getId();
 
     List<Postit> v = service.getPostits(userId, lastRead);
     Iterator<Postit> enu = v.iterator();

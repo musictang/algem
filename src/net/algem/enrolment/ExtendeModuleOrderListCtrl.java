@@ -202,7 +202,9 @@ public class ExtendeModuleOrderListCtrl
   public void actionPerformed(ActionEvent e) {
     String cmd = e.getActionCommand();
     if (GemCommand.CLOSE_CMD.equals(cmd)) {
-      desktop.removeModule("Modules.ordered");
+            if (desktop.getDataCache().getUser().getDesktop() == 1) {
+                desktop.removeModule("Modules.ordered");
+            }
     } else if (GemCommand.EXPORT_CMD.equals(cmd)) {
       print();
     } else if (GemCommand.LOAD_CMD.equals(cmd)) {

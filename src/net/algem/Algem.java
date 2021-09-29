@@ -56,6 +56,8 @@ import net.algem.security.AuthDlg;
 import net.algem.security.User;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.module.GemSPADesktop;
+import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.MessagePopup;
 import org.apache.commons.codec.binary.Base64;
 
@@ -80,6 +82,11 @@ public class Algem
     System.getProperty("user.home") + FileUtil.FILE_SEPARATOR + ".algem" + FileUtil.FILE_SEPARATOR + "preferences"
   };
 
+  public static final Color BGCOLOR_PLANNING = new Color(225,225,225);
+  public static final Color BGCOLOR_DESKTOP = new Color(225,225,225);
+  public static final Color BGCOLOR_POSTIT = new Color(225,225,225);
+  public static final Color BGCOLOR_TEST = new Color(0,0,0);
+
   private JFrame frame;
   private DataCache cache;
   private String driverName = "org.postgresql.Driver";
@@ -88,6 +95,8 @@ public class Algem
   private static Properties props;
   private static final Font MY_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
   private DataConnection dc;
+  
+  private AbstractDesktopCtrl desktop;
 
   public Algem() {
     Locale.setDefault(Locale.FRENCH);
@@ -291,8 +300,11 @@ public class Algem
     frame.setSize(prefs.getInt("desktop.w", DEF_WIDTH), prefs.getInt("desktop.h", DEF_HEIGHT));
     frame.setLocation(prefs.getInt("desktop.x", DEF_LOCATION.x), prefs.getInt("desktop.y", DEF_LOCATION.y));
     checkVersion(frame);
-
-    GemDesktopCtrl desktop = new GemDesktopCtrl(frame, cache, props);
+    if (cache.getUser().getDesktop() == 2) {
+        desktop = new GemSPADesktop(frame, cache, props);
+    } else {
+        desktop = new GemDesktopCtrl(frame, cache, props);
+    }
     frame.setVisible(true);
   }
 

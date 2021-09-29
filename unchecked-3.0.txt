@@ -1,0 +1,209 @@
+s to /home/eric/algem-master/algem/target/classes
+/algem/src/net/algem/util/ServeurCtrl.java:[29,25] net.algem.util.ui.TableSGBDView in net.algem.util.ui has been deprecated
+/algem/src/net/algem/billing/Item.java:[137,61] unchecked conversion
+g.Vat>
+l.List
+/algem/src/net/algem/contact/Contact.java:[89,19] unchecked conversion
+act.Address>
+l.Vector
+/algem/src/net/algem/contact/Contact.java:[113,20] unchecked conversion
+act.Telephone>
+l.Vector
+/algem/src/net/algem/planning/wishes/EnrolmentWishGroupCourseTableModel.java:[58,26] unchecked conversion
+ng.wishes.EnrolmentWishGroupCourseLine>
+l.List
+/algem/src/net/algem/util/DataCache.java:[1263,58] unchecked conversion
+,java.lang.Boolean>
+l.HashMap
+/algem/src/net/algem/util/DataCache.java:[1394,33] unchecked conversion
+.CourseModuleInfo>
+l.List
+/algem/src/net/algem/course/ModuleView.java:[131,12] unchecked call to JComboBox(E[]) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/course/ModuleView.java:[136,18] unchecked method invocation: constructor <init> in class net.algem.course.CourseModuleView is applied to given types
+t.algem.course.CourseCode>
+til.model.GemList
+/algem/src/net/algem/course/ModuleView.java:[136,56] unchecked conversion
+t.algem.course.CourseCode>
+m.util.model.GemList
+/algem/src/net/algem/room/RoomIO.java:[310,23] load() in net.algem.room.RoomIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.room.Room> to java.util.List<T>
+/algem/src/net/algem/planning/ActionIO.java:[350,23] load() in net.algem.planning.ActionIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.planning.Action> to java.util.List<T>
+/algem/src/net/algem/contact/member/MemberIO.java:[202,23] load() in net.algem.contact.member.MemberIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.contact.member.Member> to java.util.List<T>
+/algem/src/net/algem/contact/PersonIO.java:[238,23] load() in net.algem.contact.PersonIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.contact.Person> to java.util.List<T>
+/algem/src/net/algem/contact/PersonFileIO.java:[323,27] load() in net.algem.contact.PersonFileIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.contact.PersonFile> to java.util.List<T>
+/algem/src/net/algem/contact/teacher/TeacherIO.java:[178,24] load() in net.algem.contact.teacher.TeacherIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.contact.teacher.Teacher> to java.util.List<T>
+/algem/src/net/algem/room/RoomRateIO.java:[145,25] load() in net.algem.room.RoomRateIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.room.RoomRate> to java.util.List<T>
+/algem/src/net/algem/group/GroupIO.java:[233,22] load() in net.algem.group.GroupIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.group.Group> to java.util.List<T>
+/algem/src/net/algem/course/CourseIO.java:[153,23] load() in net.algem.course.CourseIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.course.Course> to java.util.List<T>
+/algem/src/net/algem/course/CourseIO.java:[67,23] getLevel() in net.algem.course.Course has been deprecated
+/algem/src/net/algem/course/CourseIO.java:[88,23] getLevel() in net.algem.course.Course has been deprecated
+/algem/src/net/algem/course/CourseIO.java:[143,6] setLevel(short) in net.algem.course.Course has been deprecated
+/algem/src/net/algem/course/ModuleIO.java:[256,23] load() in net.algem.course.ModuleIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.course.Module> to java.util.List<T>
+/algem/src/net/algem/course/ModuleIO.java:[306,22] unchecked call to add(E) as a member of the raw type java.util.List
+/algem/src/net/algem/course/ModuleIO.java:[314,22] unchecked call to add(E) as a member of the raw type java.util.List
+/algem/src/net/algem/config/MusicStyleIO.java:[106,27] load() in net.algem.config.MusicStyleIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.config.MusicStyle> to java.util.List<T>
+/algem/src/net/algem/config/AgeRangeIO.java:[160,25] load() in net.algem.config.AgeRangeIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.config.AgeRange> to java.util.List<T>
+/algem/src/net/algem/config/LevelIO.java:[56,25] load() in net.algem.config.LevelIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.config.GemParam> to java.util.List<T>
+/algem/src/net/algem/config/StatusIO.java:[58,25] load() in net.algem.config.StatusIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.config.GemParam> to java.util.List<T>
+/algem/src/net/algem/config/CourseCodeIO.java:[65,25] load() in net.algem.config.CourseCodeIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.config.GemParam> to java.util.List<T>
+/algem/src/net/algem/security/UserIO.java:[262,21] load() in net.algem.security.UserIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.security.User> to java.util.List<T>
+/algem/src/net/algem/security/UserIO.java:[278,16] unchecked call to put(K,V) as a member of the raw type java.util.HashMap
+/algem/src/net/algem/billing/ItemIO.java:[123,21] load() in net.algem.billing.ItemIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.billing.Item> to java.util.List<T>
+/algem/src/net/algem/contact/EmployeeTypeIO.java:[64,25] load() in net.algem.contact.EmployeeTypeIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.config.GemParam> to java.util.List<T>
+/algem/src/net/algem/config/StudioTypeIO.java:[61,25] load() in net.algem.config.StudioTypeIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.config.GemParam> to java.util.List<T>
+/algem/src/net/algem/rental/RentableObjectIO.java:[154,33] load() in net.algem.rental.RentableObjectIO implements <T>load() in net.algem.util.model.Cacheable
+ from java.util.List<net.algem.rental.RentableObject> to java.util.List<T>
+/algem/src/net/algem/planning/day/DayScheduleCtrl.java:[107,54] unchecked conversion
+t.algem.room.Establishment>
+m.util.model.GemList
+/algem/src/net/algem/planning/editing/PlanModifCtrl.java:[77,11] net.algem.planning.editing.UpdateCoursePlanCtrl in net.algem.planning.editing has been deprecated
+/algem/src/net/algem/planning/ScheduleDetailCtrl.java:[522,21] unchecked method invocation: method sort in class java.util.Collections is applied to given types
+parator<? super T>
+ician>,net.algem.contact.PersonComparator
+/algem/src/net/algem/planning/ScheduleDetailCtrl.java:[522,25] unchecked conversion
+
+tor
+/algem/src/net/algem/util/ui/HtmlViewer.java:[143,16] unchecked call to push(E) as a member of the raw type java.util.Stack
+/algem/src/net/algem/group/GroupRehearsalView.java:[56,12] unchecked method invocation: constructor <init> in class net.algem.room.RoomChoice is applied to given types
+t.algem.room.Room>
+til.model.GemList
+/algem/src/net/algem/group/GroupRehearsalView.java:[56,37] unchecked conversion
+t.algem.room.Room>
+m.util.model.GemList
+/algem/src/net/algem/util/ui/GemChoice.java:[43,10] unchecked call to JComboBox(javax.swing.ComboBoxModel<E>) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/util/ui/GemChoice.java:[47,10] unchecked call to JComboBox(java.util.Vector<E>) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/util/ui/GemChoice.java:[53,36] unchecked assignment to variable list as member of raw type net.algem.util.ui.GemChoiceModel
+/algem/src/net/algem/util/ui/GemChoiceFilterModel.java:[44,10] unchecked call to GemChoiceModel(net.algem.util.model.GemList<T>) as a member of the raw type net.algem.util.ui.GemChoiceModel
+/algem/src/net/algem/util/ui/GemChoiceFilterModel.java:[82,9] unchecked method invocation: method load in class net.algem.util.ui.GemChoiceFilterModel is applied to given types
+
+til.model.GemList
+/algem/src/net/algem/util/ui/GemChoiceFilterModel.java:[82,10] unchecked conversion
+
+m.util.model.GemList
+/algem/src/net/algem/util/ui/GemChoiceFilterModel.java:[88,9] unchecked method invocation: method load in class net.algem.util.ui.GemChoiceFilterModel is applied to given types
+
+til.model.GemList
+/algem/src/net/algem/util/ui/GemChoiceFilterModel.java:[88,10] unchecked conversion
+
+m.util.model.GemList
+/algem/src/net/algem/group/GroupPassRehearsalView.java:[59,12] unchecked method invocation: constructor <init> in class net.algem.room.RoomChoice is applied to given types
+t.algem.room.Room>
+til.model.GemList
+/algem/src/net/algem/group/GroupPassRehearsalView.java:[59,37] unchecked conversion
+t.algem.room.Room>
+m.util.model.GemList
+/algem/src/net/algem/planning/day/DayChoice.java:[46,13] unchecked call to addItem(E) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/planning/day/DayChoice.java:[47,13] unchecked call to addItem(E) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/planning/day/DayChoice.java:[48,13] unchecked call to addItem(E) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/planning/day/DayChoice.java:[49,13] unchecked call to addItem(E) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/planning/day/DayChoice.java:[50,13] unchecked call to addItem(E) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/planning/day/DayChoice.java:[51,13] unchecked call to addItem(E) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/planning/day/DayChoice.java:[52,13] unchecked call to addItem(E) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/group/MusicianEditor.java:[93,17] unchecked call to ArrayList(java.util.Collection<? extends E>) as a member of the raw type java.util.ArrayList
+/algem/src/net/algem/group/MusicianEditor.java:[93,17] unchecked conversion
+Musician>
+l.ArrayList
+/algem/src/net/algem/group/GroupView.java:[120,15] unchecked method invocation: constructor <init> in class net.algem.config.GemParamChoice is applied to given types
+
+til.model.GemList
+/algem/src/net/algem/group/GroupView.java:[120,64] unchecked conversion
+
+m.util.model.GemList
+/algem/src/net/algem/config/ParamChoice.java:[48,14] unchecked call to addItem(E) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/util/ui/ListCtrl.java:[109,23] unchecked call to addItem(T) as a member of the raw type net.algem.util.ui.JTableModel
+/algem/src/net/algem/util/ui/ListCtrl.java:[114,23] unchecked call to modItem(int,T) as a member of the raw type net.algem.util.ui.JTableModel
+/algem/src/net/algem/util/ui/ListCtrl.java:[130,30] unchecked conversion
+l.Collection<T>
+l.Vector
+/algem/src/net/algem/billing/HistoInvoice.java:[185,40] unchecked call to ProgressMonitorHandler(javax.swing.ProgressMonitor,javax.swing.SwingWorker<T,V>) as a member of the raw type net.algem.util.ui.ProgressMonitorHandler
+/algem/src/net/algem/accounting/OrderLineView.java:[122,51] unchecked conversion
+g.Vat>
+l.List
+/algem/src/net/algem/accounting/OrderLineView.java:[155,21] unchecked call to JComboBox(E[]) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/accounting/OrderLineView.java:[187,20] unchecked method invocation: constructor <init> in class net.algem.config.ParamChoice is applied to given types
+l.Collection<T>
+ist
+/algem/src/net/algem/accounting/OrderLineView.java:[187,75] unchecked conversion
+l.Collection<T>
+l.List
+/algem/src/net/algem/billing/InvoiceListCtrl.java:[54,46] unchecked call to setComparator(int,java.util.Comparator<?>) as a member of the raw type javax.swing.DefaultRowSorter
+/algem/src/net/algem/contact/ContactFileEditor.java:[221,21] unchecked method invocation: method setLien in class net.algem.contact.TelView is applied to given types
+act.Telephone>
+ector
+/algem/src/net/algem/contact/ContactFileEditor.java:[221,22] unchecked conversion
+act.Telephone>
+l.Vector
+/algem/src/net/algem/enrolment/MemberEnrolmentWishEditor.java:[111,42] unchecked conversion
+ng.wishes.EnrolmentWish>
+l.ArrayList
+/algem/src/net/algem/planning/wishes/EnrolmentWishService.java:[65,46] unchecked conversion
+se.Course>
+l.Vector
+/algem/src/net/algem/planning/wishes/EnrolmentWishService.java:[66,51] unchecked conversion
+ng.wishes.EnrolmentWish>
+l.ArrayList
+/algem/src/net/algem/planning/wishes/EnrolmentWishService.java:[67,50] unchecked conversion
+ng.wishes.EnrolmentWish>
+l.ArrayList
+/algem/src/net/algem/planning/wishes/EnrolmentWishService.java:[84,30] unchecked call to GemList(java.util.List<T>) as a member of the raw type net.algem.util.model.GemList
+/algem/src/net/algem/planning/wishes/EnrolmentWishService.java:[212,22] unchecked call to add(E) as a member of the raw type java.util.Vector
+/algem/src/net/algem/planning/wishes/EnrolmentWishService.java:[217,16] unchecked conversion
+ng[]>
+l.Vector
+/algem/src/net/algem/planning/wishes/EnrolmentWishService.java:[267,26] unchecked conversion
+ng.wishes.EnrolmentWish>
+l.ArrayList
+/algem/src/net/algem/planning/wishes/EnrolmentWishService.java:[277,37] unchecked conversion
+ng.wishes.EnrolmentWish>
+l.ArrayList
+/algem/src/net/algem/planning/wishes/EnrolmentWishService.java:[383,30] unchecked conversion
+r>
+l.ArrayList
+/algem/src/net/algem/course/CourseChoiceTeacherModel.java:[39,10] unchecked call to GemChoiceModel(net.algem.util.model.GemList<T>) as a member of the raw type net.algem.util.ui.GemChoiceModel
+/algem/src/net/algem/planning/wishes/EnrolmentWishTableModel.java:[59,22] unchecked conversion
+ng.wishes.EnrolmentWish>
+l.List
+/algem/src/net/algem/enrolment/CourseEnrolmentDlg.java:[139,19] unchecked method invocation: constructor <init> in class net.algem.room.EstabChoice is applied to given types
+t.algem.room.Establishment>
+til.model.GemList
+/algem/src/net/algem/enrolment/CourseEnrolmentDlg.java:[139,52] unchecked conversion
+t.algem.room.Establishment>
+m.util.model.GemList
+/algem/src/net/algem/enrolment/CourseEnrolmentDlg.java:[148,15] unchecked method invocation: constructor <init> in class net.algem.contact.teacher.TeacherChoice is applied to given types
+t.algem.contact.teacher.Teacher>
+til.model.GemList
+/algem/src/net/algem/enrolment/CourseEnrolmentDlg.java:[148,50] unchecked conversion
+t.algem.contact.teacher.Teacher>
+m.util.model.GemList
+/algem/src/net/algem/enrolment/CourseEnrolmentDlg.java:[356,22] unchecked call to setListData(java.util.Vector<? extends E>) as a member of the raw type javax.swing.JList
+/algem/src/net/algem/enrolment/CourseEnrolmentDlg.java:[494,20] unchecked call to addItem(E) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/enrolment/ModuleDlg.java:[98,20] unchecked method invocation: constructor <init> in class net.algem.course.ModuleChoice is applied to given types
+t.algem.course.Module>,boolean
+an
+/algem/src/net/algem/enrolment/ModuleDlg.java:[98,54] unchecked conversion
+t.algem.course.Module>
+m.util.model.GemList
+/algem/src/net/algem/enrolment/ModuleDlg.java:[133,15] unchecked call to JComboBox(E[]) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/enrolment/ModuleDlg.java:[138,17] unchecked call to JComboBox(E[]) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/enrolment/ModuleDlg.java:[143,15] unchecked call to JComboBox(E[]) as a member of the raw type javax.swing.JComboBox
+/algem/src/net/algem/util/model/SqlList.java:[53,16] unchecked call to setListData(java.util.Vector<? extends E>) as a member of the raw type javax.swing.JList
+gem/src/net/algem/edition/HoursTeacherByEstabTask.java: Some input files additionally use or override a deprecated API.
+gem/src/net/algem/util/model/SqlList.java: Some input files additionally use unchecked or unsafe operations.

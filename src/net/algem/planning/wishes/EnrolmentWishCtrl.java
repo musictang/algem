@@ -77,7 +77,7 @@ import net.algem.util.MailUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.MessagePopup;
 
 /**
@@ -95,7 +95,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
     private final DateTimeFormatter timestampFileNameFormatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm");
 
     private final GemDesktop desktop;
-    private GemDesktopCtrl desktopCtrl;
+    private AbstractDesktopCtrl desktopCtrl;
     private CourseScheduleCtrl csCtrl;
 
     private final DataCache dataCache;
@@ -699,7 +699,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
 
     private void showContactFile(int id) {
 
-        PersonFileEditor editor = ((GemDesktopCtrl) desktop).getPersonFileEditor(id);
+        PersonFileEditor editor = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(id);
         if (editor != null) {
             desktop.setSelectedModule(editor);
         } else {

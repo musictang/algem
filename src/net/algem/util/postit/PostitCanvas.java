@@ -40,26 +40,26 @@ public class PostitCanvas
         implements MouseListener, MouseMotionListener
 {
 
-  static final int MAXW = 100;
-  static final int MAXH = 50;
-  private static final Color INTERNAL_PUBLIC_COLOR = Color.YELLOW;
-  private static final Color INTERNAL_PRIVATE_COLOR = new Color(230, 255, 68);
-  private static final Color EXTERNAL_PUBLIC_COLOR = new Color(254,210,68);//"fed244"
-  private static final Color EXTERNAL_PRIVATE_COLOR = new Color(255,123,123);//#ff7b7b
-  private static final Color BOOKING_COLOR = Color.MAGENTA.brighter();
+  protected static final int MAXW = 100;
+  protected static final int MAXH = 50;
+  protected static final Color INTERNAL_PUBLIC_COLOR = Color.YELLOW;
+  protected static final Color INTERNAL_PRIVATE_COLOR = new Color(230, 255, 68);
+  protected static final Color EXTERNAL_PUBLIC_COLOR = new Color(254,210,68);//"fed244"
+  protected static final Color EXTERNAL_PRIVATE_COLOR = new Color(255,123,123);//#ff7b7b
+  protected static final Color BOOKING_COLOR = Color.MAGENTA.brighter();
   int nextx = MAXW / 2;
   int nexty = 40;
   int initialDragPos;
-  private List<PostitPosition> postits;
-  private PostitPosition pick;
-  private int clickx;
-  private int clicky;
-  private Dimension dim;
-  private ActionListener actionListener;
-  private Font font = new Font("Helvetica",Font.PLAIN,10);
-  private Font smallFont = new Font("Helvetica",Font.PLAIN,9);
-  private int yOffset = 0;
-  private int xOffset = 0;
+  protected List<PostitPosition> postits;
+  protected PostitPosition pick;
+  protected int clickx;
+  protected int clicky;
+  protected Dimension dim;
+  protected ActionListener actionListener;
+  protected Font font = new Font("Helvetica",Font.PLAIN,10);
+  protected Font smallFont = new Font("Helvetica",Font.PLAIN,9);
+  protected int yOffset = 0;
+  protected int xOffset = 0;
 
   public PostitCanvas() {
     postits = new ArrayList<PostitPosition>();
@@ -133,8 +133,9 @@ public class PostitCanvas
       if (x == 50) {
         x = getWidth() / 2;// LAF adaptation
       }
-      //int w = MAXW;
-      int w = getWidth();// LAF adaptation
+      int w = MAXW;
+      //TODOERIC int w = getWidth();// LAF adaptation
+//      GemLogger.info("PostitCanvas.draw x="+x+" w="+w);
       // background color
       switch(p.getType()) {
         case Postit.INTERNAL:

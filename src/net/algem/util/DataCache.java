@@ -1,8 +1,7 @@
 /*
- * @(#)DataCache.java	3.0.0 10/09/2021
+ * @(#)DataCache.java	2.17.3 01/11/19
  *
-* Copyright (c) 2021 eric@productionlibre.fr. All Rights Reserved.
-* Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it

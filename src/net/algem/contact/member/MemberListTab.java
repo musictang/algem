@@ -33,7 +33,7 @@ import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.FileTab;
 import net.algem.util.ui.ListCtrl;
 
@@ -61,7 +61,7 @@ public class MemberListTab
       public void mouseClicked(MouseEvent e) {
         int id = _list.getSelectedID();
         if (id > 0) {
-          PersonFileEditor m = ((GemDesktopCtrl) desktop).getPersonFileEditor(id);
+          PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(id);
           if (m == null) {
             PersonFile pf = ((PersonFileListCtrl) _list).getPersonFile();
               PersonFileEditor editor = new PersonFileEditor(pf);

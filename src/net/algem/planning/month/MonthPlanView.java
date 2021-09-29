@@ -131,7 +131,7 @@ public class MonthPlanView
       bg.drawString(dayNames[dow], x - (w - 10) / 2, y);
       // draw sunday column
       if (dow == Calendar.SUNDAY) {
-        drawRange(i, GLOBAL_START_TIME, H_END, Color.gray);
+        drawRange(i, GLOBAL_START_TIME, H_END, net.algem.Algem.BGCOLOR_PLANNING);
       }
       if (++dow > 7) {
         dow = 1;
@@ -159,7 +159,7 @@ public class MonthPlanView
     x = 5 + fm.stringWidth(hour.toString()) + 2;
 
     bg.drawLine(x, TOP_MARGIN + 1, LEFT_MARGIN + (step_x * maxd) - (step_x / 2), TOP_MARGIN + 1);
-    bg.setColor(Color.gray);
+    bg.setColor(net.algem.Algem.BGCOLOR_TEST);
 
 //    y = TOP_MARGIN + (step_y * 2);
     y = TOP_MARGIN + (step_y);

@@ -80,8 +80,8 @@ public class MonthScheduleCtrl
   private boolean savePrefs;
   private final Preferences prefs = Preferences.userRoot().node("/algem/ui");
 
-  public MonthScheduleCtrl() {
-    super("PlanningMois");
+  public MonthScheduleCtrl(String s) {
+    super(s);
     cal = Calendar.getInstance(Locale.FRANCE);
     cal.set(Calendar.YEAR, 1900);
     start = cal.getTime();
@@ -182,7 +182,7 @@ public class MonthScheduleCtrl
     } else if (src == mPrint) {
       view.print();
     } else if (src == mQuit) {
-      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK;
+      savePrefs = (evt.getModifiers() & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK;
       try {
         close();
       } catch (GemCloseVetoException ex) {

@@ -100,10 +100,14 @@ public class ContactFileEditor
     gp.add(personView, BorderLayout.WEST);
     gp.add(scp, BorderLayout.EAST);
 
-    gb.add(gp, 0, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
-    gb.add(addressPanel, 0, 2, 1, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
-    gb.add(note, 0, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-
+    //TODOERIC
+    
+    //gb.add(gp, 0, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    //gb.add(addressPanel, 0, 2, 1, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    //gb.add(note, 0, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(gp, 0, 0, 1, 1, GridBagHelper.BOTH, GridBagHelper.CENTER); //WEST
+    gb.add(addressPanel, 0, 2, 1, 1, GridBagHelper.BOTH, GridBagHelper.CENTER); //WEST
+    gb.add(note, 0, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.CENTER); //WEST
   }
 
   @Override

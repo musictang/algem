@@ -244,7 +244,7 @@ public class CanvasPlanTrim
     for (i = 0, jj = Calendar.MONDAY; i < 37; i++) {
       g.drawString(dayLabels[jj], 2, y + (pas_y / 2) + 5);
       if (jj == 1) {
-        g.setColor(Color.gray);
+        g.setColor(net.algem.Algem.BGCOLOR_PLANNING);
         g.fillRect(marged + 1, y + 1, (pas_x * 12) - 1, pas_y - 1);
         g.setColor(Color.black);
       }
@@ -273,7 +273,7 @@ public class CanvasPlanTrim
       int x2 = ((pas_x - margd2) * 540) / nbmin;
       g.drawString("18h", x + margd2 + x2, y + (pas_y / 2) + 5);
 
-      g.setColor(Color.gray);
+      g.setColor(net.algem.Algem.BGCOLOR_PLANNING);
       g.drawLine(x + margd2, y + (pas_y / 2) + 5, x + margd2, margeh + (pas_y * 38));
       g.drawLine(x + margd2 + x1, y + (pas_y / 2) + 5, x + margd2 + x1, margeh + (pas_y * 38));
       g.drawLine(x + margd2 + x2, y + (pas_y / 2) + 5, x + margd2 + x2, margeh + (pas_y * 38));
