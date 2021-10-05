@@ -86,7 +86,8 @@ public class GroupFileEditor
     super(GROUP_DOSSIER_KEY);
     this.group = g;
     if (g != null) {
-      label += " " + g.getName();
+//      label += " " + g.getName();
+      label = "Fiche: " + g.getName();
     }
   }
 

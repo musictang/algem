@@ -364,7 +364,7 @@ public abstract class Statistics
    */
   protected String getStringResult(String query) throws SQLException {
     ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
+    if (rs.next()) {
       return rs.getString(1);
     }
     return "";

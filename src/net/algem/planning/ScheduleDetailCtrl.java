@@ -749,6 +749,9 @@ public class ScheduleDetailCtrl
     int dw = desktop.getFrame().getWidth();
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
+    if (view == null) {
+        return new Point(100,100);  //TODOERIC
+    }
     int x = view.getX() + view.getWidth();
     if (x > dw) {
       x = dw - 100;

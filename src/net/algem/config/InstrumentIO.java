@@ -77,7 +77,7 @@ public class InstrumentIO
   public static int findUsed(int id, DataConnection dc) throws SQLException {
     String query = "SELECT count(instrument) FROM " + PERSON_INSTRUMENT_TABLE + " WHERE instrument = " + id;
     ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
+    if (rs.next()) {
       return rs.getInt(1);
     }
     return 0;

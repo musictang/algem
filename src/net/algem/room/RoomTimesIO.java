@@ -50,7 +50,7 @@ public class RoomTimesIO
   public Hour getOpeningTime(int roomId, int dow) throws SQLException {
     String query = "SELECT ouverture FROM " + TABLE + " WHERE idsalle = " + roomId + " AND jour = " + dow;
     ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
+    if (rs.next()) {
       return new Hour(rs.getString(1));
     }
     return null;
@@ -59,7 +59,7 @@ public class RoomTimesIO
   public Hour getClosingTime(int roomId, int dow) throws SQLException {
     String query = "SELECT fermeture FROM " + TABLE + " WHERE idsalle = " + roomId + " AND jour = " + dow;
     ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
+    if (rs.next()) {
       return new Hour(rs.getString(1));
     }
     return null;

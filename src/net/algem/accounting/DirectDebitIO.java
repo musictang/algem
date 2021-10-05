@@ -67,7 +67,7 @@ public class DirectDebitIO
             + " AND s.seqtype != '" + DDSeqType.LOCK.name() + "'"
             + " ORDER BY id DESC LIMIT 1";
     ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
+    if (rs.next()) {
       return getMandateFromRs(rs);
     }
     return null;
@@ -80,7 +80,7 @@ public class DirectDebitIO
             + " AND s.seqtype != '" + DDSeqType.LOCK.name() + "'"
             + " ORDER BY id DESC LIMIT 1";
     ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
+    if (rs.next()) {
       DDMandate m = getMandateFromRs(rs);
       m.setBic(rs.getString(8));
       m.setName(rs.getString(9));

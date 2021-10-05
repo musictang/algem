@@ -253,7 +253,8 @@ public class GemSPADesktop extends AbstractDesktopCtrl {
 
         setWaitCursor();
 
-        if (BundleUtil.getLabel(GemCommand.CLOSE_CMD).equals(arg)) {
+        if (BundleUtil.getLabel(GemCommand.CLOSE_CMD).equals(arg)
+                || BundleUtil.getLabel("Menu.quit.label").equals(arg)) {
             System.out.println("GemDPADesktop.actionPerformed try close/exit");
             savePrefs = (evt.getModifiers() & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK;
             try {

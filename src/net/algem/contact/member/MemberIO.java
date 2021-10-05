@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 import java.util.Vector;
+import net.algem.Algem;
 import net.algem.config.Instrument;
 import net.algem.config.InstrumentIO;
 import net.algem.planning.DateFr;
@@ -94,6 +95,9 @@ public class MemberIO
       }
       //TODO archiv ?? default false
       createPs.setBoolean(10, false);
+      if (!Algem.isFeatureEnabled("cc-mdl")) {
+          m.setFamily(m.getPayer());
+      }
       createPs.setInt(11, m.getFamily());
       GemLogger.info(createPs.toString());
       createPs.executeUpdate();
@@ -126,6 +130,9 @@ public class MemberIO
         updatePs.setNull(8, Types.VARCHAR);
       } else {
         updatePs.setString(8, m.getInsuranceRef());
+      }
+      if (!Algem.isFeatureEnabled("cc-mdl")) {
+          m.setFamily(m.getPayer());
       }
       updatePs.setInt(9, m.getFamily());
 

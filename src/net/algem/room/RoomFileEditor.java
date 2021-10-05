@@ -74,7 +74,8 @@ public class RoomFileEditor
   private Date date;
 
   public RoomFileEditor(Room r) {
-    super(ROOM_DOSSIER_KEY);
+//    super(ROOM_DOSSIER_KEY);
+    super(r.getName() != null ? "Fiche: "+r.getName() : ROOM_DOSSIER_KEY);
     this.room = r;
   }
 

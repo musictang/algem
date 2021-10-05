@@ -210,6 +210,32 @@ public class ContactIO
     }
   }
 
+  public void updateEmails(Vector<Email> oldmails, Vector<Email> newmails, int idper) throws SQLException {
+
+    int i = 0;
+    for (; newmails != null && i < newmails.size(); i++) {
+      Email nm = newmails.elementAt(i);
+      nm.setIdx(i);
+      if (nm.getEmail().length() == 0) {
+        continue;
+      }
+      if (oldmails != null && i < oldmails.size()) {
+        if (!nm.equals(oldmails.elementAt(i))) {
+          nm.setIdper(idper);
+          EmailIO.update(nm, i, dc);
+        }
+      } else {
+        nm.setIdper(idper);
+        EmailIO.insert(nm, i, dc);
+      }
+    }
+    // si le nombre d'anciens sites > nombre nouveaux sites
+    for (; oldmails != null && i < oldmails.size(); i++) {
+      Email m = oldmails.elementAt(i);
+      EmailIO.delete(idper, i, dc);
+    }
+  }
+  
   /**
    * Suppression of contact. Address, telephone, emails are also deleted.
    *

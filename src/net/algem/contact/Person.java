@@ -290,10 +290,4 @@ public class Person
     return toString().compareToIgnoreCase(o.toString());
   }
 
-
-  private boolean out(int n) {
-    System.out.println("!Personne.equals " + n);
-    return false;
-  }
-
 }

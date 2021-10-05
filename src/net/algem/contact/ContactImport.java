@@ -35,6 +35,15 @@ public class ContactImport
   private Contact parent;
   private Date birthDate;
   private String instrument;
+  private String note;
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 
   public Contact getParent() {
     return parent;

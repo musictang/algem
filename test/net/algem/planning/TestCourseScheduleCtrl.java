@@ -26,7 +26,6 @@ import net.algem.TestProperties;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.module.GemDesktopCtrl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

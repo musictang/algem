@@ -1312,7 +1312,7 @@ public class PersonFileEditor
         desktop.removeModule(this);
     } else {
         JFrame frame = (JFrame)SwingUtilities.getRoot(view.getContentPane());
-        if (frame.getClass().getName().equals("net.algem.util.ui.FrameDetach")) {
+        if (frame instanceof FrameDetach) {
             ((FrameDetach)frame).close();
         } else {
             desktop.removeModule(this);

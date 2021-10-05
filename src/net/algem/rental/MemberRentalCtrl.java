@@ -134,7 +134,7 @@ public class MemberRentalCtrl
         try {
             r.setAmount(Integer.parseInt(view.getAmount())*100);
         } catch (Exception e) {
-
+            return false;
         }
         r.setDescription(view.getDescription());
         try {

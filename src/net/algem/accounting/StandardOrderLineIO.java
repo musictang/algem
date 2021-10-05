@@ -158,7 +158,7 @@ public class StandardOrderLineIO {
       + " AND e.analytique = '" + o.getCostAccount().getNumber()
       + "' AND e.adherent = " + member;
     ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
+    if (rs.next()) {
       return true;
     }
     return false;

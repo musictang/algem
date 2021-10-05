@@ -105,22 +105,32 @@ public class CsvContactTableModel
           if (t.getTypeTel() == 1) {
             return t.getNumber();
           }
-          return "";
         }
+          return "";
       case 15:
         if (tels == null || tels.isEmpty()) {return "";}
         for (Telephone t : tels) {
           if (t.getTypeTel() == 8) {
             return t.getNumber();
           }
-          return "";
         }
+          return "";
       case 16:
         return emails == null ? "" : emails.isEmpty() ? "" : emails.get(0).getEmail();
       case 17:
         if (p == null) return null;
         List<Email> pMails = p.getEmail();
         return pMails == null ? "" : (pMails.isEmpty()  ? "" : pMails.get(0).getEmail());
+      case 18:
+        if (tels == null || tels.isEmpty()) {return "";}
+        for (Telephone t : tels) {
+          if (t.getTypeTel() == 2) {
+            return t.getNumber();
+          }
+        }
+          return "";
+      case 19:
+        return c.getNote() == null ? "" : c.getNote();
 
     }
     return null;

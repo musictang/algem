@@ -1,6 +1,8 @@
 /*
- * @(#) ImportCsvCtrl.java Algem 2.15.4 18/10/17
+ * @(#) ImportCsvCtrl.java  3.0.0 04/10/2021
+ *                          2.15.4 18/10/17
  *
+ * Copyright (c) 2021 eric@productionlibre.fr. All Rights Reserved.
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -73,7 +75,7 @@ import org.supercsv.io.ICsvListReader;
 public class ImportCsvCtrl
   extends CardCtrl {
 
-  private static final short COLS = 18;
+  private static final short COLS = 20;
   static final String[] IMPORT_FIELDS = {
     BundleUtil.getLabel("Number.abbrev.label"),
     BundleUtil.getLabel("Person.civility.label"),
@@ -92,7 +94,9 @@ public class ImportCsvCtrl
     BundleUtil.getLabel("Home.phone.label"),
     BundleUtil.getLabel("Mobile.phone.label"),
     BundleUtil.getLabel("Email.label"),
-    BundleUtil.getLabel("Parent.email.label")
+    BundleUtil.getLabel("Parent.email.label"),
+    BundleUtil.getLabel("Office.phone.label"),
+    BundleUtil.getLabel("Note.label")
   };
 
   private Map<String, Integer> importMap;

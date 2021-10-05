@@ -1,6 +1,9 @@
 /*
- * @(#) ImportCsvHandler.java Algem 2.13.0 31/03/2017
+ * @(#) ImportCsvHandler.java  3.0.0 04/10/2021
+ *                             2.17.0 04/06/2019
+ *                             2.13.0 31/03/2017
  *
+ * Copyright (c) 2021 eric@productionlibre.fr. All Rights Reserved.
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -36,7 +39,6 @@ import net.algem.contact.Contact;
 import net.algem.contact.ContactImport;
 import net.algem.contact.Email;
 import net.algem.contact.Telephone;
-import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.comment.CommentStartsWith;
@@ -54,7 +56,8 @@ import org.supercsv.prefs.CsvPreference;
 public class ImportCsvHandler {
 
   private static final int TEL1_TYPE = 1;
-  private static final int TEL2_TYPE = 8;
+  private static final int TEL2_TYPE = 8; //portable
+  private static final int TEL3_TYPE = 2; //travail
   private String fileName;
   private Charset charset;
   private int errors;
@@ -141,6 +144,13 @@ public class ImportCsvHandler {
         setAddress(rowData, map, c, p);
         setTels(rowData, map, c, p);
         setEmails(rowData, map, c, p);
+
+        idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[19]); //note
+        if (idx > -1) {
+          if (c != null) {
+            c.setNote((String) rowData.get(idx));
+          }
+        }
 
         if (c.getName() != null) {
           c.setParent(p);
@@ -238,7 +248,8 @@ public class ImportCsvHandler {
           t2.setTypeTel(TEL2_TYPE);
           if (p == null) {
             if (c.getTele() != null) {
-              t2.setIdx(1);
+//              t2.setIdx(1);
+              t2.setIdx(c.getTele().size());
               c.getTele().add(t2);
             } else {
               Vector<Telephone> tels = new Vector<Telephone>();
@@ -248,12 +259,47 @@ public class ImportCsvHandler {
             }
           } else {
             if (p.getTele() != null) {
-              t2.setIdx(1);
+//              t2.setIdx(1);
+              t2.setIdx(p.getTele().size());
               p.getTele().add(t2);
             } else {
               Vector<Telephone> tels = new Vector<Telephone>();
               t2.setIdx(0);
               tels.add(t2);
+              p.setTele(tels);
+            }
+          }
+        }
+      }
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[18]);
+      String tel3 = null;
+      if (idx > -1) {
+        tel3 = (String) rowData.get(idx);
+        
+        if (tel3 != null && tel3.length() > 0) {
+          Telephone t3 = new Telephone();
+          t3.setNumber(tel3);
+          t3.setTypeTel(TEL3_TYPE);
+          if (p == null) {
+            if (c.getTele() != null) {
+//              t3.setIdx(2);
+              t3.setIdx(c.getTele().size());
+              c.getTele().add(t3);
+            } else {
+              Vector<Telephone> tels = new Vector<Telephone>();
+              t3.setIdx(0);
+              tels.add(t3);
+              c.setTele(tels);
+            }
+          } else {
+            if (p.getTele() != null) {
+//              t3.setIdx(1);
+              t3.setIdx(p.getTele().size());
+              p.getTele().add(t3);
+            } else {
+              Vector<Telephone> tels = new Vector<Telephone>();
+              t3.setIdx(0);
+              tels.add(t3);
               p.setTele(tels);
             }
           }
@@ -268,9 +314,15 @@ public class ImportCsvHandler {
       String email1 = (String) rowData.get(idx);
       if (email1 != null && email1.length() > 0) {
         Vector<Email> emails = new Vector<Email>();
-        Email m1 = new Email();
-        m1.setEmail(email1);
-        emails.add(m1);
+        String[] listemails = email1.split(",");
+        for (String m : listemails) {
+            Email m1 = new Email();
+            m1.setEmail(m);
+            emails.add(m1);
+        }
+//        Email m1 = new Email();
+//        m1.setEmail(email1);
+//        emails.add(m1);
         c.setEmail(emails);
       }
     }
@@ -280,9 +332,15 @@ public class ImportCsvHandler {
         String email2 = (String) rowData.get(idx);
         if (email2 != null && email2.length() > 0) {
           Vector<Email> emails = new Vector<Email>();
-          Email m2 = new Email();
-          m2.setEmail(email2);
-          emails.add(m2);
+                  String[] listemails = email2.split(",");
+        for (String m : listemails) {
+            Email m2 = new Email();
+            m2.setEmail(m);
+            emails.add(m2);
+        }
+//          Email m2 = new Email();
+//          m2.setEmail(email2);
+//          emails.add(m2);
           p.setEmail(emails);
         }
       }
