@@ -89,10 +89,6 @@ public class MultiBranchDlg
     return gv.getSelectedBranch();
   }
 
-  private boolean isValidEntry() {
-    return true;
-  }
-
   boolean isValid() {
     return validation;
   }
@@ -116,9 +112,6 @@ public class MultiBranchDlg
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {
-      if (!isValidEntry()) {
-        return;
-      }
       validation = true;
     } else if (evt.getActionCommand().equals(GemCommand.CREATE_CMD)) {
       createBranch = true;

@@ -352,7 +352,7 @@ public class Hour
       int firstIdx = time.indexOf(':');
       int lastIdx = time.lastIndexOf(':');
       if (firstIdx == -1) {
-        h = Integer.parseInt(time.substring(0));
+        h = Integer.parseInt(time);
         m = 0;
       } else {
         h = Integer.parseInt(time.substring(0, firstIdx));

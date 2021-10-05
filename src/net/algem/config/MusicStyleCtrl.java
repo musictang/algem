@@ -81,7 +81,7 @@ public class MusicStyleCtrl
      throw new ParamException(MessageUtil.getMessage("musical.style.delete.exception",used));
     }
     else {
-      if (MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+      if (MessagePopup.confirm(contentPane, MessageUtil.getMessage("param.delete.confirmation"))) {
         ParamTableIO.delete(MusicStyleIO.TABLE, COLUMN_KEY, p, dc);
         dataCache.remove(ms);
         desktop.postEvent(new MusicStyleEvent(this, GemEvent.SUPPRESSION, ms));

@@ -77,7 +77,7 @@ public class CategoryWebSiteCtrl
       throw new ParamException(MessageUtil.getMessage("web.site.category.default.delete.exception"));
     }
     int sites = WebSiteIO.find(key, dc);
-    if (sites == 0 && MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+    if (sites == 0 && MessagePopup.confirm(contentPane, MessageUtil.getMessage("param.delete.confirmation"))) {
       ParamTableIO.delete(TABLE, COLUMN_KEY, p, dc);
       dataCache.getWebSiteCat().remove(p);
     } else {

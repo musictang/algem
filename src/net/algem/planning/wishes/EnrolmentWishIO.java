@@ -147,7 +147,7 @@ public class EnrolmentWishIO
     public EnrolmentWish findId(int n) throws SQLException {
         findPS.setInt(1, n);
         ResultSet rs = findPS.executeQuery();
-        while (rs.next()) {
+        if (rs.next()) {
             return getEnrolmentWishesFromRS(rs);
         }
         return null;

@@ -288,7 +288,8 @@ public class FileUtil
 
     FileReader r = new FileReader(path);
     LineNumberReader l = new LineNumberReader(new BufferedReader(r));
-    while (l.readLine() != null) {
+    String line=null;
+    while ((line=l.readLine()) != null) {
     }
     return l.getLineNumber();
   }

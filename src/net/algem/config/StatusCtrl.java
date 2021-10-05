@@ -93,7 +93,7 @@ public class StatusCtrl
       if (used > 0) {
         throw new ParamException(MessageUtil.getMessage("status.delete.exception", used));
       }
-      if (MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+      if (MessagePopup.confirm(contentPane, MessageUtil.getMessage("param.delete.confirmation"))) {
         service.deleteStatus(status);
         desktop.getDataCache().remove(status);
         desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.STATUS, status));

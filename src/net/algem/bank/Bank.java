@@ -20,6 +20,8 @@
  */
 package net.algem.bank;
 
+import java.util.Objects;
+
 /**
  * Bank object model.
  * A bank is a person of type {@link net.algem.contact.Person#BANK}.
@@ -46,12 +48,28 @@ public class Bank
     name = _name;
   }
 
-  public boolean equals(Bank b) {
-    return (b != null
-            && code.equals(b.code)
+  @Override
+  public boolean equals(Object o) {
+      if (this == o) {
+          return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+          return false;
+      }
+      Bank b = (Bank)o;
+      return (code.equals(b.code)
             && name.equals(b.name)
             && multi == b.multi);
   }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 67 * hash + Objects.hashCode(this.code);
+        hash = 67 * hash + Objects.hashCode(this.name);
+        hash = 67 * hash + (this.multi ? 1 : 0);
+        return hash;
+    }
 
   @Override
   public String toString() {

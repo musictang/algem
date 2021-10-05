@@ -20,6 +20,7 @@
  */
 package net.algem.course;
 
+import java.util.Objects;
 import net.algem.util.BundleUtil;
 
 /**
@@ -62,10 +63,27 @@ public class Workshop
     return name;
   }
 
-  public boolean equals(Workshop a) {
-    return (a != null
-            && id == a.id);
+  @Override
+  public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Workshop a = (Workshop) o;
+      
+    return (id == a.id);
   }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + this.id;
+        hash = 97 * hash + Objects.hashCode(this.name);
+        hash = 97 * hash + this.teacherId;
+        return hash;
+    }
 
   public int getId() {
     return id;

@@ -22,6 +22,7 @@ package net.algem.config;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -45,7 +46,6 @@ import net.algem.util.ui.MessagePopup;
  * @since 1.0a 21/08/2009
  */
 public abstract class ParamTableCtrl
-        extends GemPanel
         implements ActionListener
 {
 
@@ -58,6 +58,7 @@ public abstract class ParamTableCtrl
   protected ParamTableView table;
   protected ParamView mask;
   private boolean editKey;
+  protected GemPanel contentPane;
   protected GemPanel wCard;
   protected int mode;
   protected int minId;
@@ -121,6 +122,8 @@ public abstract class ParamTableCtrl
     mask.addActionListener(this);
     mask.setKeyEditable(editKey);
 
+    contentPane = new GemPanel();
+    contentPane.setPreferredSize(new Dimension(300,500));
     wCard = new GemPanel();
     wCard.setLayout(new CardLayout());
 
@@ -128,8 +131,8 @@ public abstract class ParamTableCtrl
     wCard.add("masque", mask);
     ((CardLayout) wCard.getLayout()).show(wCard, "liste");
 
-    setLayout(new BorderLayout());
-    add(wCard, BorderLayout.CENTER);
+    contentPane.setLayout(new BorderLayout());
+    contentPane.add(wCard, BorderLayout.CENTER);
   }
 
   /**
@@ -159,9 +162,9 @@ public abstract class ParamTableCtrl
           insertion(p);
           table.addRow(p);
         } catch (SQLException e) {
-          GemLogger.logException("creation " + title, e, this);
+          GemLogger.logException("creation " + title, e, contentPane);
         } catch (ParamException pe) {
-          MessagePopup.warning(this, pe.getMessage());
+          MessagePopup.warning(contentPane, pe.getMessage());
         }
       } else if (mode == MODIFICATION_MODE) {
         try {
@@ -169,9 +172,9 @@ public abstract class ParamTableCtrl
           modification(current, p);
           table.modRow(p);
         } catch (SQLException e) {
-          GemLogger.logException("modification " + title, e, this);
+          GemLogger.logException("modification " + title, e, contentPane);
         } catch (ParamException pe) {
-          MessagePopup.warning(this, pe.getMessage());
+          MessagePopup.warning(contentPane, pe.getMessage());
         }
       }
       mode = READING_MODE;
@@ -190,10 +193,10 @@ public abstract class ParamTableCtrl
         suppression(current);
         table.deleteCurrent();
       } catch (SQLException e) {
-        GemLogger.logException("suppression " + title, e, this);
+        GemLogger.logException("suppression " + title, e, contentPane);
       } catch (Exception ex) {
         if (ex.getMessage() != null) {
-          MessagePopup.warning(this, ex.getMessage());
+          MessagePopup.warning(contentPane, ex.getMessage());
         }
       }
 
@@ -202,6 +205,10 @@ public abstract class ParamTableCtrl
     } else if (cmd.equals(GemCommand.CLOSE_CMD)) {
       desktop.removeCurrentModule();
     }
+  }
+  
+  public GemPanel getContentPane() {
+      return contentPane;
   }
 
   @Override

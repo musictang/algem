@@ -146,7 +146,7 @@ public class SubstituteTeacher
 
   @Override
   public boolean equals(Object o) {
-    if (o.getClass() != getClass() || o == null) {
+    if (o == null || o.getClass() != getClass()) {
       return false;
     }
     SubstituteTeacher other = (SubstituteTeacher) o;

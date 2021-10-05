@@ -20,6 +20,8 @@
  */
 package net.algem.planning;
 
+import java.util.Objects;
+
 /**
  * comment
  *
@@ -55,14 +57,35 @@ public class Schedule
   protected int idRoom;
   protected int note;
 
-  public boolean equals(Schedule d) {
-    return (d != null
-            && type == d.type
+  @Override
+  public boolean equals(Object o) {
+                    if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Schedule d = (Schedule) o;
+    return (type == d.type
             && idper == d.idper
             && date.equals(d.date)
             && start.equals(d.start)
             && end.equals(d.end));
   }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.date);
+        hash = 67 * hash + Objects.hashCode(this.start);
+        hash = 67 * hash + Objects.hashCode(this.end);
+        hash = 67 * hash + this.type;
+        hash = 67 * hash + this.idper;
+        hash = 67 * hash + this.idAction;
+        hash = 67 * hash + this.idRoom;
+        hash = 67 * hash + this.note;
+        return hash;
+    }
 
   @Override
   public String toString() {

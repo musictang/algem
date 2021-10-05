@@ -72,7 +72,7 @@ public class UpdateCoursePlanCtrl
 			desktop.postEvent(new ModifPlanEvent(this, action.getStartDate(), action.getEndDate()));
 			cancel();
 			return true;
-		} catch (PlanningException ex) {
+		} catch (PlanningException | NullPointerException ex) {
 			MessagePopup.warning(this,
 				MessageUtil.getMessage("planning.course.create.exception") + " :\n" + ex.getMessage());
 			return false;

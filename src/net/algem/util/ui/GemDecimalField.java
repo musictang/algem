@@ -58,7 +58,7 @@ public class GemDecimalField
   public Object getValue() {
     Object d = super.getValue();
     if (d instanceof Number) {
-      return (d == null ? 0.0 : ((Number) d).doubleValue());
+      return ((Number) d).doubleValue();
     }
     return d;
   }

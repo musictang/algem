@@ -159,7 +159,7 @@ public class Employee {
     if ((this.types == null) ? (other.types != null) : this.types.size() != other.types.size()) {
       return false;
     }
-    for(int i = 0; i < types.size(); i++) {
+    for(int i = 0; types != null && i < types.size(); i++) {
       if (types.get(i) != other.types.get(i)) {
         return false;
       }

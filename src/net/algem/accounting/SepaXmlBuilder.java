@@ -45,7 +45,7 @@ import net.algem.util.TextUtil;
 public class SepaXmlBuilder
 {
 
-  public static DateFormat ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+  public DateFormat ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
   public static final String IBAN_REGEX = "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}";
   private static String TAB = "  ";
   private static short MAX_NAME_LENGTH = 70;

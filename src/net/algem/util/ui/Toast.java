@@ -45,6 +45,7 @@ public class Toast {
                         Thread.sleep(duration);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Toast.class.getName()).log(Level.SEVERE, null, ex);
+                        Thread.currentThread().interrupt();
                     } finally {
                         if (view != null) {
                             view.hide();

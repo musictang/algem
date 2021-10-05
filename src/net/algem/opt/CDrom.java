@@ -20,6 +20,8 @@
  */
 package net.algem.opt;
 
+import java.util.Objects;
+
 /**
  * comment
  *
@@ -40,13 +42,31 @@ public class CDrom
   private String ref;
   private String genre;
 
-  public boolean equals(CDrom c) {
-    return (c != null
-            && album.equals(c.album)
+  @Override
+  public boolean equals(Object o) {
+              if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CDrom c = (CDrom) o;
+    return (album.equals(c.album)
             && artist.equals(c.artist)
             && ref.equals(c.ref)
             && label.equals(c.label));
   }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 47 * hash + Objects.hashCode(this.artist);
+        hash = 47 * hash + Objects.hashCode(this.album);
+        hash = 47 * hash + Objects.hashCode(this.label);
+        hash = 47 * hash + Objects.hashCode(this.ref);
+        hash = 47 * hash + Objects.hashCode(this.genre);
+        return hash;
+    }
 
   @Override
   public String toString() {

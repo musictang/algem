@@ -102,7 +102,7 @@ public class CourseSearchCtrl
 		} catch (SQLException ex) {
 			GemLogger.logException(ex);
 		}
-    if (v.isEmpty()) {
+    if (v == null || v.isEmpty()) {
       setStatus(EMPTY_LIST);
     } else if (v.size() == 1) {
       ((CardLayout) wCard.getLayout()).show(wCard, "masque");

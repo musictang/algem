@@ -33,77 +33,83 @@ import net.algem.room.Room;
  */
 public abstract class ScheduleObject
         extends Schedule
-        implements java.io.Serializable
-{
+        implements java.io.Serializable {
 
-  protected Object activity;	//action
-  protected Person person;	//idper
-  protected Room room;		//lieux
-  protected String noteValue;
-  protected FollowUp followUp;
+    protected Object activity;	//action
+    protected Person person;	//idper
+    protected Room room;		//lieux
+    protected String noteValue;
+    protected FollowUp followUp;
 
-  public ScheduleObject() {
-  }
+    public ScheduleObject() {
+    }
 
-  public ScheduleObject(Schedule d) {
-    id = d.id;
-    date = d.date;
-    start = d.start;
-    end = d.end;
-    type = d.type;
-    idper = d.idper;
-    idAction = d.idAction;
-    idRoom = d.idRoom;
-    note = d.note;
-  }
+    public ScheduleObject(Schedule d) {
+        id = d.id;
+        date = d.date;
+        start = d.start;
+        end = d.end;
+        type = d.type;
+        idper = d.idper;
+        idAction = d.idAction;
+        idRoom = d.idRoom;
+        note = d.note;
+    }
 
-  public boolean equals(ScheduleObject d) {
-    return (d != null && d.id == id);
-  }
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ScheduleObject d = (ScheduleObject) o;
+        return (d.id == id);
+    }
 
-  public void setPerson(Person p) {
-    person = p;
-    idper = p == null ? 0 : p.getId();
-  }
+    public void setPerson(Person p) {
+        person = p;
+        idper = p == null ? 0 : p.getId();
+    }
 
-  public Person getPerson() {
-    return person;
-  }
+    public Person getPerson() {
+        return person;
+    }
 
-  public void setActivity(Object o) {
-    activity = o;
-  }
+    public void setActivity(Object o) {
+        activity = o;
+    }
 
-  public Object getActivity() {
-    return activity;
-  }
+    public Object getActivity() {
+        return activity;
+    }
 
-  public void setRoom(Room r) {
-    room = r;
-    idRoom = r == null ? 0 : r.getId();
-  }
+    public void setRoom(Room r) {
+        room = r;
+        idRoom = r == null ? 0 : r.getId();
+    }
 
-  public Room getRoom() {
-    return room;
-  }
+    public Room getRoom() {
+        return room;
+    }
 
-   public void setNoteValue(String s) {
-    noteValue = s;
-  }
+    public void setNoteValue(String s) {
+        noteValue = s;
+    }
 
-  public String getNoteValue() {
-    return noteValue;
-  }
+    public String getNoteValue() {
+        return noteValue;
+    }
 
-  public FollowUp getFollowUp() {
-    return followUp;
-  }
+    public FollowUp getFollowUp() {
+        return followUp;
+    }
 
-  public void setFollowUp(FollowUp followUp) {
-    this.followUp = followUp;
-  }
+    public void setFollowUp(FollowUp followUp) {
+        this.followUp = followUp;
+    }
 
-  abstract public String getScheduleLabel();
+    abstract public String getScheduleLabel();
 
-  abstract public String getScheduleDetail();
+    abstract public String getScheduleDetail();
 }

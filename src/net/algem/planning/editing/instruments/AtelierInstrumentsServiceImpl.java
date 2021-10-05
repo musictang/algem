@@ -63,10 +63,7 @@ public class AtelierInstrumentsServiceImpl
   }
 
   private Instrument getFirstInstrument(Person person) throws SQLException {
-    for (Instrument instrument : getAvailableInstruments(person)) {
-      return instrument;
-    }
-    return null;
+    return getAvailableInstruments(person).get(0);
   }
 
   @Override
@@ -127,7 +124,6 @@ public class AtelierInstrumentsServiceImpl
     List<Integer> ids = atelierInstrumentsDAO.getInstrumentIdsForPerson(person.getId());
     List<Instrument> instruments = new ArrayList<>(ids.size());
     for (Integer id : ids) {
-      //instruments.add(InstrumentIO.findById(id, dc));
       instruments.add((Instrument) DataCache.findId(id, Model.Instrument));
     }
     return instruments;

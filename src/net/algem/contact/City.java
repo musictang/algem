@@ -20,6 +20,8 @@
  */
 package net.algem.contact;
 
+import java.util.Objects;
+
 /**
  * City.
  *
@@ -28,47 +30,61 @@ package net.algem.contact;
  * @version 2.9.4.13
  */
 public class City
-        implements java.io.Serializable
-{
+        implements java.io.Serializable {
 
-  private static final long serialVersionUID = -7379005860658244170L;
-  
-  private String cdp;
-  private String city;
+    private static final long serialVersionUID = -7379005860658244170L;
 
-  public City() {
-  }
+    private String cdp;
+    private String city;
 
-  public City(String c, String v) {
-    cdp = c;
-    city = v;
-  }
+    public City() {
+    }
 
-  public void setCdp(String s) {
-    cdp = s;
-  }
+    public City(String c, String v) {
+        cdp = c;
+        city = v;
+    }
 
-  public String getCdp() {
-    return cdp;
-  }
+    public void setCdp(String s) {
+        cdp = s;
+    }
 
-  public void setCity(String s) {
-    city = s;
-  }
+    public String getCdp() {
+        return cdp;
+    }
 
-  public String getCity() {
-    return city;
-  }
+    public void setCity(String s) {
+        city = s;
+    }
 
-  public boolean equals(City v) {
-    return (v != null
-            && cdp.equals(v.cdp)
-            && city.equals(v.city));
-  }
+    public String getCity() {
+        return city;
+    }
 
-  @Override
-  public String toString() {
-    return cdp + " " + city;
-  }
-  
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        City v = (City) o;
+        return (cdp.equals(v.cdp)
+                && city.equals(v.city));
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(this.cdp);
+        hash = 23 * hash + Objects.hashCode(this.city);
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        return cdp + " " + city;
+    }
+
 }

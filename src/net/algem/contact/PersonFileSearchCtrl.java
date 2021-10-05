@@ -161,6 +161,7 @@ public class PersonFileSearchCtrl
         try {
           thread.join();
         } catch (InterruptedException ignore) {
+                Thread.currentThread().interrupt();
         }
       }
       abort = false;

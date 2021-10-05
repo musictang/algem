@@ -20,6 +20,7 @@
  */
 package net.algem.planning;
 
+import java.util.Objects;
 import net.algem.contact.Person;
 
 /**
@@ -58,9 +59,27 @@ public class ScheduleRangeObject
     note = d.note;
   }
 
-  public boolean equals(ScheduleRangeObject d) {
+  @Override
+  public boolean equals(Object o) {
+              if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ScheduleRangeObject d = (ScheduleRangeObject) o;
     return super.equals(d) && member.getId() == d.member.getId();
   }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 29 * hash + Objects.hashCode(this.member);
+        hash = 29 * hash + this.memberId;
+        hash = 29 * hash + this.scheduleId;
+        hash = 29 * hash + Objects.hashCode(this.note2);
+        return hash;
+    }
 
   @Override
   public String toString() {

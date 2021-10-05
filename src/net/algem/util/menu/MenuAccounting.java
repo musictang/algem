@@ -198,12 +198,12 @@ public class MenuAccounting
     } else if (menus.get("Menu.account.label").equals(arg)) {
       AccountCtrl accountCtrl = new AccountCtrl(desktop);
       accountCtrl.load();
-      desktop.addPanel("Menu.account", accountCtrl);
+      desktop.addPanel("Menu.account", accountCtrl.getContentPane());
 
     } else if (menus.get("Menu.cost.account.label").equals(arg)) {
       CostAccountCtrl costAccountCtrl = new CostAccountCtrl(desktop);
       costAccountCtrl.load();
-      desktop.addPanel("Menu.cost.account", costAccountCtrl);
+      desktop.addPanel("Menu.cost.account", costAccountCtrl.getContentPane());
     } else if (menus.get("Menu.default.account.label").equals(arg)) {
       String[] keys = null;
       List<Account> accounts = null;
@@ -229,11 +229,11 @@ public class MenuAccounting
     } else if (menus.get("Menu.mode.of.payment.label").equals(arg)) {
       ModeOfPaymentCtrl modeOfPaymentCtrl = new ModeOfPaymentCtrl(desktop);
       modeOfPaymentCtrl.load();
-      desktop.addPanel("Menu.mode.of.payment", modeOfPaymentCtrl);
+      desktop.addPanel("Menu.mode.of.payment", modeOfPaymentCtrl.getContentPane());
     } else if (menus.get("Menu.vat.label").equals(arg)) {
       VATCtrl vatCtrl = new VATCtrl(desktop);
       vatCtrl.load();
-      desktop.addPanel("Menu.vat", vatCtrl);
+      desktop.addPanel("Menu.vat", vatCtrl.getContentPane());
     } else if (src == miRoomRate) {
       RoomRateSearchCtrl roomRateBrowse = new RoomRateSearchCtrl(desktop);
       roomRateBrowse.addActionListener(this);

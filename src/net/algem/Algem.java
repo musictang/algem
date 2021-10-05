@@ -51,6 +51,7 @@ import net.algem.config.Company;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.ThemeConfig;
+import net.algem.contact.Employee;
 import net.algem.contact.OrganizationIO;
 import net.algem.security.AuthDlg;
 import net.algem.security.User;
@@ -92,15 +93,12 @@ public class Algem
   private String driverName = "org.postgresql.Driver";
   private String hostName = "localhost";
   private String baseName = "algem";
-  private static Properties props;
+  private static Properties props  = new Properties();
   private static final Font MY_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
   private DataConnection dc;
   
-  private GemDesktop desktop;
-
   public Algem() {
     Locale.setDefault(Locale.FRENCH);
-    props = new Properties();
   }
 
   /**
@@ -171,11 +169,9 @@ public class Algem
         GemLogger.set(new File(logPath).getPath());
       } catch (IOException ex1) {
         System.err.println(ex1.getMessage());
-        //ex1.printStackTrace();
         try {
           setDefaultLogFile();
         } catch (IOException ex2) {
-          //ex2.printStackTrace();
           System.err.println(ex2.getMessage());
         }
       }
@@ -204,37 +200,6 @@ public class Algem
   }
 
   /**
-   *
-   * @param u user name
-   * @param pass user pass
-   * @param auth authentication config
-   * @deprecated
-   */
-  private void checkUser(String u, String pass, boolean auth) {
-    User currentUser = cache.getUser();
-    if (currentUser == null) {
-      MessagePopup.error(null, MessageUtil.getMessage("unknown.login", u));
-      System.exit(4);
-    } else if (auth) {
-      if (!cache.getUserService().authenticate(currentUser, pass)) {
-        MessagePopup.error(null, MessageUtil.getMessage("authentication.failure"));
-        System.exit(5);
-      }
-    }
-  }
-
-  /**
-   *
-   * @param login
-   * @param pass
-   * @return true if authentication succeeded
-   * @deprecated
-   */
-  private boolean authenticate(String login, String pass) {
-    return cache.getUserService().authenticate(login, pass);
-  }
-
-  /**
    * Presents a dialog to authenticate user.
    *
    * @param parent parent frame
@@ -258,7 +223,7 @@ public class Algem
         MessagePopup.error(parent, MessageUtil.getMessage("authentication.failure"));
       }
       trials++;
-    } while (success == false && trials <= 3);
+    } while (!success && trials <= 3);
     if (success) {
       cache.setUser(login);
     } else {
@@ -291,15 +256,16 @@ public class Algem
   }
 
   private void setDesktop() {
-    String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient");
-    //          + " - Utilisateur système " +System.getProperty("user.name")
-    // + " - jdbc://" + hostName + "/" + baseName;
+    String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient")
+     + " - jdbc://" + hostName + "/" + baseName + " - "+cache.getUser().getName();
 
     frame = new JFrame(title);
     Preferences prefs = Preferences.userRoot().node("/algem/ui");
     frame.setSize(prefs.getInt("desktop.w", DEF_WIDTH), prefs.getInt("desktop.h", DEF_HEIGHT));
     frame.setLocation(prefs.getInt("desktop.x", DEF_LOCATION.x), prefs.getInt("desktop.y", DEF_LOCATION.y));
     checkVersion(frame);
+    
+    GemDesktop desktop;
     if (cache.getUser().getDesktop() == 2) {
         desktop = new GemSPADesktop(frame, cache, props);
     } else {
@@ -355,11 +321,11 @@ public class Algem
     }
 
     if (host == null) {
-      host = props.getProperty("host");
+      hostName = props.getProperty("host");
     }
 
     if (base == null) {
-      base = props.getProperty("base");
+      baseName = props.getProperty("base");
     }
 
     String dbPass = props.getProperty("dbpass");
@@ -372,8 +338,7 @@ public class Algem
     String port = props.getProperty("port");
     int dbport = (port != null) ? Integer.parseInt(port) : 0;
 
-    dc = new DataConnection(host, dbport, base, dbPass);
-//    dc = new DataConnectionSpy(host, dbport, base, dbPass);
+    dc = new DataConnection(hostName, dbport, baseName, dbPass);
 
     String ssl = props.getProperty("ssl");
     if (ssl != null && "true".equalsIgnoreCase(ssl)) {
@@ -416,10 +381,9 @@ public class Algem
    *
    * @param v
    * @throws SQLException
-   * @deprecated
    */
   private void updateVersionFrom(String v) throws SQLException {
-    System.out.println("UPDATE version v = " + v + " app = " + APP_VERSION);
+    GemLogger.info("UPDATE version v = " + v + " app = " + APP_VERSION);
     String query;
 
     if (v.equals("inconnue")) {
@@ -468,43 +432,8 @@ public class Algem
 
   public static void setLafProperties(final String lafClassName) {
     try {
-      System.out.println("lafClassName " + lafClassName);
+      GemLogger.info("lafClassName " + lafClassName);
 
-    /*
-      if (lafClassName.startsWith("com.jtattoo")) {
-        switch (lafClassName) {
-          case "com.jtattoo.plaf.acryl.AcrylLookAndFeel":
-            com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
-            break;
-          case "com.jtattoo.plaf.aero.AerolLookAndFeel":
-            com.jtattoo.plaf.aero.AeroLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
-            break;
-          case "com.jtattoo.plaf.aluminium.AluminiumLookAndFeel":
-            com.jtattoo.plaf.aluminium.AluminiumLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
-            break;
-          case "com.jtattoo.plaf.bernstein.BernsteinLookAndFeel":
-            com.jtattoo.plaf.bernstein.BernsteinLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
-            break;
-          case "com.jtattoo.plaf.fast.FastLookAndFeel":
-            com.jtattoo.plaf.fast.FastLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
-            break;
-          case "com.jtattoo.plaf.graphite.GraphiteLookAndFeel":
-            com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
-            break;
-          case "com.jtattoo.plaf.luna.LunaLookAndFeel":
-            com.jtattoo.plaf.luna.LunaLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
-            break;
-          case "com.jtattoo.plaf.mint.MintLookAndFeel":
-            com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
-            break;
-          case "com.jtattoo.plaf.smart.SmartLookAndFeel":
-            com.jtattoo.plaf.smart.SmartLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
-            break;
-          case "com.jtattoo.plaf.texture.TextureLookAndFeel":
-            com.jtattoo.plaf.texture.TextureLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
-            break;
-        }
-      } */
       UIManager.setLookAndFeel(lafClassName);
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
       GemLogger.log("look&feel exception : " + ex.getMessage());
@@ -537,13 +466,16 @@ public class Algem
         def.put("Table.font", MY_FONT); // default : Font SansSerif 12
         def.put("TextField.font", MY_FONT);
         def.put("ComboBox.font", MY_FONT);
-//        def.put("TextArea.font", MY_FONT.deriveFont(12));
-//        def.put("TextPane.font", MY_FONT.deriveFont(12));
+        def.put("TextArea.font", MY_FONT.deriveFont(12));
+        def.put("TextPane.font", MY_FONT.deriveFont(12));
         break;
       case "Windows":
       case "Windows Classic":
         def.put("TextArea.font", def.getFont("Label.font").deriveFont(Font.PLAIN, 12));
         break;
+      default:
+          GemLogger.info("unknow lafName");
+          break;
     }
   }
 
@@ -563,7 +495,6 @@ public class Algem
       UIManager.put("CheckBox.font", bold);
       UIManager.put("CheckBoxMenuItem.font", bold);
       UIManager.put("TitledBorder.font", bold);
-      //UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
       UIManager.put("RadioButton.font", bold);
       UIManager.put("List.font", bold);
     }
@@ -592,14 +523,14 @@ public class Algem
         icon = ImageUtil.createImageIcon(ImageUtil.ALGEM_LOGO);
       }
 
-      label = new JLabel("", JLabel.LEFT);
+      label = new JLabel("", SwingConstants.LEFT);
       frame.setSize(420, 160);
       frame.setLocation(100, 100);
 
       frame.add(new JLabel(icon), BorderLayout.WEST);
       frame.add(label, BorderLayout.EAST);
 
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
       frame.setVisible(true);
     }
 
@@ -617,7 +548,7 @@ public class Algem
     }
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
 
     String userArg = null;
     String hostArg = null;

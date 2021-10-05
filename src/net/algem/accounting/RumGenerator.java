@@ -40,8 +40,6 @@ public class RumGenerator
 {
 
   private static SecureRandom random = new SecureRandom();
-  private static DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-  private static DateFormat df2 = new SimpleDateFormat("ddMMyy");
   private static Pattern datePattern = Pattern.compile("[0-3][0-9]-[0-1][0-9]-2[0-9]{3}");
   private static final int LEADING = 0;
   private static final int TRAILING = 1;
@@ -93,6 +91,8 @@ public class RumGenerator
   }
 
   static String generateRum(String idper, String signDate) {
+   DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+    DateFormat df2 = new SimpleDateFormat("ddMMyy");
     Date d = null;
     try {
       d = df.parse(signDate);

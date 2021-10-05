@@ -84,7 +84,7 @@ public class InstrumentCtrl
     if (used > 0) {
       throw new ParamException(MessageUtil.getMessage("instrument.delete.exception", used));
     } else {
-      if (MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+      if (MessagePopup.confirm(contentPane, MessageUtil.getMessage("param.delete.confirmation"))) {
         ParamTableIO.delete(TABLE, COLUMN_KEY, p, dc);
         dataCache.getInstruments().remove(i);
       } else {

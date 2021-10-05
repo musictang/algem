@@ -20,6 +20,7 @@
  */
 package net.algem.enrolment;
 
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -86,9 +87,27 @@ public class Enrolment
     return true;
   }
   
-  public boolean equals(Enrolment aa) {
-    return (aa != null && c.equals(aa.c));
+  @Override
+  public boolean equals(Object o) {
+              if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Enrolment aa = (Enrolment) o;
+
+    return (c.equals(aa.c));
   }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 41 * hash + Objects.hashCode(this.c);
+        hash = 41 * hash + Objects.hashCode(this.cmm);
+        hash = 41 * hash + Objects.hashCode(this.cmc);
+        return hash;
+    }
 
   @Override
   public String toString() {

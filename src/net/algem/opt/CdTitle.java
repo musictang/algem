@@ -28,57 +28,62 @@ package net.algem.opt;
  * @version 2.9.4.13
  */
 public class CdTitle
-        implements java.io.Serializable
-{
+        implements java.io.Serializable {
 
-  private static final long serialVersionUID = 1L;
-  
-  private int cd;
-  private int number;
-  private String title;
-  private String performer;
+    private static final long serialVersionUID = 1L;
 
-  public boolean equals(CdTitle c) {
-    return (c != null
-            && cd == c.cd
-            && title.equals(c.title)
-            && performer.equals(c.performer));
-  }
+    private int cd;
+    private int number;
+    private String title;
+    private String performer;
 
-  @Override
-  public String toString() {
-    return number + " " + title + " " + performer;
-  }
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CdTitle c = (CdTitle) o;
+        return (cd == c.cd
+                && title.equals(c.title)
+                && performer.equals(c.performer));
+    }
 
-  public void setTitle(String s) {
-    title = s;
-  }
+    @Override
+    public String toString() {
+        return number + " " + title + " " + performer;
+    }
 
-  public String getTitre() {
-    return title;
-  }
+    public void setTitle(String s) {
+        title = s;
+    }
 
-  public void setPerformer(String s) {
-    performer = s;
-  }
+    public String getTitre() {
+        return title;
+    }
 
-  public String getPerformer() {
-    return performer;
-  }
+    public void setPerformer(String s) {
+        performer = s;
+    }
 
-  public void setCd(int i) {
-    cd = i;
-  }
+    public String getPerformer() {
+        return performer;
+    }
 
-  public int getCd() {
-    return cd;
-  }
+    public void setCd(int i) {
+        cd = i;
+    }
 
-  public void setNumber(int i) {
-    number = i;
-  }
+    public int getCd() {
+        return cd;
+    }
 
-  public int getNumber() {
-    return number;
-  }
+    public void setNumber(int i) {
+        number = i;
+    }
+
+    public int getNumber() {
+        return number;
+    }
 }

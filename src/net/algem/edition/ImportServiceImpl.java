@@ -306,7 +306,11 @@ public class ImportServiceImpl implements ImportService {
             try {
                 int ci = get();
                 MessagePopup.information(null, MessageUtil.getMessage(ci <= 1 ? "contact.imported" : "contacts.imported", ci));
-            } catch (InterruptedException | ExecutionException ex) {
+            } catch (InterruptedException ex) {
+                GemLogger.logException(ex);
+                MessagePopup.error(null, MessageUtil.getMessage("import.exception") + ":\n" + ex.getMessage());
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException ex) {
                 GemLogger.logException(ex);
                 MessagePopup.error(null, MessageUtil.getMessage("import.exception") + ":\n" + ex.getMessage());
             }

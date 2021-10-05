@@ -100,7 +100,7 @@ public class MajoView
   }
 
   @Override
-  public void addMouseListener(MouseListener l) {
+  public synchronized void addMouseListener(MouseListener l) {
     table.addMouseListener(l);
   }
 

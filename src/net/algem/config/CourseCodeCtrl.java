@@ -107,7 +107,7 @@ public class CourseCodeCtrl
       if (used > 0) {
         throw new ParamException(MessageUtil.getMessage("course.code.delete.exception", used));
       }
-      if (MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+      if (MessagePopup.confirm(contentPane, MessageUtil.getMessage("param.delete.confirmation"))) {
         ccIO.delete(cc);
         desktop.getDataCache().remove(cc);
         desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.COURSE_CODE, cc));

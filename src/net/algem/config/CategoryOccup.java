@@ -56,9 +56,15 @@ public class CategoryOccup
     return label;
   }
 
-  public boolean equals(CategoryOccup c) {
-    return (c != null
-            && id == c.id);
+  public boolean equals(Object o) {
+              if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CategoryOccup c = (CategoryOccup) o;
+    return (id == c.id);
   }
 
   @Override

@@ -92,7 +92,7 @@ public class LevelCtrl
       if (used > 0) {
         throw new ParamException(MessageUtil.getMessage("level.delete.exception", used));
       }
-      if (MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+      if (MessagePopup.confirm(contentPane, MessageUtil.getMessage("param.delete.confirmation"))) {
         service.deleteLevel((GemParam)p);
         desktop.getDataCache().remove(level);
         desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.LEVEL, level));

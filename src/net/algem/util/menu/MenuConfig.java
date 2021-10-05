@@ -152,35 +152,35 @@ public class MenuConfig
     } else if (menus.get("Menu.instrument.label").equals(arg)) {
       InstrumentCtrl instrumentCtrl = new InstrumentCtrl(desktop);
       instrumentCtrl.load();
-      desktop.addPanel("Menu.instrument", instrumentCtrl);
+      desktop.addPanel("Menu.instrument", instrumentCtrl.getContentPane());
     } else if (menus.get("Menu.style.label").equals(arg)) {
       MusicStyleCtrl styleCtrl = new MusicStyleCtrl(desktop);
       styleCtrl.load();
-      desktop.addPanel("Menu.style", styleCtrl);
+      desktop.addPanel("Menu.style", styleCtrl.getContentPane());
     } else if (menus.get("Menu.occupational.cat.label").equals(arg)) {
       CategoryOccupCtrl occupCatCtrl = new CategoryOccupCtrl(desktop);
       occupCatCtrl.load();
-      desktop.addPanel("Menu.occupational.cat", occupCatCtrl);
+      desktop.addPanel("Menu.occupational.cat", occupCatCtrl.getContentPane());
     } else if (menus.get("Marital.status.label").equals(arg)) {
       MaritalStatusCtrl maritalStatus = new MaritalStatusCtrl(desktop);
       maritalStatus.load();
-      desktop.addPanel("Marital.status", maritalStatus);
+      desktop.addPanel("Marital.status", maritalStatus.getContentPane());
     } else if (menus.get("Menu.web.site.cat.label").equals(arg)) {
       CategoryWebSiteCtrl siteCatCtrl = new CategoryWebSiteCtrl(desktop);
       siteCatCtrl.load();
-      desktop.addPanel("Menu.web.site.cat", siteCatCtrl);
+      desktop.addPanel("Menu.web.site.cat", siteCatCtrl.getContentPane());
     } else if (menus.get("Menu.course.codes.label").equals(arg)) {
       CourseCodeCtrl ccCtrl = new CourseCodeCtrl(desktop);
       ccCtrl.load();
-      desktop.addPanel("Course.code", ccCtrl);
+      desktop.addPanel("Course.code", ccCtrl.getContentPane());
     } else if (menus.get("Status.label").equals(arg)) {
       StatusCtrl statutCtrl = new StatusCtrl(desktop, arg);
       statutCtrl.load();
-      desktop.addPanel("Status", statutCtrl);
+      desktop.addPanel("Status", statutCtrl.getContentPane());
     } else if (menus.get("Level.label").equals(arg)) {
       LevelCtrl levelCtrl = new LevelCtrl(desktop, arg);
       levelCtrl.load();
-      desktop.addPanel("Level", levelCtrl);
+      desktop.addPanel("Level", levelCtrl.getContentPane());
     } else if (menus.get("Menu.age.range.label").equals(arg)) {
       AgeRangeSearchCtrl ageRangeCtrl = new AgeRangeSearchCtrl(desktop);
       ageRangeCtrl.addActionListener(this);
@@ -189,7 +189,7 @@ public class MenuConfig
     } else if (menus.get("Menu.telephone.type.label").equals(arg)) {
       TelephoneTypeCtrl typeTelephoneCtrl = new TelephoneTypeCtrl(desktop);
       typeTelephoneCtrl.load();
-      desktop.addPanel("Menu.telephone.type", typeTelephoneCtrl);
+      desktop.addPanel("Menu.telephone.type", typeTelephoneCtrl.getContentPane());
     }  else if (menus.get("Menu.city.label").equals(arg)) {
       CityCtrl cityCtrl = new CityCtrl(desktop);
       desktop.addPanel("Menu.city", cityCtrl);
@@ -203,7 +203,7 @@ public class MenuConfig
     }else if (menus.get("Menu.school.label").equals(arg)) {
       SchoolCtrl schoolCtrl = new SchoolCtrl(desktop);
       schoolCtrl.load();
-      desktop.addPanel("Menu.school", schoolCtrl);
+      desktop.addPanel("Menu.school", schoolCtrl.getContentPane());
     } else if (src == msEstabCreate) {
       EstabCreateCtrl estabCreate = new EstabCreateCtrl(desktop);
       estabCreate.addActionListener(this);
@@ -245,7 +245,7 @@ public class MenuConfig
     } else if (menus.get("Menu.holidays.cat.label").equals(arg)) {
       CategoryVacancyCtrl vacancyCatCtrl = new CategoryVacancyCtrl(desktop);
       vacancyCatCtrl.load();
-      desktop.addPanel("Menu.holidays.cat", vacancyCatCtrl);
+      desktop.addPanel("Menu.holidays.cat", vacancyCatCtrl.getContentPane());
     } else if (menus.get("Menu.periods.label").equals(arg)) {
       VacationCtrl vacancyCtrl = new VacationCtrl(dataCache);
       desktop.addPanel("Menu.periods", vacancyCtrl, new Dimension(680,460));

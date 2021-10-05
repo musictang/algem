@@ -82,7 +82,7 @@ class HoursTechnicianTask
 
         if (idper != prevIdper) {
           if (prevIdper > 0) {
-            if (!detail) {
+            if (!detail && prevDate != null) {
               out.println(df.format(prevDate.getDate()) + ";;;;" + getTotal(totalDay));
             }
             out.println(totalMonthLabel + ";;;;" + getTotal(totalMonth));

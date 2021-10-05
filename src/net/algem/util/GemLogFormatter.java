@@ -28,31 +28,30 @@ import java.util.logging.LogRecord;
 
 /**
  * Formatter for logging.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.13.2
  * @since 2.6.a 30/07/2012
  */
 public class GemLogFormatter
-	extends java.util.logging.Formatter
-{
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy H:mm:ss");
+        extends java.util.logging.Formatter {
 
-	@Override
-	public String format(LogRecord record) {
+    @Override
+    public String format(LogRecord record) {
+        final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy H:mm:ss");
         String nl = TextUtil.LINE_SEPARATOR;
-		StringBuilder s = new StringBuilder(1000);
+        StringBuilder s = new StringBuilder(1000);
 
-		Date d = new Date(record.getMillis());
+        Date d = new Date(record.getMillis());
 
-		s.append(record.getLevel()).append(':').append(DATE_FORMAT.format(d)).append(" ").append(System.getProperty("user.name")).append(nl);
-		s.append(record.getMessage()).append(nl).append(nl);
-		return s.toString();
-	}
+        s.append(record.getLevel()).append(':').append(DATE_FORMAT.format(d)).append(" ").append(System.getProperty("user.name")).append(nl);
+        s.append(record.getMessage()).append(nl).append(nl);
+        return s.toString();
+    }
 
-	@Override
-	public String getHead(Handler h) {
-		return "============================================================================" + TextUtil.LINE_SEPARATOR;
-	}
+    @Override
+    public String getHead(Handler h) {
+        return "============================================================================" + TextUtil.LINE_SEPARATOR;
+    }
 
 }
-

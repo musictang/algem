@@ -251,6 +251,8 @@ public class DataConnection
       GemLogger.info(query);
     }
     Statement stmt = createStatement(resultSetType, resultSetConcurrency);
+    if (stmt == null)
+        throw new SQLException("createStatment");
     return stmt.executeQuery(query);
   }
 

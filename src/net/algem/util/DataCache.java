@@ -1117,6 +1117,7 @@ public class DataCache {
             try {
                 monthThread.join();
             } catch (InterruptedException ignore) {
+                    Thread.currentThread().interrupt();
             }
         }
         final DateFr start = new DateFr(startDate);

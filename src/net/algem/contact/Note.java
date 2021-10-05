@@ -20,88 +20,104 @@
  */
 package net.algem.contact;
 
+import java.util.Objects;
 import net.algem.util.model.GemModel;
 
 /**
  * comment.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.4.14
  */
 public class Note
-        implements GemModel
-{
+        implements GemModel {
 
-  private static final long serialVersionUID = -2510125799305049998L;
-  
-  private int id;
-  private int idper;
-  private String text;
-  private short ptype;
+    private static final long serialVersionUID = -2510125799305049998L;
 
-  public Note() {
-  }
+    private int id;
+    private int idper;
+    private String text;
+    private short ptype;
 
+    public Note() {
+    }
 
-  public Note(String t) {
-    text = t;
-  }
+    public Note(String t) {
+        text = t;
+    }
 
-  public Note(int _idper, String t, short ptype) {
-    this(t);
-    this.idper = _idper;
-    this.ptype = ptype;
-  }
+    public Note(int _idper, String t, short ptype) {
+        this(t);
+        this.idper = _idper;
+        this.ptype = ptype;
+    }
 
-  public Note(int id, int _idper, String t, short ptype) {
-    this(t);
-    this.id = id;
-    this.idper = _idper;
-    this.ptype = ptype;
-  }
+    public Note(int id, int _idper, String t, short ptype) {
+        this(t);
+        this.id = id;
+        this.idper = _idper;
+        this.ptype = ptype;
+    }
 
-  @Override
-  public String toString() {
-    return id + " " + text + " "+ptype;
-  }
+    @Override
+    public String toString() {
+        return id + " " + text + " " + ptype;
+    }
 
-  public boolean equals(Note n) {
-    return text.equals(n.text);
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Note n = (Note) o;
+        return text.equals(n.text);
+    }
 
-  @Override
-  public int getId() {
-    return id;
-  }
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 59 * hash + this.idper;
+        hash = 59 * hash + Objects.hashCode(this.text);
+        hash = 59 * hash + this.ptype;
+        return hash;
+    }
 
-  @Override
-  public void setId(int i) {
-    id = i;
-  }
+    @Override
+    public int getId() {
+        return id;
+    }
 
-  public int getIdPer() {
-    return idper;
-  }
+    @Override
+    public void setId(int i) {
+        id = i;
+    }
 
-  public void setIdPer(int i) {
-    idper = i;
-  }
+    public int getIdPer() {
+        return idper;
+    }
 
-  public String getText() {
-    return text;
-  }
+    public void setIdPer(int i) {
+        idper = i;
+    }
 
-  public void setText(String l) {
-    text = l;
-  }
+    public String getText() {
+        return text;
+    }
 
-  public short getPtype() {
-    return ptype;
-  }
+    public void setText(String l) {
+        text = l;
+    }
 
-  public void setPtype(short ptype) {
-    this.ptype = ptype;
-  }
+    public short getPtype() {
+        return ptype;
+    }
+
+    public void setPtype(short ptype) {
+        this.ptype = ptype;
+    }
 
 }

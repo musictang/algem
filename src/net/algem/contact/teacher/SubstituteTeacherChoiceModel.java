@@ -43,6 +43,7 @@ public class SubstituteTeacherChoiceModel
     if (list != null && list.getSize() > 0) {
       currentValue = list.getElementAt(0);
     }
+    if (this.list != null)
     this.list.addListDataListener(this);
   }
 
