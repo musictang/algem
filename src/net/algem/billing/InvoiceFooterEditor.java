@@ -45,164 +45,159 @@ import net.algem.util.ui.*;
 
 /**
  * Reading and updating of invoice footer.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.3.1
  * @since 2.3.a 27/02/12
  */
 public class InvoiceFooterEditor
         extends GemPanel
-        implements ActionListener
-{
+        implements ActionListener {
 
-  private GemLabel label;
-  private JTextArea area;
-  private GemButton btOk;
-  private GemButton btCancel;
-  private GemDesktop desktop;
-  
-  /** Module key. */
-  private String key;
+    private GemLabel label;
+    private JTextArea area;
+    private GemButton btOk;
+    private GemButton btCancel;
+    private GemDesktop desktop;
 
-  /** Border spacing. */
-  private static final int bp = 10;
+    /**
+     * Module key.
+     */
+    private String key;
 
+    /**
+     * Border spacing.
+     */
+    private static final int bp = 10;
 
-  public InvoiceFooterEditor(String key, GemDesktop desktop) {
-    this.desktop = desktop;
-    this.key = key;
-    init();
-  }
+    public InvoiceFooterEditor(String key, GemDesktop desktop) {
+        this.desktop = desktop;
+        this.key = key;
+        init();
+    }
 
-  private void init() {
-    
-    GemPanel content = new GemBorderPanel(BorderFactory.createEmptyBorder(bp, bp , bp, bp));
-    content.setLayout(new BorderLayout(0,10));
+    private void init() {
 
-    label = new GemLabel(MessageUtil.getMessage("invoice.footer.editor"));
-    area = new JTextArea();
-    area.setMargin(new Insets(bp, bp, bp, bp));
-    area.setLineWrap(true);
-    area.setWrapStyleWord(true);
-    area.setText(read());
-    content.add(label, BorderLayout.NORTH);
-    content.add(area, BorderLayout.CENTER);
+        GemPanel content = new GemBorderPanel(BorderFactory.createEmptyBorder(bp, bp, bp, bp));
+        content.setLayout(new BorderLayout(0, 10));
 
-    btOk = new GemButton(GemCommand.VALIDATION_CMD);
-    btOk.addActionListener(this);
-    btCancel = new GemButton(GemCommand.CANCEL_CMD);
-    btCancel.addActionListener(this);
+        label = new GemLabel(MessageUtil.getMessage("invoice.footer.editor"));
+        area = new JTextArea();
+        area.setMargin(new Insets(bp, bp, bp, bp));
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
+        area.setText(read());
+        content.add(label, BorderLayout.NORTH);
+        content.add(area, BorderLayout.CENTER);
 
-    GemPanel boutons = new GemPanel(new GridLayout(1, 2));
-    boutons.add(btOk);
-    boutons.add(btCancel);
+        btOk = new GemButton(GemCommand.VALIDATION_CMD);
+        btOk.addActionListener(this);
+        btCancel = new GemButton(GemCommand.CANCEL_CMD);
+        btCancel.addActionListener(this);
 
-    setLayout(new BorderLayout());
-    add(content, BorderLayout.CENTER);
-    add(boutons, BorderLayout.SOUTH);
-  }
+        GemPanel boutons = new GemPanel(new GridLayout(1, 2));
+        boutons.add(btOk);
+        boutons.add(btCancel);
 
-  /**
-   * Retrieves the actual footer.
-   * @return a list of strings
-   */
-  public static List<String> getFooter() {
+        setLayout(new BorderLayout());
+        add(content, BorderLayout.CENTER);
+        add(boutons, BorderLayout.SOUTH);
+    }
 
-    BufferedReader br = null;
-    List<String> lines = new ArrayList<String>();
-    String s = null;
+    /**
+     * Retrieves the actual footer.
+     *
+     * @return a list of strings
+     */
+    public static List<String> getFooter() {
 
-    try {
-      File f = getFile();
-      if (f == null) {
-        throw new IOException(MessageUtil.getMessage("file.not.found.exception", ""));
-      }
-      FileReader reader = new FileReader(f);
-      br = new BufferedReader(reader);
-      while ((s = br.readLine()) != null) {
-        lines.add(s);
-      }
-    } catch (IOException ex) {
-      GemLogger.logException(ex);
-      lines.add(ex.getMessage());
-    } finally {
-      try {
-        if (br != null) {
-          br.close();
+        List<String> lines = new ArrayList<String>();
+        String s = null;
+
+        try {
+            File f = getFile();
+            if (f == null) {
+                throw new IOException(MessageUtil.getMessage("file.not.found.exception", ""));
+            }
+            try (FileReader reader = new FileReader(f);
+                    BufferedReader br = new BufferedReader(reader);) {
+                while ((s = br.readLine()) != null) {
+                    lines.add(s);
+                }
+            }
+        } catch (IOException ex) {
+            GemLogger.logException(ex);
+            lines.add(ex.getMessage());
         }
-      } catch (IOException ex) {
-        GemLogger.logException(ex);
-      }
+        return lines;
     }
-    return lines;
-  }
 
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    if (btOk == e.getSource()) {
-      write();
-    }
-    desktop.removeModule(key);
-  }
-
-  @Override
-  public String toString() {
-    return getClass().getSimpleName();
-  }
-
-  /**
-   * Fills the text area.
-   * @return a string representing the invoice footer
-   */
-  private String read() {
-    StringBuilder sb = new StringBuilder();
-    List<String> ls = getFooter();
-    for (String s : ls) {
-      sb.append(s).append(TextUtil.LINE_SEPARATOR);
-    }
-    return sb.toString();
-  }
-
-  /**
-   * Updates footer.
-   * The infos into the text area are saved in the file.
-   * {@code FileUtil.INVOICE_FOOTER_FILE}.
-   */
-  private void write() {
-
-    BufferedWriter bw = null;
-    try {
-      File f = getFile();
-      if (f != null && f.canWrite()) {
-        bw = new BufferedWriter(new FileWriter(f));
-        bw.append(area.getText());
-      } else {
-        throw new IOException(MessageUtil.getMessage("file.writing.exception", (f == null ? "" : f.getAbsolutePath())));
-      }
-    } catch(FileNotFoundException f) {
-      GemLogger.logException(f);
-      MessagePopup.warning(this, f.getMessage());
-    } catch (IOException ex) {
-      GemLogger.logException(ex);
-      MessagePopup.warning(this, ex.getMessage());
-    } finally {
-      try {
-        if (bw != null) {
-          bw.close();
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (btOk == e.getSource()) {
+            write();
         }
-      } catch (IOException ex) {
-        GemLogger.logException(ex);
-      }
+        desktop.removeModule(key);
     }
 
-  }
-  
-  private static File getFile() {
-      String filePath = ConfigUtil.getConf(ConfigKey.INVOICE_FOOTER.getKey());
-      if (filePath != null) {
-      return new File(filePath);
-      }
-    return null;
-  }
-  
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
+
+    /**
+     * Fills the text area.
+     *
+     * @return a string representing the invoice footer
+     */
+    private String read() {
+        StringBuilder sb = new StringBuilder();
+        List<String> ls = getFooter();
+        for (String s : ls) {
+            sb.append(s).append(TextUtil.LINE_SEPARATOR);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Updates footer. The infos into the text area are saved in the file.
+     * {@code FileUtil.INVOICE_FOOTER_FILE}.
+     */
+    private void write() {
+
+        BufferedWriter bw = null;
+        try {
+            File f = getFile();
+            if (f != null && f.canWrite()) {
+                bw = new BufferedWriter(new FileWriter(f));
+                bw.append(area.getText());
+            } else {
+                throw new IOException(MessageUtil.getMessage("file.writing.exception", (f == null ? "" : f.getAbsolutePath())));
+            }
+        } catch (FileNotFoundException f) {
+            GemLogger.logException(f);
+            MessagePopup.warning(this, f.getMessage());
+        } catch (IOException ex) {
+            GemLogger.logException(ex);
+            MessagePopup.warning(this, ex.getMessage());
+        } finally {
+            try {
+                if (bw != null) {
+                    bw.close();
+                }
+            } catch (IOException ex) {
+                GemLogger.logException(ex);
+            }
+        }
+
+    }
+
+    private static File getFile() {
+        String filePath = ConfigUtil.getConf(ConfigKey.INVOICE_FOOTER.getKey());
+        if (filePath != null) {
+            return new File(filePath);
+        }
+        return null;
+    }
+
 }

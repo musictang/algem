@@ -689,7 +689,7 @@ public class ConflictService
     testRoomAndPersonPS.setTime(8, java.sql.Time.valueOf(a.getStartTime().toString() + ":00"));
     testRoomAndPersonPS.setTime(9, java.sql.Time.valueOf(endTime.toString() + ":00"));
 
-    ResultSet rs = testRoomAndPersonPS.executeQuery();
+    try (ResultSet rs = testRoomAndPersonPS.executeQuery()) {
     while (!Thread.interrupted() && rs.next()) {
       ScheduleTestConflict conflict = new ScheduleTestConflict(
         d,
@@ -703,6 +703,7 @@ public class ConflictService
         conflict.setRoomFree(false);
       }
       conflicts.add(conflict);
+    }
     }
     return conflicts;
 

@@ -37,86 +37,88 @@ import net.algem.util.model.TableIO;
  * @version 2.9.4.13
  */
 public class NoteIO
-        extends TableIO
-{
+        extends TableIO {
 
-  public static final String TABLE = "note";
-  public static final String SEQUENCE = "idnote";
-  private static final PreparedStatement notePS = 
-          DataCache.getDataConnection().prepareStatement("SELECT * FROM " + TABLE + " WHERE idper = ? AND ptype = ? LIMIT 1");
+    public static final String TABLE = "note";
+    public static final String SEQUENCE = "idnote";
+    private static final PreparedStatement notePS
+            = DataCache.getDataConnection().prepareStatement("SELECT * FROM " + TABLE + " WHERE idper = ? AND ptype = ? LIMIT 1");
 
-  public static void insert(Note n, DataConnection dc) throws SQLException {
-    
-    int number = nextId(SEQUENCE, dc);
+    public static void insert(Note n, DataConnection dc) throws SQLException {
 
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + number
-            + "," + n.getIdPer()
-            + ",'" + escape(n.getText())
-            + "'," + n.getPtype()
-            + ")";
+        int number = nextId(SEQUENCE, dc);
 
-    dc.executeUpdate(query);
-    n.setId(number);
-  }
+        String query = "INSERT INTO " + TABLE + " VALUES("
+                + number
+                + "," + n.getIdPer()
+                + ",'" + escape(n.getText())
+                + "'," + n.getPtype()
+                + ")";
 
-  public static void update(Note n, DataConnection dc) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET texte = '" + escape(n.getText())
-            + "' WHERE id = " + n.getId() + " AND ptype = " + n.getPtype();
-    dc.executeUpdate(query);
-  }
-
-  public static void delete(Note n, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + n.getId() + " AND ptype = " + n.getPtype();
-    dc.executeUpdate(query);
-  }
-
-  /**
-   * 
-   * @param idper person id
-   * @param type note type
-   * @param dc data connection
-   * @return a note
-   * @throws NoteException
-   */
-  public static Note findId(int idper, short type, DataConnection dc) throws NoteException {
-    try {
-      notePS.setInt(1, idper);
-      notePS.setShort(2, type);
-      ResultSet rs = notePS.executeQuery();
-      while (rs.next()) {
-        return getResultFromRS(rs);
-      }
-    } catch (SQLException ex) {
-      throw new NoteException(MessageUtil.getMessage("note.exception"));
+        dc.executeUpdate(query);
+        n.setId(number);
     }
-    return null;
-  }
 
-  public static Vector<Note> find(String where, DataConnection dc) throws NoteException {
-
-    Vector<Note> v = new Vector<Note>();
-    String query = "SELECT * FROM " + TABLE + " " + where;
-    try {
-      ResultSet rs = dc.executeQuery(query);
-      while (rs.next()) {
-        v.addElement(getResultFromRS(rs));
-      }
-      rs.close();
-
-      return v;
-    } catch (SQLException ex) {
-      throw new NoteException(MessageUtil.getMessage("note.exception"));
+    public static void update(Note n, DataConnection dc) throws SQLException {
+        String query = "UPDATE " + TABLE + " SET texte = '" + escape(n.getText())
+                + "' WHERE id = " + n.getId() + " AND ptype = " + n.getPtype();
+        dc.executeUpdate(query);
     }
-  }
-  
-  private static Note getResultFromRS(ResultSet rs) throws SQLException {
-    Note n = new Note();
-    n.setId(rs.getInt(1));
-    n.setIdPer(rs.getInt(2));
-    n.setText(rs.getString(3));
-    n.setPtype(rs.getShort(4));
-    return n;
-  }
-  
+
+    public static void delete(Note n, DataConnection dc) throws SQLException {
+        String query = "DELETE FROM " + TABLE + " WHERE id = " + n.getId() + " AND ptype = " + n.getPtype();
+        dc.executeUpdate(query);
+    }
+
+    /**
+     *
+     * @param idper person id
+     * @param type note type
+     * @param dc data connection
+     * @return a note
+     * @throws NoteException
+     */
+    public static Note findId(int idper, short type, DataConnection dc) throws NoteException {
+        try {
+            notePS.setInt(1, idper);
+            notePS.setShort(2, type);
+        } catch (SQLException ex) {
+            throw new NoteException(MessageUtil.getMessage("note.exception"));
+        }
+        try (ResultSet rs = notePS.executeQuery()) {
+            if (rs.next()) {
+                return getResultFromRS(rs);
+            }
+        } catch (SQLException ex) {
+            throw new NoteException(MessageUtil.getMessage("note.exception"));
+        }
+        return null;
+    }
+
+    public static Vector<Note> find(String where, DataConnection dc) throws NoteException {
+
+        Vector<Note> v = new Vector<Note>();
+        String query = "SELECT * FROM " + TABLE + " " + where;
+        try {
+            ResultSet rs = dc.executeQuery(query);
+            while (rs.next()) {
+                v.addElement(getResultFromRS(rs));
+            }
+            rs.close();
+
+            return v;
+        } catch (SQLException ex) {
+            throw new NoteException(MessageUtil.getMessage("note.exception"));
+        }
+    }
+
+    private static Note getResultFromRS(ResultSet rs) throws SQLException {
+        Note n = new Note();
+        n.setId(rs.getInt(1));
+        n.setIdPer(rs.getInt(2));
+        n.setText(rs.getString(3));
+        n.setPtype(rs.getShort(4));
+        return n;
+    }
+
 }

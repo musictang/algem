@@ -204,7 +204,7 @@ public abstract class AbstractDesktopCtrl
             @Override
             public void run() {
                 int nerr = 0;
-                for (;;) {
+                while (true) {
                     GemRemoteEvent evt = null;
                     try {
                         evt = (GemRemoteEvent) iDispatcher.readObject();
@@ -219,6 +219,8 @@ public abstract class AbstractDesktopCtrl
                             return;
                         }
                     }
+                    if (nerr > 3)
+                        break;
                 }
             }
         }).start();
@@ -243,13 +245,9 @@ public abstract class AbstractDesktopCtrl
         if (savePrefs) {
             storeUISettings();
         }
-        ObjectOutputStream out = null;
         String path = System.getProperty("user.home") + FileUtil.FILE_SEPARATOR;
-        try {
-            out = new ObjectOutputStream(new FileOutputStream(path + ".gemdesktop"));
-        } catch (IOException e) {
-            GemLogger.logException(e);
-        }
+        try (
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + ".gemdesktop"))) {
         // test ferme tous les modules
         Enumeration enu = modules.elements();
         // Sérialisation des modules ouverts dans une liste
@@ -262,14 +260,11 @@ public abstract class AbstractDesktopCtrl
             lm.add(moduleSID);
             m.close();
         }
-        if (out != null) {
-            try {
-                out.writeObject(lm);
-                out.close();
-            } catch (IOException e) {
-                GemLogger.logException(e);
-            }
+        out.writeObject(lm);
+        } catch (IOException e) {
+            GemLogger.logException(e);
         }
+
         if (postitScheduledExecutor != null) {
             postitScheduledExecutor.shutdown();
         }

@@ -1349,11 +1349,10 @@ public class DataCache {
     }
 
     <T extends Object> void dump(String p, Vector<T> v) {
-        try {
+        try (
             FileOutputStream fic = new FileOutputStream(p);
-            ObjectOutputStream out = new ObjectOutputStream(fic);
+            ObjectOutputStream out = new ObjectOutputStream(fic)) {
             out.writeObject(v);
-            fic.close();
         } catch (IOException e) {
             GemLogger.log("serializ err :" + e);
         }

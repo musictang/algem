@@ -121,14 +121,14 @@ public class PhotoIO
     PreparedStatement foundStmt = dc.prepareStatement("SELECT idper FROM " + TABLE + " WHERE idper = ?");
     PreparedStatement saveStmt = dc.prepareStatement(SAVE_QUERY);
     int saved = 0;
-    ResultSet rs = null;
     try {
       dc.setAutoCommit(false);
       for (Map.Entry<Integer, byte[]> entry : map.entrySet()) {
         foundStmt.setInt(1, entry.getKey());
-        rs = foundStmt.executeQuery();
+        try (ResultSet rs = foundStmt.executeQuery()) {
         if (rs.next()) {
           continue;
+        }
         }
         saveStmt.setInt(1, entry.getKey());
         saveStmt.setBytes(2, entry.getValue());
@@ -144,7 +144,6 @@ public class PhotoIO
       return -1;
     } finally {
       dc.setAutoCommit(true);
-      closeRS(rs);
       closeStatement(foundStmt);
       closeStatement(saveStmt);
     }

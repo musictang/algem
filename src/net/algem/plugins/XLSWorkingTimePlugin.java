@@ -486,7 +486,6 @@ public class XLSWorkingTimePlugin
         return index;
     }
 
-
     private class CustomRange {
 //    Parcours DEM Jazz, L1 Musicologie/Jazz à Tours, L2 Musicologie / Jazz à Tours, L3 Musicologie / Jazz à Tours
 
@@ -601,7 +600,7 @@ public class XLSWorkingTimePlugin
 
         private DataConnection dc;
         private PreparedStatement ps5;
- 
+
         private final String rangeQuery = "SELECT DISTINCT ON (pl.id) pl.fin-pl.debut,m.id,m.code,e.analytique"
                 + " FROM " + ScheduleRangeIO.TABLE + " pl JOIN " + ScheduleIO.TABLE + " p ON (pl.idplanning = p.id)"
                 + " JOIN " + CourseOrderIO.TABLE + " cc ON (cc.idaction = p.action)"
@@ -616,7 +615,6 @@ public class XLSWorkingTimePlugin
             this.dc = dc;
             ps5 = dc.prepareStatement(rangeQuery);
         }
-
 
         private List<CustomSchedule> getSchedules(int idper, DateFr start, DateFr end) throws SQLException {
             List<CustomSchedule> schedules = new ArrayList<>();
@@ -664,11 +662,12 @@ public class XLSWorkingTimePlugin
         private List<CustomRange> getRanges(int p) throws SQLException {
             List<CustomRange> ranges = new ArrayList<>();
             ps5.setInt(1, p);
-            ResultSet rs = ps5.executeQuery();
-            while (rs.next()) {
-                int min = Hour.getMinutesFromString(rs.getString(1));
-                CustomRange cr = new CustomRange(min, rs.getInt(2), rs.getString(3), rs.getString(4));
-                ranges.add(cr);
+            try (ResultSet rs = ps5.executeQuery()) {
+                while (rs.next()) {
+                    int min = Hour.getMinutesFromString(rs.getString(1));
+                    CustomRange cr = new CustomRange(min, rs.getInt(2), rs.getString(3), rs.getString(4));
+                    ranges.add(cr);
+                }
             }
             return ranges;
         }

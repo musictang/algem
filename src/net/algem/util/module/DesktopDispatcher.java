@@ -37,31 +37,32 @@ import net.algem.util.GemLogger;
  */
 public class DesktopDispatcher {
 
-  static final int DEFAULT_SOCKET_PORT = 5433;
+    static final int DEFAULT_SOCKET_PORT = 5433;
 
-  Vector<ObjectInputStream> ins = new Vector<ObjectInputStream>();
-  Vector<ObjectOutputStream> outs = new Vector<ObjectOutputStream>();
+    Vector<ObjectInputStream> ins = new Vector<ObjectInputStream>();
+    Vector<ObjectOutputStream> outs = new Vector<ObjectOutputStream>();
 
-  public static void main(String[] argv) {
-    ServerSocket serverSocket;
+    public static void main(String[] argv) {
 
-    try {
-      serverSocket = new ServerSocket(DEFAULT_SOCKET_PORT);
-    } catch (IOException e) {
-      GemLogger.logException(e);
-      return;
+        try (
+            ServerSocket serverSocket = new ServerSocket(DEFAULT_SOCKET_PORT)) {
+
+            DesktopDispatcher dispatcher = new DesktopDispatcher();
+            System.out.println("dispatcher started");
+            while (true) {
+                try {
+                    Socket client = serverSocket.accept();
+                    ThreadDispatcher t = new ThreadDispatcher(client, dispatcher);
+                    t.start();
+                } catch (IOException e) {
+                    GemLogger.logException(e);
+                }
+                if (dispatcher.ins.size() > 1000) //sonar end loop
+                    break;
+            }
+        } catch (IOException e) {
+            GemLogger.logException(e);
+            return;
+        }
     }
-
-    DesktopDispatcher dispatcher = new DesktopDispatcher();
-    System.out.println("dispatcher started");
-    while (true) {
-      try {
-        Socket client = serverSocket.accept();
-        ThreadDispatcher t = new ThreadDispatcher(client, dispatcher);
-        t.start();
-      } catch (IOException e) {
-        GemLogger.logException(e);
-      }
     }
-  }
-  }

@@ -37,213 +37,213 @@ import net.algem.util.model.TableIO;
  */
 public class OrganizationIO extends TableIO {
 
-  public static final String TABLE = "organisation";
-  public static final String COLUMNS = "idper,referent,nom,raison,siret,naf,codefp,codetva";
-  public static final String LOGO_COL = "logo";
-  public static final String STAMP_COL = "stamp";
+    public static final String TABLE = "organisation";
+    public static final String COLUMNS = "idper,referent,nom,raison,siret,naf,codefp,codetva";
+    public static final String LOGO_COL = "logo";
+    public static final String STAMP_COL = "stamp";
 //  private static final String SEQUENCE = "organisation_id_seq";
 
-  private DataConnection dc;
+    private DataConnection dc;
 
-  public OrganizationIO(DataConnection dc) {
-    this.dc = dc;
-  }
-
-  public Organization findId(int idper) throws SQLException {
-
-    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idper=?";
-    try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setInt(1, idper);
-      //GemLogger.info(ps.toString());
-      ResultSet rs = ps.executeQuery();
-      while (rs.next()) {
-        return getFromRS(rs);
-      }
-      return null;
+    public OrganizationIO(DataConnection dc) {
+        this.dc = dc;
     }
-  }
 
-  public List<Organization> find(String name) throws SQLException {
-    List<Organization> orgs = new ArrayList<>();
-    if (name != null) {
-      String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE lower(nom) LIKE ?";
-      try (PreparedStatement ps = dc.prepareStatement(query)) {
-        ps.setString(1, name.toLowerCase() + "%");
-        //GemLogger.info(ps.toString());
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-          orgs.add(getFromRS(rs));
+    public Organization findId(int idper) throws SQLException {
+
+        String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idper=?";
+        try (PreparedStatement ps = dc.prepareStatement(query)) {
+            ps.setInt(1, idper);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return getFromRS(rs);
+                }
+            }
+            return null;
         }
-      }
     }
-    return orgs;
-  }
 
-   public List<Organization> findAll() throws SQLException {
-    List<Organization> orgs = new ArrayList<>();
-      String query = "SELECT " + COLUMNS + " FROM " + TABLE + " ORDER BY nom";
-      try (ResultSet rs = dc.executeQuery(query)) {
-        while (rs.next()) {
-          orgs.add(getFromRS(rs));
+    public List<Organization> find(String name) throws SQLException {
+        List<Organization> orgs = new ArrayList<>();
+        if (name != null) {
+            String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE lower(nom) LIKE ?";
+            try (PreparedStatement ps = dc.prepareStatement(query)) {
+                ps.setString(1, name.toLowerCase() + "%");
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        orgs.add(getFromRS(rs));
+                    }
+                }
+            }
         }
-      }
-    return orgs;
-  }
-
-  public List<Person> findMembers(int orgId) throws SQLException {
-    List<Person> pers = new ArrayList<>();
-    if (orgId > 0) {
-      String query = "SELECT p.id,CASE WHEN p.nom IS NULL OR p.nom = '' THEN o.nom ELSE p.nom END,p.prenom FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " o ON p.organisation = o.idper WHERE o.idper = ?"
-        + " AND (p.ptype = " + Person.PERSON + " OR p.ptype = " + Person.ROOM + ") ORDER BY p.prenom";
-      try (PreparedStatement ps = dc.prepareStatement(query)) {
-        ps.setInt(1, orgId);
-        //GemLogger.info(ps.toString());
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-          Person p = new Person(rs.getInt(1));
-          p.setName(rs.getString(2));
-          p.setOrganization(new Organization());
-          p.setFirstName(rs.getString(3));
-          pers.add(p);
-        }
-      }
+        return orgs;
     }
-    return pers;
-  }
 
-  private Organization getFromRS(ResultSet rs) throws SQLException {
-    Organization org = new Organization(rs.getInt(1));
-    org.setReferent(rs.getInt(2));
-    org.setName(rs.getString(3));
-    org.setCompanyName(rs.getString(4));
-    org.setSiret(rs.getString(5));
-    org.setNafCode(rs.getString(6));
-    org.setFpCode(rs.getString(7));
-    org.setVatCode(rs.getString(8));
-    return org;
-  }
+    public List<Organization> findAll() throws SQLException {
+        List<Organization> orgs = new ArrayList<>();
+        String query = "SELECT " + COLUMNS + " FROM " + TABLE + " ORDER BY nom";
+        try (ResultSet rs = dc.executeQuery(query)) {
+            if (rs.next()) {
+                orgs.add(getFromRS(rs));
+            }
+        }
+        return orgs;
+    }
 
-  public void create(Organization org) throws SQLException {
-    //int nextId = nextId(SEQUENCE, dc);
+    public List<Person> findMembers(int orgId) throws SQLException {
+        List<Person> pers = new ArrayList<>();
+        if (orgId > 0) {
+            String query = "SELECT p.id,CASE WHEN p.nom IS NULL OR p.nom = '' THEN o.nom ELSE p.nom END,p.prenom FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " o ON p.organisation = o.idper WHERE o.idper = ?"
+                    + " AND (p.ptype = " + Person.PERSON + " OR p.ptype = " + Person.ROOM + ") ORDER BY p.prenom";
+            try (PreparedStatement ps = dc.prepareStatement(query)) {
+                ps.setInt(1, orgId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Person p = new Person(rs.getInt(1));
+                        p.setName(rs.getString(2));
+                        p.setOrganization(new Organization());
+                        p.setFirstName(rs.getString(3));
+                        pers.add(p);
+                    }
+                }
+            }
+        }
+        return pers;
+    }
 
-    String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?)";
-    try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setInt(1, org.getId());
-      ps.setInt(2,org.getReferent());
-      ps.setString(3, org.getName());
+    private Organization getFromRS(ResultSet rs) throws SQLException {
+        Organization org = new Organization(rs.getInt(1));
+        org.setReferent(rs.getInt(2));
+        org.setName(rs.getString(3));
+        org.setCompanyName(rs.getString(4));
+        org.setSiret(rs.getString(5));
+        org.setNafCode(rs.getString(6));
+        org.setFpCode(rs.getString(7));
+        org.setVatCode(rs.getString(8));
+        return org;
+    }
 
-      if (org.getCompanyName() == null || org.getCompanyName().trim().isEmpty()) {
-        ps.setNull(4, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(4, org.getCompanyName());
-      }
-      if (org.getSiret() == null || org.getSiret().trim().isEmpty()) {
-        ps.setNull(5, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(5, org.getSiret());
-      }
-      if (org.getNafCode() == null || org.getNafCode().trim().isEmpty()) {
-        ps.setNull(6, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(6, org.getNafCode());
-      }
-      if (org.getFpCode() == null || org.getFpCode().trim().isEmpty()) {
-        ps.setNull(7, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(7, org.getFpCode());
-      }
-      if (org.getVatCode() == null || org.getVatCode().trim().isEmpty()) {
-        ps.setNull(8, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(8, org.getVatCode());
-      }
+    public void create(Organization org) throws SQLException {
+        //int nextId = nextId(SEQUENCE, dc);
 
-      GemLogger.info(ps.toString());
-      ps.executeUpdate();
+        String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?)";
+        try (PreparedStatement ps = dc.prepareStatement(query)) {
+            ps.setInt(1, org.getId());
+            ps.setInt(2, org.getReferent());
+            ps.setString(3, org.getName());
+
+            if (org.getCompanyName() == null || org.getCompanyName().trim().isEmpty()) {
+                ps.setNull(4, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(4, org.getCompanyName());
+            }
+            if (org.getSiret() == null || org.getSiret().trim().isEmpty()) {
+                ps.setNull(5, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(5, org.getSiret());
+            }
+            if (org.getNafCode() == null || org.getNafCode().trim().isEmpty()) {
+                ps.setNull(6, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(6, org.getNafCode());
+            }
+            if (org.getFpCode() == null || org.getFpCode().trim().isEmpty()) {
+                ps.setNull(7, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(7, org.getFpCode());
+            }
+            if (org.getVatCode() == null || org.getVatCode().trim().isEmpty()) {
+                ps.setNull(8, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(8, org.getVatCode());
+            }
+
+            GemLogger.info(ps.toString());
+            ps.executeUpdate();
 //      org.setId(nextId);
+        }
+
     }
 
-  }
+    public void update(Organization org) throws SQLException {
+        String query = "UPDATE " + TABLE + " SET nom=?,referent=?,raison=?,siret=?,naf=?,codefp=?,codetva=? WHERE idper=?";
+        try (PreparedStatement ps = dc.prepareStatement(query)) {
+            ps.setString(1, org.getName());
+            ps.setInt(2, org.getReferent());
+            if (org.getCompanyName() == null || org.getCompanyName().trim().isEmpty()) {
+                ps.setNull(3, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(3, org.getCompanyName());
+            }
+            if (org.getSiret() == null || org.getSiret().trim().isEmpty()) {
+                ps.setNull(4, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(4, org.getSiret());
+            }
+            if (org.getNafCode() == null || org.getNafCode().trim().isEmpty()) {
+                ps.setNull(5, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(5, org.getNafCode());
+            }
+            if (org.getFpCode() == null || org.getFpCode().trim().isEmpty()) {
+                ps.setNull(6, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(6, org.getFpCode());
+            }
+            if (org.getVatCode() == null || org.getVatCode().trim().isEmpty()) {
+                ps.setNull(7, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(7, org.getVatCode());
+            }
 
-  public void update(Organization org) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET nom=?,referent=?,raison=?,siret=?,naf=?,codefp=?,codetva=? WHERE idper=?";
-    try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setString(1, org.getName());
-      ps.setInt(2, org.getReferent());
-      if (org.getCompanyName() == null || org.getCompanyName().trim().isEmpty()) {
-        ps.setNull(3, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(3, org.getCompanyName());
-      }
-      if (org.getSiret() == null || org.getSiret().trim().isEmpty()) {
-        ps.setNull(4, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(4, org.getSiret());
-      }
-      if (org.getNafCode() == null || org.getNafCode().trim().isEmpty()) {
-        ps.setNull(5, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(5, org.getNafCode());
-      }
-      if (org.getFpCode() == null || org.getFpCode().trim().isEmpty()) {
-        ps.setNull(6, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(6, org.getFpCode());
-      }
-      if (org.getVatCode() == null || org.getVatCode().trim().isEmpty()) {
-        ps.setNull(7, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(7, org.getVatCode());
-      }
+            ps.setInt(8, org.getId());
 
-      ps.setInt(8, org.getId());
+            GemLogger.info(ps.toString());
+            ps.executeUpdate();
+        }
 
-      GemLogger.info(ps.toString());
-      ps.executeUpdate();
     }
 
-  }
+    public Company getDefault() throws SQLException {
 
-  public Company getDefault() throws SQLException {
+        String query = "SELECT p.id,s.domaine,s.logo,s.stamp FROM personne p JOIN societe s ON p.id = s.idper WHERE s.id=1";
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                Company c = new Company();
 
-    String query = "SELECT p.id,s.domaine,s.logo,s.stamp FROM personne p JOIN societe s ON p.id = s.idper WHERE s.id=1";
-    try (ResultSet rs = dc.executeQuery(query)) {
-      while (rs.next()) {
-        Company c = new Company();
+                c.setDomain(rs.getString(2));
+                c.setLogo(rs.getBytes(3));
+                c.setStamp(rs.getBytes(4));
 
-        c.setDomain(rs.getString(2));
-        c.setLogo(rs.getBytes(3));
-        c.setStamp(rs.getBytes(4));
+                c.setContact(ContactIO.findId(rs.getInt(1), dc));
+                c.setOrg(OrganizationIO.this.findId(c.getContact().getOrganization().getId()));
+                c.setReferent(ContactIO.findId(c.getOrg().getReferent(), dc));
 
-        c.setContact(ContactIO.findId(rs.getInt(1), dc));
-        c.setOrg(OrganizationIO.this.findId(c.getContact().getOrganization().getId()));
-        c.setReferent(ContactIO.findId(c.getOrg().getReferent(), dc));
+                return c;
+            }
+        }
 
-        return c;
-      }
+        return null;
     }
 
-    return null;
-  }
-
-  public void saveDefault(Company comp) throws SQLException {
-    String query = "UPDATE societe SET domaine=? WHERE id=1";
-    try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setString(1, comp.getDomain());
-      GemLogger.info(ps.toString());
-      ps.executeUpdate();
+    public void saveDefault(Company comp) throws SQLException {
+        String query = "UPDATE societe SET domaine=? WHERE id=1";
+        try (PreparedStatement ps = dc.prepareStatement(query)) {
+            ps.setString(1, comp.getDomain());
+            GemLogger.info(ps.toString());
+            ps.executeUpdate();
+        }
     }
-  }
 
-  public void saveImage(String col, byte[] img) throws SQLException {
-    String query = "UPDATE societe SET " + col + " = ?  WHERE id=1";
-    try (PreparedStatement ps = dc.prepareStatement(query)) {
-      if (img == null) {
-        ps.setNull(1, java.sql.Types.OTHER);
-      } else {
-        ps.setBytes(1, img);
-      }
-      ps.executeUpdate();
+    public void saveImage(String col, byte[] img) throws SQLException {
+        String query = "UPDATE societe SET " + col + " = ?  WHERE id=1";
+        try (PreparedStatement ps = dc.prepareStatement(query)) {
+            if (img == null) {
+                ps.setNull(1, java.sql.Types.OTHER);
+            } else {
+                ps.setBytes(1, img);
+            }
+            ps.executeUpdate();
+        }
     }
-  }
 }

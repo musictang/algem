@@ -29,6 +29,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import net.algem.config.ColorPlan;
 import net.algem.config.ColorPlanListener;
@@ -102,7 +103,7 @@ public class ActionView
     hourPanel = new HourRangePanel();
     GemList<Teacher> teacherList = dataCache.getList(Model.Teacher);
     teacher = new TeacherChoice(teacherList, true);
-    if (teacherList.getSize() > 0) {
+    if (teacher.getModel().getSize() > 0) { //     if (teacherList.getSize() > 0) { ERIC3.0 si aucun prof actif
       teacher.setSelectedIndex(0);
     }
     room = new RoomChoice(dataCache.getList(Model.Room));//salles actives par défaut
@@ -291,8 +292,10 @@ public class ActionView
     datePanel.setEnd(dataCache.getEndOfYear());
     hourPanel.clear();
     course.setSelectedIndex(0);
-    teacher.setSelectedIndex(0);
-    room.setSelectedIndex(0);
+    if (teacher.getModel().getSize() >0)
+        teacher.setSelectedIndex(0);
+    if (room.getModel().getSize() >0)
+        room.setSelectedIndex(0);
     day.setSelectedIndex(0);
     periodicity.setSelectedIndex(0);
     sessions.setText(SESSIONS_MAX);

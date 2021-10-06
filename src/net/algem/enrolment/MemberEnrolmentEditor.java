@@ -958,7 +958,6 @@ public class MemberEnrolmentEditor
         pw.println("</body></html>");
       }
       if (pw != null) {
-        pw.close();
         //FileUtil.printFile(temp, DocFlavor.INPUT_STREAM.AUTOSENSE);//XXX prints in plain text only
         try {
           if (temp != null) {
@@ -967,7 +966,7 @@ public class MemberEnrolmentEditor
           }
         } catch (DesktopHandlerException de) {
           GemLogger.log(de.getMessage());
-        }
+        } 
       }
 
     } catch (FileNotFoundException ex) {
@@ -976,6 +975,7 @@ public class MemberEnrolmentEditor
     } catch (IOException ex) {
       GemLogger.log(ex.getMessage());
     } finally {
+      pw.close();
       desktop.setDefaultCursor();
     }
   }

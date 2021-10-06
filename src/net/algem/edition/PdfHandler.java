@@ -412,10 +412,11 @@ public class PdfHandler {
     }
 
     private ByteBuffer getBufferFromFile(File file) throws IOException {
-        RandomAccessFile raf = new RandomAccessFile(file, "r");
-        //ReadableByteChannel ch = Channels.newChannel(new FileInputStream(file));
-        FileChannel channel = raf.getChannel();
-        return channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+            //ReadableByteChannel ch = Channels.newChannel(new FileInputStream(file));
+            FileChannel channel = raf.getChannel();
+            return channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        }
     }
 
     private byte[] getByteArrayFromFile(File file) throws IOException {

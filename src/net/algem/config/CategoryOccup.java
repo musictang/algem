@@ -31,76 +31,75 @@ import net.algem.util.model.GenericTable;
  * @since 1.0a 07/07/1999
  */
 public class CategoryOccup
-        implements GenericTable
-{
+        implements GenericTable {
 
-  private static final long serialVersionUID = 4362331151043829289L;
-  private int id;
-  private String label;
+    private static final long serialVersionUID = 4362331151043829289L;
+    private int id;
+    private String label;
 
-  public CategoryOccup() {
-  }
+    public CategoryOccup() {
+    }
 
-  public CategoryOccup(int i) {
-    id = i;
-    label = "";
-  }
+    public CategoryOccup(int i) {
+        id = i;
+        label = "";
+    }
 
-  public CategoryOccup(int i, String l) {
-    id = i;
-    label = l;
-  }
+    public CategoryOccup(int i, String l) {
+        id = i;
+        label = l;
+    }
 
-  @Override
-  public String toString() {
-    return label;
-  }
+    @Override
+    public String toString() {
+        return label;
+    }
 
-  public boolean equals(Object o) {
-              if (this == o) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
         CategoryOccup c = (CategoryOccup) o;
-    return (id == c.id);
-  }
+        return (id == c.id);
+    }
 
-  @Override
-  public int getId() {
-    return id;
-  }
+    @Override
+    public int getId() {
+        return id;
+    }
 
-  @Override
-  public void setId(int i) {
-    id = i;
-  }
+    @Override
+    public void setId(int i) {
+        id = i;
+    }
 
-  @Override
-  public String getLabel() {
-    return label;
-  }
+    @Override
+    public String getLabel() {
+        return label;
+    }
 
-  @Override
-  public void setLabel(String l) {
-    label = l;
-  }
+    @Override
+    public void setLabel(String l) {
+        label = l;
+    }
 
-  public String getKey() {
-    return String.valueOf(id);
-  }
+    public String getKey() {
+        return String.valueOf(id);
+    }
 
-  public void setKey(String l) {
-    id = Integer.parseInt(l);
-  }
+    public void setKey(String l) {
+        id = Integer.parseInt(l);
+    }
 
-  public String getValue() {
-    return label;
-  }
+    public String getValue() {
+        return label;
+    }
 
-  public void setValue(String l) {
-    label = l;
-  }
+    public void setValue(String l) {
+        label = l;
+    }
 
 }

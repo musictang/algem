@@ -122,20 +122,20 @@ public class EnrolmentWishIO
     }
 
     public void updateMailInfoDate(int student, LocalDateTime mailDate) throws SQLException {
-        String query = "UPDATE " + TABLE 
-                + " SET mailinfo='"+mailDate+"' WHERE student = " + student; //TODO AND creation between année scolaire en cours
+        String query = "UPDATE " + TABLE
+                + " SET mailinfo='" + mailDate + "' WHERE student = " + student; //TODO AND creation between année scolaire en cours
         dc.executeUpdate(query);
     }
 
     public void updateMailConfirmDate(int student, LocalDateTime mailDate) throws SQLException {
-        String query = "UPDATE " + TABLE 
-                + " SET mailconfirm='"+mailDate+"' WHERE student = " + student; //TODO AND creation between année scolaire en cours
+        String query = "UPDATE " + TABLE
+                + " SET mailconfirm='" + mailDate + "' WHERE student = " + student; //TODO AND creation between année scolaire en cours
         dc.executeUpdate(query);
     }
 
     public void updateMailConfirmDate(EnrolmentWish w) throws SQLException {
-        String query = "UPDATE " + TABLE 
-                + " SET mailconfirm='"+w.getDateMailConfirm()+"' WHERE student = " + w.getStudentId();
+        String query = "UPDATE " + TABLE
+                + " SET mailconfirm='" + w.getDateMailConfirm() + "' WHERE student = " + w.getStudentId();
         dc.executeUpdate(query);
     }
 
@@ -146,9 +146,10 @@ public class EnrolmentWishIO
 
     public EnrolmentWish findId(int n) throws SQLException {
         findPS.setInt(1, n);
-        ResultSet rs = findPS.executeQuery();
-        if (rs.next()) {
-            return getEnrolmentWishesFromRS(rs);
+        try (ResultSet rs = findPS.executeQuery()) {
+            if (rs.next()) {
+                return getEnrolmentWishesFromRS(rs);
+            }
         }
         return null;
     }
@@ -167,7 +168,7 @@ public class EnrolmentWishIO
     }
 
     public int count(String where) {
-        int count=0;
+        int count = 0;
         String query = "SELECT count(id) FROM " + TABLE + where;
         try (ResultSet rs = dc.executeQuery(query)) {
             if (rs.next()) {
@@ -177,19 +178,19 @@ public class EnrolmentWishIO
         }
         return count;
     }
-    
+
     public int count(int student) {
         return count(" WHERE student=" + student);
     }
-    
+
     public int countGroupWishes(int student) {
         return count(" WHERE student=" + student + "AND action != 0");
     }
-    
+
     public int count(int student, int teacher, int course) {
-        return count(" WHERE student=" + student + "AND prof=" + teacher + " AND cours="+ course);
+        return count(" WHERE student=" + student + "AND prof=" + teacher + " AND cours=" + course);
     }
-    
+
     public int count(int student, int action) {
         return count(" WHERE student=" + student + "AND action=" + action);
     }
@@ -205,7 +206,7 @@ public class EnrolmentWishIO
     private EnrolmentWish getEnrolmentWishesFromRS(ResultSet rs) throws SQLException {
         EnrolmentWish w = new EnrolmentWish();
         w.setId(rs.getInt(1));
-        w.setCreationDate((LocalDate)rs.getObject(2, LocalDate.class));
+        w.setCreationDate((LocalDate) rs.getObject(2, LocalDate.class));
         w.setTeacher(rs.getInt(3));
         w.setDay(rs.getShort(4));
         w.setCourse(rs.getInt(5));
@@ -216,18 +217,17 @@ public class EnrolmentWishIO
         w.setNote(rs.getString(10));
         w.setColumn(rs.getInt(11));
         w.setSelected(rs.getBoolean(12));
-        w.setDateMailInfo((LocalDateTime)rs.getObject(13, LocalDateTime.class));
-        w.setDateMailConfirm((LocalDateTime)rs.getObject(14, LocalDateTime.class));
+        w.setDateMailInfo((LocalDateTime) rs.getObject(13, LocalDateTime.class));
+        w.setDateMailConfirm((LocalDateTime) rs.getObject(14, LocalDateTime.class));
         w.setAction(rs.getInt(15));
-        
+
         w.setTeacherLabel(((Person) DataCache.findId(w.getTeacher(), Model.Teacher)).getName());
         try {
             w.setCourseLabel(((Course) DataCache.findId(w.getCourse(), Model.Course)).getTitle());
         } catch (Exception ex) {
-                w.setCourseLabel("Cours supprimé ??");
+            w.setCourseLabel("Cours supprimé ??");
         }
         w.setDayLabel(DayOfWeek.of(dow2isodow(w.getDay())).getDisplayName(TextStyle.FULL, Locale.FRANCE));
-
 
         return w;
     }

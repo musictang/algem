@@ -272,6 +272,7 @@ public class ScheduleRangeIO
     /**
      * Retun a list of ranges from a list of schedules. This method is used to
      * find all individual rehearsals of a person between @{code start} and
+     *
      * @{code end}. As rehearsals are of schedule type, schedule entries are
      * converted in schedule range objects.
      *
@@ -304,21 +305,22 @@ public class ScheduleRangeIO
             ps.setDate(2, new java.sql.Date(end.getTime()));
             ps.setInt(3, idper);
 
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                ScheduleRangeObject p = new ScheduleRangeObject();
-                p.setId(rs.getInt(1));
-                p.setScheduleId(rs.getInt(1));
-                p.setDate(new DateFr(rs.getString(2)));
-                p.setStart(new Hour(rs.getString(3)));
-                p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
-                p.setNote(0);
-                p.setIdAction(rs.getInt(5));
-                p.setIdPerson(idper);// idper in schedule
-                p.setIdRoom(0);
-                p.setType(Schedule.MEMBER);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ScheduleRangeObject p = new ScheduleRangeObject();
+                    p.setId(rs.getInt(1));
+                    p.setScheduleId(rs.getInt(1));
+                    p.setDate(new DateFr(rs.getString(2)));
+                    p.setStart(new Hour(rs.getString(3)));
+                    p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
+                    p.setNote(0);
+                    p.setIdAction(rs.getInt(5));
+                    p.setIdPerson(idper);// idper in schedule
+                    p.setIdRoom(0);
+                    p.setType(Schedule.MEMBER);
 
-                ranges.add(p);
+                    ranges.add(p);
+                }
             }
         }
 
@@ -390,17 +392,17 @@ public class ScheduleRangeIO
         String query;
         if (!DataCache.personCacheLoaded()) { //ERIC 2.17 27/03/2019 
             query = "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype"
-                + ",pv.id,pv.ptype,pv.nom,pv.prenom,pv.civilite,pv.droit_img,pv.partenaire,pv.pseudo,pv.organisation,pv.onom,pv.oraison"  //ERIC 27/03/2019
-                + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
-                + ", personnevue pv"
-                + " WHERE pg.idplanning = p.id"
-                + " AND pv.id = pg.adherent"
-                + " AND p.jour >= ? AND p.jour <= ? ORDER BY p.jour, pg.debut";
+                    + ",pv.id,pv.ptype,pv.nom,pv.prenom,pv.civilite,pv.droit_img,pv.partenaire,pv.pseudo,pv.organisation,pv.onom,pv.oraison" //ERIC 27/03/2019
+                    + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
+                    + ", personnevue pv"
+                    + " WHERE pg.idplanning = p.id"
+                    + " AND pv.id = pg.adherent"
+                    + " AND p.jour >= ? AND p.jour <= ? ORDER BY p.jour, pg.debut";
         } else {
             query = "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype"
-                + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
-                + " WHERE pg.idplanning = p.id"
-                + " AND p.jour >= ? AND p.jour <= ? ORDER BY p.jour, pg.debut";
+                    + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
+                    + " WHERE pg.idplanning = p.id"
+                    + " AND p.jour >= ? AND p.jour <= ? ORDER BY p.jour, pg.debut";
         }
         return query;
     }
@@ -409,21 +411,21 @@ public class ScheduleRangeIO
     //                        la lecture du resultset avec 11 ou 22 colonnes se fait dans rangeObjectFactory()
     public static String getDayRangeStmt() {
         String query;
-        
+
         if (!DataCache.personCacheLoaded()) { //ERIC 2.17 27/03/2019 
             query = "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype"
-                + ",pv.id,pv.ptype,pv.nom,pv.prenom,pv.civilite,pv.droit_img,pv.partenaire,pv.pseudo,pv.organisation,pv.onom,pv.oraison"  //ERIC 27/03/2019
-                + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
-                + ", personnevue pv"
-                + " WHERE pg.idplanning = p.id"
-                + " AND pv.id = pg.adherent"
-                + " AND p.jour = ? ORDER BY p.debut, pg.debut";
+                    + ",pv.id,pv.ptype,pv.nom,pv.prenom,pv.civilite,pv.droit_img,pv.partenaire,pv.pseudo,pv.organisation,pv.onom,pv.oraison" //ERIC 27/03/2019
+                    + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
+                    + ", personnevue pv"
+                    + " WHERE pg.idplanning = p.id"
+                    + " AND pv.id = pg.adherent"
+                    + " AND p.jour = ? ORDER BY p.debut, pg.debut";
         } else {
             query = "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype"
-                + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
-                + " WHERE pg.idplanning = p.id"
-                + " AND p.jour = ? ORDER BY p.debut, pg.debut";
-            
+                    + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
+                    + " WHERE pg.idplanning = p.id"
+                    + " AND p.jour = ? ORDER BY p.debut, pg.debut";
+
         }
         return query;
     }

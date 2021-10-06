@@ -287,11 +287,12 @@ public class FileUtil
   public static int getNumberOfLines(String path) throws IOException {
 
     FileReader r = new FileReader(path);
-    LineNumberReader l = new LineNumberReader(new BufferedReader(r));
+    try (LineNumberReader l = new LineNumberReader(new BufferedReader(r))) {
     String line=null;
     while ((line=l.readLine()) != null) {
     }
     return l.getLineNumber();
+    }
   }
 
   /**
@@ -325,8 +326,8 @@ public class FileUtil
     // TODO java.lang.IllegalArgumentException: services must be non-null and non-empty at javax.print.ServiceUI.printDialog(ServiceUI.java:167).
     //java.lang.NullPointerException at sun.print.ServiceDialog$PrintServicePanel.init(ServiceDialog.java:719)
     PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
-    try {
-      InputStream in = new FileInputStream(f);
+    try (
+      InputStream in = new FileInputStream(f)) {
       PrintService printService1[] = PrintServiceLookup.lookupPrintServices(flavor, pras);
       PrintService defaultService = PrintServiceLookup.lookupDefaultPrintService();
       PrintService service = ServiceUI.printDialog(null, 200, 200, printService1, defaultService, flavor, pras);
@@ -335,7 +336,6 @@ public class FileUtil
       DocAttributeSet das = new HashDocAttributeSet();
       Doc doc = new SimpleDoc(in, flavor, das);
       printJob.print(doc, pras);
-      in.close();
     } catch (IOException ex) {
       throw new PrintException(ex.getMessage());
     }
