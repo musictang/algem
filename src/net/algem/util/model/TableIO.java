@@ -62,7 +62,8 @@ public abstract class TableIO
     }
     return b.toString();*/
     s = s.replace("\\", "\\\\");
-    s = s.replace("\'", "\\'");
+//    s = s.replace("\'", "\\'");
+    s = s.replace("\'", "\'\'"); //ERIC algem3 postgresql 13.4
     return s;
 
   }

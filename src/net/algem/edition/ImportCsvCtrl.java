@@ -347,6 +347,12 @@ public class ImportCsvCtrl
           case 17:
             processors[idx] = new Optional(new Trim(new Truncate(64)));// email
             break;
+          case 18:
+            processors[idx] = new Optional(new Trim(new Truncate(24)));// tel
+            break;
+          case 19:
+            processors[idx] = new Optional(new Trim(new Truncate(128)));// note
+            break;
           default: processors[idx] = new Optional();
         }
       }
