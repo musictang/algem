@@ -1058,6 +1058,10 @@ public class PersonFileEditor
    * Gets the number of linked members.
    */
   private int setFamilyList() {
+    if (!Algem.isFeatureEnabled("cc-mdl")) { //ERIC depuis synchro payeur/famille
+        return 0;
+    }
+ 
     Vector<PersonFile> v = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE famille != 0 AND famille = " + dossier.getId() + " AND p.id != famille");
     familyList = new PersonFileListCtrl();
 

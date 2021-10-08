@@ -50,7 +50,7 @@ then
     fi
   done
   # REMOVE COPIED PROPERTIES FILES
-  rm algem.properties algem.properties.bak local.properties
+  rm -f algem.properties algem.properties.bak local.properties
 else
   echo "Directory $TARGET not found"
 fi
