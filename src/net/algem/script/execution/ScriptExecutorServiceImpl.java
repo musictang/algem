@@ -20,7 +20,6 @@
  */
 package net.algem.script.execution;
 
-import net.algem.scripthelper.ScriptHelperFactory;
 import net.algem.script.common.Script;
 import net.algem.script.execution.models.ScriptResult;
 import net.algem.script.execution.models.ScriptUserArguments;
@@ -68,7 +67,7 @@ public class ScriptExecutorServiceImpl implements ScriptExecutorService {
                 Bindings bindings = engine.createBindings();
                 OutInterface out = new OutInterface();
                 bindings.put("out", out);
-                bindings.put("args", ScriptHelperFactory.getScriptHelper().convertArgumentsToJs(arguments.getArguments()));
+                bindings.put("args", arguments.getArguments());
                 //bindings.put("dc", conn);
                 bindings.put("utils", new Utils());
                 engine.eval(script.getCode(), bindings);

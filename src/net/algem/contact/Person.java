@@ -20,8 +20,7 @@
  */
 package net.algem.contact;
 
-import net.algem.config.ConfigKey;
-import net.algem.config.ConfigUtil;
+import net.algem.util.DataCache;
 import net.algem.util.model.GemModel;
 
 /**
@@ -46,7 +45,6 @@ public class Person
   public static final short ESTABLISHMENT = 5;
   public static final short BANK = 6;
   public static final short ACTION = 7;
-  protected static boolean nameFirst = ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey()).equalsIgnoreCase("n");
   private static final long serialVersionUID = 4578641553339894755L;
 
   protected int id;
@@ -146,7 +144,7 @@ public class Person
 
   @Override
   public String toString() {
-    return type == PERSON ? (nameFirst ? getNameFirstname() : getFirstnameName()) : name;
+    return type == PERSON ? (DataCache.nameFirst ? getNameFirstname() : getFirstnameName()) : name;
   }
 
   public String getFirstnameName() {

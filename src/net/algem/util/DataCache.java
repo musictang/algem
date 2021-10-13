@@ -173,6 +173,8 @@ public class DataCache {
     private Vector<Param> webSiteCat;
 
     private boolean cacheInit = false;
+    public static boolean nameFirst = false;
+    
     private User user;
     private DateFr startOfPeriod;
     private DateFr startOfYear;
@@ -925,6 +927,12 @@ public class DataCache {
             }
             loadDailyTimesCache(); //ERIC 27/03/2019
             loadAuthorizationsCache(); //ERIC 27/03/2019
+            //ERIC 12/10/2021
+            //plus en static dans la classe Person => génére une exception dans DesktopDispatcher,
+            // impossible d'instancier une Person sans DataConnection + appel dans ConfigUtil de getDataConnection()
+            // avec IHM Swing MessagePopup 
+            nameFirst = ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey()).equalsIgnoreCase("n");
+            
         } catch (SQLException ex) {
             String m = MessageUtil.getMessage("cache.loading.exception");
             GemLogger.logException(m, ex);
