@@ -104,6 +104,19 @@ public class ImportServiceImpl implements ImportService {
         });
     }
 
+    // maj adr/tel/email dans la base 
+    private int updateContact(ContactImport c, ContactIO contactIO, MemberIO memberIO) throws Exception {
+
+        Contact find = findByName(c);
+        if (find != null) {
+            c.setId(find.getId());
+            update(contactIO, find, c);
+            return 1;
+        } else {
+            return 0;
+        }       
+    }
+    
     /**
      * Imports a contact. Existing contacts are not imported.
      *
@@ -146,11 +159,25 @@ public class ImportServiceImpl implements ImportService {
             return 1;
         } else {
             /*Contact o = ContactIO.findId(c.getId(), dc);
-      update(contactIO, o, c);*/
-            return 0;
+            update(contactIO, o, c);*/
+        return 0;
         }
+   
     }
 
+      private Contact findByName(Contact c) {
+    String query = "WHERE translate(lower(nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') = '" + TextUtil.stripDiacritics(c.getName().toLowerCase()) + "'";
+    if (c.getFirstName() != null) {
+      query += " AND translate(lower(prenom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') = '" + TextUtil.stripDiacritics(c.getFirstName().toLowerCase()) + "'";
+    }
+
+    List<Contact> oc = ContactIO.find(query, true, dc);
+    if (oc != null && oc.size() > 0) {
+      return oc.get(0);
+    }
+    return null;
+  }    
+    
     private boolean hasDuplicates(Contact c) {
         String query = "WHERE translate(lower(nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') = '" + TextUtil.stripDiacritics(c.getName().toLowerCase()) + "'";
         if (c.getFirstName() != null) {
