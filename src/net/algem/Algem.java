@@ -59,6 +59,7 @@ import net.algem.util.*;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.module.GemSPADesktop;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.module.JournalIO;
 import net.algem.util.ui.MessagePopup;
 import org.apache.commons.codec.binary.Base64;
 
@@ -69,531 +70,535 @@ import org.apache.commons.codec.binary.Base64;
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 3.0.0
  */
-public class Algem
-{
-  public static final String APP_VERSION = "3.0.0";
-  public static final List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
-  private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
-  private static final int DEF_HEIGHT = 780;
-  private static final int BOOT_ICON_MAX_WIDTH = 128;
-  private static final int BOOT_ICON_MAX_HEIGHT = 128;
-  private static final Point DEF_LOCATION = new Point(70, 30);
-  private static final String[] ADDITIONAL_PROPERTIES = {
-    "local.properties",
-    System.getProperty("user.home") + FileUtil.FILE_SEPARATOR + ".algem" + FileUtil.FILE_SEPARATOR + "preferences"
-  };
+public class Algem {
 
-  public static final Color BGCOLOR_PLANNING = new Color(225,225,225);
-  public static final Color BGCOLOR_DESKTOP = new Color(225,225,225);
-  public static final Color BGCOLOR_POSTIT = new Color(225,225,225);
-  public static final Color BGCOLOR_TEST = new Color(0,0,0);
+    public static final String APP_VERSION = "3.0.0";
+    public static final List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
+    private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
+    private static final int DEF_HEIGHT = 780;
+    private static final int BOOT_ICON_MAX_WIDTH = 128;
+    private static final int BOOT_ICON_MAX_HEIGHT = 128;
+    private static final Point DEF_LOCATION = new Point(70, 30);
+    private static final String[] ADDITIONAL_PROPERTIES = {
+        "local.properties",
+        System.getProperty("user.home") + FileUtil.FILE_SEPARATOR + ".algem" + FileUtil.FILE_SEPARATOR + "preferences"
+    };
 
-  private JFrame frame;
-  private DataCache cache;
-  private String driverName = "org.postgresql.Driver";
-  private String hostName = "localhost";
-  private String baseName = "algem";
-  private static Properties props  = new Properties();
-  private static final Font MY_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
-  private DataConnection dc;
-  
-  public Algem() {
-    Locale.setDefault(Locale.FRENCH);
-  }
+    public static final Color BGCOLOR_PLANNING = new Color(225, 225, 225);
+    public static final Color BGCOLOR_DESKTOP = new Color(225, 225, 225);
+    public static final Color BGCOLOR_POSTIT = new Color(225, 225, 225);
+    public static final Color BGCOLOR_TEST = new Color(0, 0, 0);
 
-  /**
-   * Check if a given feature is enabled in current configuration.
-   *
-   * <p>
-   * Feature keys are prefixed in properties files by <code>'feature.'</code></p>
-   *
-   * @param featureName The name of the feature to check
-   * @return whether this feature is enabled
-   */
-  public static boolean isFeatureEnabled(String featureName) {
-    return Boolean.parseBoolean(props.getProperty("feature." + featureName, "false"));
-  }
-
-  public static File getScriptsPath() {
-    Preferences prefs = Preferences.userRoot().node("/algem/paths");
-    String path = prefs.get("scripts.path", ConfigUtil.getConf(ConfigKey.SCRIPTS_PATH.getKey()));
-    File prefDir = new File(path).getAbsoluteFile();
-    if (prefDir.isDirectory()) {
-      return prefDir;
-    }
-    if (props == null) {
-      return null;
-    }
-    String pathName = props.getProperty("scripts_path", "scripts");
-    return pathName == null ? null : new File(props.getProperty("scripts_path", "scripts")).getAbsoluteFile();
-  }
-
-  private void init(String configFile, final String host, final String base, String login) throws IOException {
-
-    // opening configuration file
-    try { // local file
-      props.load(new FileInputStream(configFile));
-    } catch (FileNotFoundException fe) {
-      try { //url
-        props.load(new URL(configFile).openStream());
-      } catch (MalformedURLException ex) {
-        System.err.println(ex);
-      }
-    } catch (IOException e) {
-      MessagePopup.error(null, e.getMessage() + ">>" + configFile);
-      System.exit(1);
-    }
-
-    // optional properties file $HOME/.algem/preferences
-    setAdditionalProperties();
-    setUIProperties();
-    setLocale(props);
-
-    /* -------------------------- */
-    /* Initialisation driver JDBC */
-    /* -------------------------- */
-    try {
-      setDB(host, base, props);
-    } catch (SQLException ex) {
-      MessagePopup.error(frame, ex.getMessage());
-      System.exit(2);
-    }
-    cache = DataCache.getInstance(dc, login);// !important before Logger
-    /* -------------------------- */
-    /* Logger initialisation      */
-    /* -------------------------- */
-    String logPath = ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()) + "/algem.log";
-    String msg = "Algem version " + APP_VERSION + "\nJava version " + System.getProperty("java.version");
-    if (logPath != null) {
-      try {
-        GemLogger.set(new File(logPath).getPath());
-      } catch (IOException ex1) {
-        System.err.println(ex1.getMessage());
-        try {
-          setDefaultLogFile();
-        } catch (IOException ex2) {
-          System.err.println(ex2.getMessage());
-        }
-      }
-    }
-    GemLogger.log(Level.INFO, "net.algem.Algem", "main", msg);
-
-    final GemBoot gemBoot = new GemBoot(new OrganizationIO(dc));
-
-    /* ------------------------ */
-    /* Test login user validity */
-    /* ------------------------ */
-    boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
-
-    if (auth || login == null) {//authentication required
-      checkAuthUser(gemBoot.getFrame());
-    } else {
-      checkUnauthUser(login);
-    }
-
-    cache.load(gemBoot);
-    /* ------------------------------------------------ */
-    /* Creates the frame of the application             */
-    /* ------------------------------------------------ */
-    setDesktop();
-    gemBoot.close();
-  }
-
-  /**
-   * Presents a dialog to authenticate user.
-   *
-   * @param parent parent frame
-   */
-  private void checkAuthUser(Frame parent) {
-    String login = null;
-    String pass = null;
-    boolean success = false;
-    int trials = 1;
-    do {
-      AuthDlg dlg = new AuthDlg(parent);
-      if (dlg.isValidation()) {
-        login = dlg.getLogin();
-        pass = dlg.getPass();
-      } else {
-        System.exit(5);
-      }
-      if (login.length() > 0 && pass.length() > 0 && cache.getUserService().authenticate(login, pass)) {
-        success = true;
-      } else if (trials < 3) {
-        MessagePopup.error(parent, MessageUtil.getMessage("authentication.failure"));
-      }
-      trials++;
-    } while (!success && trials <= 3);
-    if (success) {
-      cache.setUser(login);
-    } else {
-      MessagePopup.error(parent, MessageUtil.getMessage("unknown.login", login));
-      System.exit(5);
-    }
-  }
-
-  /**
-   * Checks if this @{code login} is valid.
-   * This method must be called when authentication is disabled in properties.
-   *
-   * @param login a login string
-   */
-  private void checkUnauthUser(String login) {
-    cache.setUser(login);
-    if (cache.getUser() == null) {
-      MessagePopup.error(null, MessageUtil.getMessage("unknown.login", login));
-      System.exit(4);
-    }
-  }
-
-  /**
-   * Creates a log file into temp folder.
-   *
-   * @throws IOException
-   */
-  private void setDefaultLogFile() throws IOException {
-    GemLogger.set("%t/algem.log");
-  }
-
-  private void setDesktop() {
-    String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient")
-     + " - jdbc://" + hostName + "/" + baseName + " - "+cache.getUser().getName();
-
-    frame = new JFrame(title);
-    Preferences prefs = Preferences.userRoot().node("/algem/ui");
-    frame.setSize(prefs.getInt("desktop.w", DEF_WIDTH), prefs.getInt("desktop.h", DEF_HEIGHT));
-    frame.setLocation(prefs.getInt("desktop.x", DEF_LOCATION.x), prefs.getInt("desktop.y", DEF_LOCATION.y));
-    checkVersion(frame);
-    
-    GemDesktop desktop;
-    if (cache.getUser().getDesktop() == 2) {
-        desktop = new GemSPADesktop(frame, cache, props);
-    } else {
-        desktop = new GemDesktopCtrl(frame, cache, props);
-    }
-    frame.setVisible(true);
-  }
-
-  /**
-   * Sets additional user properties.
-   * If the file does not exist, the relevant resource is loaded from the jar.
-   */
-  private void setAdditionalProperties() {
-    for (String path : ADDITIONAL_PROPERTIES) {
-      Properties p = new Properties();
-      try {
-        p.load(new FileInputStream(path));
-        props.putAll(p);
-        GemLogger.info("Loaded properties " + path);
-      } catch (FileNotFoundException e) {
-        GemLogger.log(e.getMessage());
-        InputStream input = getClass().getClassLoader().getResourceAsStream(path);
-        if (input != null) {
-          try {
-            p.load(input);
-            props.putAll(p);
-            GemLogger.info("Loaded internal properties " + path);
-          } catch (IOException ex) {
-            GemLogger.log(ex.getMessage());
-          }
-        }
-      } catch (IOException e) {
-        GemLogger.logException(e);
-        MessagePopup.error(null, e.getMessage());
-        System.exit(3);
-      }
-    }
-  }
-
-  private void setLocale(Properties props) {
-    String language = props.getProperty("language");
-    String country = props.getProperty("pays");
-    if (language != null && country != null) {
-      Locale.setDefault(new Locale(language, country));
-    }
-  }
-
-  private void setDB(String host, String base, Properties props) throws SQLException {
-
-    String s = props.getProperty("driver");
-    if (s != null) {
-      driverName = s;
-    }
-
-    if (host == null) {
-      hostName = props.getProperty("host");
-    }
-
-    if (base == null) {
-      baseName = props.getProperty("base");
-    }
-
-    String dbPass = props.getProperty("dbpass");
-
-    if (dbPass != null) {
-      byte[] pass64 = Base64.decodeBase64(dbPass);
-      dbPass = new String(pass64).trim();
-    }
-
-    String port = props.getProperty("port");
-    int dbport = (port != null) ? Integer.parseInt(port) : 0;
-
-    dc = new DataConnection(hostName, dbport, baseName, dbPass);
-
-    String ssl = props.getProperty("ssl");
-    if (ssl != null && "true".equalsIgnoreCase(ssl)) {
-      dc.setSsl(true);
-    }
-    String cacert = props.getProperty("cacert");
-    if (cacert != null && "true".equalsIgnoreCase(cacert)) {
-      dc.setCacert(true);
-    }
-    dc.connect();
-  }
-
-  private void checkVersion(JFrame frame) {
-    String v = cache.getVersion();
-    if (!v.equals(APP_VERSION)) {
-      String mv = MessageUtil.getMessage("version.create.info", APP_VERSION);
-      try {
-        dc.setAutoCommit(false);
-        updateVersionFrom(v);
-        mv += MessageUtil.getMessage("update.info");
-        JOptionPane.showMessageDialog(frame,
-                mv, MessageUtil.getMessage("version.update.label"),
-                JOptionPane.INFORMATION_MESSAGE);
-        dc.commit();
-      } catch (SQLException ex) {
-        dc.rollback();
-        mv += MessageUtil.getMessage("version.update.exception");
-        mv += ex.getMessage();
-        JOptionPane.showMessageDialog(frame,
-                mv, MessageUtil.getMessage("version.update.label"),
-                JOptionPane.ERROR_MESSAGE);
-        System.exit(6);
-      } finally {
-        dc.setAutoCommit(true);
-      }
-    }
-  }
-
-  /**
-   *
-   * @param v
-   * @throws SQLException
-   */
-  private void updateVersionFrom(String v) throws SQLException {
-    GemLogger.info("UPDATE version v = " + v + " app = " + APP_VERSION);
-    String query;
-
-    if (v.equals("inconnue")) {
-      query = "CREATE TABLE version (version char(8))";
-      dc.executeUpdate(query);
-      query = "INSERT INTO version VALUES('" + APP_VERSION + "')";
-      dc.executeUpdate(query);
-    }
-    query = "UPDATE version SET version = '" + APP_VERSION + "'";
-    dc.executeUpdate(query);
-  }
-
-  private void setUIProperties() {
-    String laf = ThemeConfig.THEME_PREF.get("theme", "javax.swing.plaf.metal.MetalLookAndFeel");
-    if (laf == null) {
-      laf = props.getProperty("lookandfeel");
-    }
-    if (laf != null) {
-      setLafProperties(laf);
-    }
-    // load alternatives look and feel
-    for (Object o : props.keySet()) {
-      String k = (String) o;
-      if (k.startsWith("lookandfeel")) {
-        String clazz = props.getProperty(k);
-        final String lafName = k.substring(k.lastIndexOf('.') + 1);
-        ALTERNATIVE_LAF.add(new ThemeConfig.GemLafInfo(lafName, clazz));
-      }
-    }
-
-    String s = props.getProperty("couleur.fond");
-    if (s != null) {
-      frame.setBackground(Color.decode(s));
-    }
-
-    s = props.getProperty("couleur.char");
-    if (s != null) {
-      frame.setForeground(Color.decode(s));
-    }
-
-    if (!isFeatureEnabled("native_fonts")) {
-      initUIFonts();
-    }
-    ToolTipManager.sharedInstance().setInitialDelay(20);
-  }
-
-  public static void setLafProperties(final String lafClassName) {
-    try {
-      GemLogger.info("lafClassName " + lafClassName);
-
-      UIManager.setLookAndFeel(lafClassName);
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-      GemLogger.log("look&feel exception : " + ex.getMessage());
-    }
-
-    String lafName = UIManager.getLookAndFeel().getName();
-    UIDefaults def = UIManager.getLookAndFeelDefaults();
-    def.put("ProgressMonitor.progressText", BundleUtil.getLabel("Running.job.label"));
-    switch (lafName) {
-      case "Nimbus":
-        //def.put("Button.contentMargins", new InsetsUIResource(4, 3, 4, 3)); //  default : (6,14,6,14)
-        def.put("TextField.contentMargins", new InsetsUIResource(4, 4, 4, 4)); //  default : (6,6,6,6)
-//          def.put("Table.alternateRowColor", new Color(224,224,224));// default :  #f2f2f2 (242,242,242)
-        def.put("TableHeader.font", MY_FONT);
-        def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2, 2, 2, 2)); // default: (2,5,4,5)
-        def.put("Table.font", MY_FONT); // default : Font SansSerif 12
-        def.put("Table.showGrid", true); // default: false
-        def.put("Table.cellNoFocusBorder", new InsetsUIResource(2, 2, 2, 2)); // Border Insets(2,5,2,5)
-        break;
-      case "Acryl":
-      case "Aero":
-      case "Aluminium":
-      case "Bernstein":
-      case "Fast":
-      case "Graphite":
-      case "Smart":
-      case "Texture":
-        def.put("TableHeader.font", MY_FONT);
-        def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2, 2, 2, 2)); // default: (2,5,4,5)
-        def.put("Table.font", MY_FONT); // default : Font SansSerif 12
-        def.put("TextField.font", MY_FONT);
-        def.put("ComboBox.font", MY_FONT);
-        def.put("TextArea.font", MY_FONT.deriveFont(12));
-        def.put("TextPane.font", MY_FONT.deriveFont(12));
-        break;
-      case "Windows":
-      case "Windows Classic":
-        def.put("TextArea.font", def.getFont("Label.font").deriveFont(Font.PLAIN, 12));
-        break;
-      default:
-          GemLogger.info("unknow lafName");
-          break;
-    }
-  }
-
-  private static void initUIFonts() {
-    if ("Metal".equals(UIManager.getLookAndFeel().getName())) {
-      Font fsans = new Font("Lucida Sans", Font.PLAIN, 12);
-      Font bold = fsans.deriveFont(Font.BOLD);
-
-      UIManager.put("Menu.font", bold);
-      UIManager.put("MenuBar.font", bold);
-      UIManager.put("MenuItem.font", bold);
-      UIManager.put("Label.font", bold);
-      UIManager.put("Button.font", bold);
-      UIManager.put("ToggleButton.font", bold);
-      UIManager.put("ComboBox.font", bold);
-      UIManager.put("TabbedPane.font", bold);
-      UIManager.put("CheckBox.font", bold);
-      UIManager.put("CheckBoxMenuItem.font", bold);
-      UIManager.put("TitledBorder.font", bold);
-      UIManager.put("RadioButton.font", bold);
-      UIManager.put("List.font", bold);
-    }
-  }
-
-  public class GemBoot
-  {
-
-    private JLabel label;
     private JFrame frame;
+    private DataCache cache;
+    private String driverName = "org.postgresql.Driver";
+    private String hostName = "localhost";
+    private String baseName = "algem";
+    private static Properties props = new Properties();
+    private static final Font MY_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
+    private DataConnection dc;
 
-    public GemBoot(OrganizationIO orgIO) {
-      frame = new JFrame("Algem (" + APP_VERSION + ")");
-      ImageIcon icon = null;
-      try {
-        final Company comp = orgIO.getDefault();
-        byte[] data = comp.getLogo();
-        if (data != null) {
-          BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
-          icon = ImageUtil.getRescaledIcon(img, BOOT_ICON_MAX_WIDTH, BOOT_ICON_MAX_HEIGHT);
-        } else  {
-          icon = ImageUtil.createImageIcon(ImageUtil.ALGEM_LOGO);
+    public Algem() {
+        Locale.setDefault(Locale.FRENCH);
+    }
+
+    /**
+     * Check if a given feature is enabled in current configuration.
+     *
+     * <p>
+     * Feature keys are prefixed in properties files by
+     * <code>'feature.'</code></p>
+     *
+     * @param featureName The name of the feature to check
+     * @return whether this feature is enabled
+     */
+    public static boolean isFeatureEnabled(String featureName) {
+        return Boolean.parseBoolean(props.getProperty("feature." + featureName, "false"));
+    }
+
+    public static File getScriptsPath() {
+        Preferences prefs = Preferences.userRoot().node("/algem/paths");
+        String path = prefs.get("scripts.path", ConfigUtil.getConf(ConfigKey.SCRIPTS_PATH.getKey()));
+        File prefDir = new File(path).getAbsoluteFile();
+        if (prefDir.isDirectory()) {
+            return prefDir;
         }
-      } catch (SQLException | IOException ex) {
-        GemLogger.log(ex.getMessage());
-        icon = ImageUtil.createImageIcon(ImageUtil.ALGEM_LOGO);
-      }
-
-      label = new JLabel("", SwingConstants.LEFT);
-      frame.setSize(420, 160);
-      frame.setLocation(100, 100);
-
-      frame.add(new JLabel(icon), BorderLayout.WEST);
-      frame.add(label, BorderLayout.EAST);
-
-      frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-      frame.setVisible(true);
+        if (props == null) {
+            return null;
+        }
+        String pathName = props.getProperty("scripts_path", "scripts");
+        return pathName == null ? null : new File(props.getProperty("scripts_path", "scripts")).getAbsoluteFile();
     }
 
-    public void setMessage(String msg) {
-      label.setText(msg);
+    private void init(String configFile, final String host, final String base, String login) throws IOException {
+
+        // opening configuration file
+        try { // local file
+            props.load(new FileInputStream(configFile));
+        } catch (FileNotFoundException fe) {
+            try { //url
+                props.load(new URL(configFile).openStream());
+            } catch (MalformedURLException ex) {
+                System.err.println(ex);
+            }
+        } catch (IOException e) {
+            MessagePopup.error(null, e.getMessage() + ">>" + configFile);
+            System.exit(1);
+        }
+
+        // optional properties file $HOME/.algem/preferences
+        setAdditionalProperties();
+        setUIProperties();
+        setLocale(props);
+
+        /* -------------------------- */
+ /* Initialisation driver JDBC */
+ /* -------------------------- */
+        try {
+            setDB(host, base, props);
+        } catch (SQLException ex) {
+            MessagePopup.error(frame, ex.getMessage());
+            System.exit(2);
+        }
+        cache = DataCache.getInstance(dc, login);// !important before Logger
+        /* -------------------------- */
+ /* Logger initialisation      */
+ /* -------------------------- */
+        String logPath = ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()) + "/algem.log";
+        String msg = "Algem version " + APP_VERSION + "\nJava version " + System.getProperty("java.version");
+        if (logPath != null) {
+            try {
+                GemLogger.set(new File(logPath).getPath());
+            } catch (IOException ex1) {
+                System.err.println(ex1.getMessage());
+                try {
+                    setDefaultLogFile();
+                } catch (IOException ex2) {
+                    System.err.println(ex2.getMessage());
+                }
+            }
+        }
+        GemLogger.log(Level.INFO, "net.algem.Algem", "main", msg);
+
+        final GemBoot gemBoot = new GemBoot(new OrganizationIO(dc));
+
+        /* ------------------------ */
+ /* Test login user validity */
+ /* ------------------------ */
+        boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
+
+        if (auth || login == null) {//authentication required
+            checkAuthUser(gemBoot.getFrame());
+        } else {
+            checkUnauthUser(login);
+        }
+
+        cache.load(gemBoot);
+        /* ------------------------------------------------ */
+ /* Creates the frame of the application             */
+ /* ------------------------------------------------ */
+        setDesktop();
+        gemBoot.close();
     }
 
-    private JFrame getFrame() {
-      return frame;
+    /**
+     * Presents a dialog to authenticate user.
+     *
+     * @param parent parent frame
+     */
+    private void checkAuthUser(Frame parent) {
+        String login = null;
+        String pass = null;
+        boolean success = false;
+        int trials = 1;
+        do {
+            AuthDlg dlg = new AuthDlg(parent);
+            if (dlg.isValidation()) {
+                login = dlg.getLogin();
+                pass = dlg.getPass();
+            } else {
+                System.exit(5);
+            }
+            if (login.length() > 0 && pass.length() > 0 && cache.getUserService().authenticate(login, pass)) {
+                success = true;
+            } else if (trials < 3) {
+                JournalIO.log(JournalIO.LOGIN, login, "Echec connexion essai:" + trials);
+
+                MessagePopup.error(parent, MessageUtil.getMessage("authentication.failure"));
+            }
+            trials++;
+        } while (!success && trials <= 3);
+        if (success) {
+            cache.setUser(login);
+            JournalIO.log(JournalIO.LOGIN, "c:onnexion");
+
+        } else {
+            MessagePopup.error(parent, MessageUtil.getMessage("unknown.login", login));
+            System.exit(5);
+        }
     }
 
-    private void close() {
-      frame.setVisible(false);
-      frame.dispose();
-    }
-  }
-
-  public static void main(String[] args) {
-
-    String userArg = null;
-    String hostArg = null;
-    String baseArg = null;
-    String confArg = null;
-
-    if (args.length > 0) {
-      confArg = args[0];
-    }
-    if (args.length > 1) {
-      userArg = args[1];
-    }
-    if (args.length > 2) {
-      hostArg = args[2];
-    }
-    if (args.length > 3) {
-      baseArg = args[3];
+    /**
+     * Checks if this @{code login} is valid. This method must be called when
+     * authentication is disabled in properties.
+     *
+     * @param login a login string
+     */
+    private void checkUnauthUser(String login) {
+        cache.setUser(login);
+        if (cache.getUser() == null) {
+            MessagePopup.error(null, MessageUtil.getMessage("unknown.login", login));
+            System.exit(4);
+        }
     }
 
-    try {
-      Algem appli = new Algem();
-      appli.init(confArg, hostArg, baseArg, userArg);
-    } catch (Exception ex) {
-      StackTraceElement[] trace = ex.getStackTrace();
-      String st = trace.length == 0 ? "" : trace[0].toString();
-      String msg = ex.getMessage();
-      JOptionPane.showMessageDialog(null,
-              MessageUtil.getMessage("application.create.error") + " :\n" +  ex.getClass().getName() + "\n" + st + (msg == null ? "" : "\n"+msg),
-              "Erreur",
-              JOptionPane.ERROR_MESSAGE);
-      ex.printStackTrace();
-      System.exit(7);
+    /**
+     * Creates a log file into temp folder.
+     *
+     * @throws IOException
+     */
+    private void setDefaultLogFile() throws IOException {
+        GemLogger.set("%t/algem.log");
     }
-  }
 
-  /**
-   * Pour implémentation temporaire des modifs client Ecole Pays Roi Morvan.
-   *
-   * @return a string representing the client
-   * @author ERIC
-   *
-   * @since 2.9.4.12
-   */
-  public static String getAppClient() {
-    return props.getProperty("appClient");
-  }
+    private void setDesktop() {
+        String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient")
+                + " - jdbc://" + hostName + "/" + baseName + " - " + cache.getUser().getName();
+
+        frame = new JFrame(title);
+        Preferences prefs = Preferences.userRoot().node("/algem/ui");
+        frame.setSize(prefs.getInt("desktop.w", DEF_WIDTH), prefs.getInt("desktop.h", DEF_HEIGHT));
+        frame.setLocation(prefs.getInt("desktop.x", DEF_LOCATION.x), prefs.getInt("desktop.y", DEF_LOCATION.y));
+        checkVersion(frame);
+
+        GemDesktop desktop;
+        if (cache.getUser().getDesktop() == 2) {
+            desktop = new GemSPADesktop(frame, cache, props);
+        } else {
+            desktop = new GemDesktopCtrl(frame, cache, props);
+        }
+        frame.setVisible(true);
+    }
+
+    /**
+     * Sets additional user properties. If the file does not exist, the relevant
+     * resource is loaded from the jar.
+     */
+    private void setAdditionalProperties() {
+        for (String path : ADDITIONAL_PROPERTIES) {
+            Properties p = new Properties();
+            try {
+                p.load(new FileInputStream(path));
+                props.putAll(p);
+                GemLogger.info("Loaded properties " + path);
+            } catch (FileNotFoundException e) {
+                GemLogger.log(e.getMessage());
+                InputStream input = getClass().getClassLoader().getResourceAsStream(path);
+                if (input != null) {
+                    try {
+                        p.load(input);
+                        props.putAll(p);
+                        GemLogger.info("Loaded internal properties " + path);
+                    } catch (IOException ex) {
+                        GemLogger.log(ex.getMessage());
+                    }
+                }
+            } catch (IOException e) {
+                GemLogger.logException(e);
+                MessagePopup.error(null, e.getMessage());
+                System.exit(3);
+            }
+        }
+    }
+
+    private void setLocale(Properties props) {
+        String language = props.getProperty("language");
+        String country = props.getProperty("pays");
+        if (language != null && country != null) {
+            Locale.setDefault(new Locale(language, country));
+        }
+    }
+
+    private void setDB(String host, String base, Properties props) throws SQLException {
+
+        String s = props.getProperty("driver");
+        if (s != null) {
+            driverName = s;
+        }
+
+        if (host == null) {
+            hostName = props.getProperty("host");
+        }
+
+        if (base == null) {
+            baseName = props.getProperty("base");
+        }
+
+        String dbPass = props.getProperty("dbpass");
+
+        if (dbPass != null) {
+            byte[] pass64 = Base64.decodeBase64(dbPass);
+            dbPass = new String(pass64).trim();
+        }
+
+        String port = props.getProperty("port");
+        int dbport = (port != null) ? Integer.parseInt(port) : 0;
+
+        dc = new DataConnection(hostName, dbport, baseName, dbPass);
+
+        String ssl = props.getProperty("ssl");
+        if (ssl != null && "true".equalsIgnoreCase(ssl)) {
+            dc.setSsl(true);
+        }
+        String cacert = props.getProperty("cacert");
+        if (cacert != null && "true".equalsIgnoreCase(cacert)) {
+            dc.setCacert(true);
+        }
+        dc.connect();
+    }
+
+    private void checkVersion(JFrame frame) {
+        String v = cache.getVersion();
+        if (!v.equals(APP_VERSION)) {
+            String mv = MessageUtil.getMessage("version.create.info", APP_VERSION);
+            try {
+                dc.setAutoCommit(false);
+                updateVersionFrom(v);
+                mv += MessageUtil.getMessage("update.info");
+                JOptionPane.showMessageDialog(frame,
+                        mv, MessageUtil.getMessage("version.update.label"),
+                        JOptionPane.INFORMATION_MESSAGE);
+                dc.commit();
+            } catch (SQLException ex) {
+                dc.rollback();
+                mv += MessageUtil.getMessage("version.update.exception");
+                mv += ex.getMessage();
+                JOptionPane.showMessageDialog(frame,
+                        mv, MessageUtil.getMessage("version.update.label"),
+                        JOptionPane.ERROR_MESSAGE);
+                System.exit(6);
+            } finally {
+                dc.setAutoCommit(true);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param v
+     * @throws SQLException
+     */
+    private void updateVersionFrom(String v) throws SQLException {
+        GemLogger.info("UPDATE version v = " + v + " app = " + APP_VERSION);
+        String query;
+
+        if (v.equals("inconnue")) {
+            query = "CREATE TABLE version (version char(8))";
+            dc.executeUpdate(query);
+            query = "INSERT INTO version VALUES('" + APP_VERSION + "')";
+            dc.executeUpdate(query);
+        }
+        query = "UPDATE version SET version = '" + APP_VERSION + "'";
+        dc.executeUpdate(query);
+    }
+
+    private void setUIProperties() {
+        String laf = ThemeConfig.THEME_PREF.get("theme", "javax.swing.plaf.metal.MetalLookAndFeel");
+        if (laf == null) {
+            laf = props.getProperty("lookandfeel");
+        }
+        if (laf != null) {
+            setLafProperties(laf);
+        }
+        // load alternatives look and feel
+        for (Object o : props.keySet()) {
+            String k = (String) o;
+            if (k.startsWith("lookandfeel")) {
+                String clazz = props.getProperty(k);
+                final String lafName = k.substring(k.lastIndexOf('.') + 1);
+                ALTERNATIVE_LAF.add(new ThemeConfig.GemLafInfo(lafName, clazz));
+            }
+        }
+
+        String s = props.getProperty("couleur.fond");
+        if (s != null) {
+            frame.setBackground(Color.decode(s));
+        }
+
+        s = props.getProperty("couleur.char");
+        if (s != null) {
+            frame.setForeground(Color.decode(s));
+        }
+
+        if (!isFeatureEnabled("native_fonts")) {
+            initUIFonts();
+        }
+        ToolTipManager.sharedInstance().setInitialDelay(20);
+    }
+
+    public static void setLafProperties(final String lafClassName) {
+        try {
+            GemLogger.info("lafClassName " + lafClassName);
+
+            UIManager.setLookAndFeel(lafClassName);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            GemLogger.log("look&feel exception : " + ex.getMessage());
+        }
+
+        String lafName = UIManager.getLookAndFeel().getName();
+        UIDefaults def = UIManager.getLookAndFeelDefaults();
+        def.put("ProgressMonitor.progressText", BundleUtil.getLabel("Running.job.label"));
+        switch (lafName) {
+            case "Nimbus":
+                //def.put("Button.contentMargins", new InsetsUIResource(4, 3, 4, 3)); //  default : (6,14,6,14)
+                def.put("TextField.contentMargins", new InsetsUIResource(4, 4, 4, 4)); //  default : (6,6,6,6)
+//          def.put("Table.alternateRowColor", new Color(224,224,224));// default :  #f2f2f2 (242,242,242)
+                def.put("TableHeader.font", MY_FONT);
+                def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2, 2, 2, 2)); // default: (2,5,4,5)
+                def.put("Table.font", MY_FONT); // default : Font SansSerif 12
+                def.put("Table.showGrid", true); // default: false
+                def.put("Table.cellNoFocusBorder", new InsetsUIResource(2, 2, 2, 2)); // Border Insets(2,5,2,5)
+                break;
+            case "Acryl":
+            case "Aero":
+            case "Aluminium":
+            case "Bernstein":
+            case "Fast":
+            case "Graphite":
+            case "Smart":
+            case "Texture":
+                def.put("TableHeader.font", MY_FONT);
+                def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2, 2, 2, 2)); // default: (2,5,4,5)
+                def.put("Table.font", MY_FONT); // default : Font SansSerif 12
+                def.put("TextField.font", MY_FONT);
+                def.put("ComboBox.font", MY_FONT);
+                def.put("TextArea.font", MY_FONT.deriveFont(12));
+                def.put("TextPane.font", MY_FONT.deriveFont(12));
+                break;
+            case "Windows":
+            case "Windows Classic":
+                def.put("TextArea.font", def.getFont("Label.font").deriveFont(Font.PLAIN, 12));
+                break;
+            default:
+                GemLogger.info("unknow lafName");
+                break;
+        }
+    }
+
+    private static void initUIFonts() {
+        if ("Metal".equals(UIManager.getLookAndFeel().getName())) {
+            Font fsans = new Font("Lucida Sans", Font.PLAIN, 12);
+            Font bold = fsans.deriveFont(Font.BOLD);
+
+            UIManager.put("Menu.font", bold);
+            UIManager.put("MenuBar.font", bold);
+            UIManager.put("MenuItem.font", bold);
+            UIManager.put("Label.font", bold);
+            UIManager.put("Button.font", bold);
+            UIManager.put("ToggleButton.font", bold);
+            UIManager.put("ComboBox.font", bold);
+            UIManager.put("TabbedPane.font", bold);
+            UIManager.put("CheckBox.font", bold);
+            UIManager.put("CheckBoxMenuItem.font", bold);
+            UIManager.put("TitledBorder.font", bold);
+            UIManager.put("RadioButton.font", bold);
+            UIManager.put("List.font", bold);
+        }
+    }
+
+    public class GemBoot {
+
+        private JLabel label;
+        private JFrame frame;
+
+        public GemBoot(OrganizationIO orgIO) {
+            frame = new JFrame("Algem (" + APP_VERSION + ")");
+            ImageIcon icon = null;
+            try {
+                final Company comp = orgIO.getDefault();
+                byte[] data = comp.getLogo();
+                if (data != null) {
+                    BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
+                    icon = ImageUtil.getRescaledIcon(img, BOOT_ICON_MAX_WIDTH, BOOT_ICON_MAX_HEIGHT);
+                } else {
+                    icon = ImageUtil.createImageIcon(ImageUtil.ALGEM_LOGO);
+                }
+            } catch (SQLException | IOException ex) {
+                GemLogger.log(ex.getMessage());
+                icon = ImageUtil.createImageIcon(ImageUtil.ALGEM_LOGO);
+            }
+
+            label = new JLabel("", SwingConstants.LEFT);
+            frame.setSize(420, 160);
+            frame.setLocation(100, 100);
+
+            frame.add(new JLabel(icon), BorderLayout.WEST);
+            frame.add(label, BorderLayout.EAST);
+
+            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            frame.setVisible(true);
+        }
+
+        public void setMessage(String msg) {
+            label.setText(msg);
+        }
+
+        private JFrame getFrame() {
+            return frame;
+        }
+
+        private void close() {
+            frame.setVisible(false);
+            frame.dispose();
+        }
+    }
+
+    public static void main(String[] args) {
+
+        String userArg = null;
+        String hostArg = null;
+        String baseArg = null;
+        String confArg = null;
+
+        if (args.length > 0) {
+            confArg = args[0];
+        }
+        if (args.length > 1) {
+            userArg = args[1];
+        }
+        if (args.length > 2) {
+            hostArg = args[2];
+        }
+        if (args.length > 3) {
+            baseArg = args[3];
+        }
+
+        try {
+            Algem appli = new Algem();
+            appli.init(confArg, hostArg, baseArg, userArg);
+        } catch (Exception ex) {
+            StackTraceElement[] trace = ex.getStackTrace();
+            String st = trace.length == 0 ? "" : trace[0].toString();
+            String msg = ex.getMessage();
+            JOptionPane.showMessageDialog(null,
+                    MessageUtil.getMessage("application.create.error") + " :\n" + ex.getClass().getName() + "\n" + st + (msg == null ? "" : "\n" + msg),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+            System.exit(7);
+        }
+    }
+
+    /**
+     * Pour implémentation temporaire des modifs client Ecole Pays Roi Morvan.
+     *
+     * @return a string representing the client
+     * @author ERIC
+     *
+     * @since 2.9.4.12
+     */
+    public static String getAppClient() {
+        return props.getProperty("appClient");
+    }
 
 }

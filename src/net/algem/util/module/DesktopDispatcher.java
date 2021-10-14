@@ -25,7 +25,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.GemLogger;
 
 /**
@@ -39,30 +40,41 @@ public class DesktopDispatcher {
 
     static final int DEFAULT_SOCKET_PORT = 5433;
 
-    Vector<ObjectInputStream> ins = new Vector<ObjectInputStream>();
-    Vector<ObjectOutputStream> outs = new Vector<ObjectOutputStream>();
+    ServerSocket serverSocket;
+    int port;
+    
+    List<ObjectInputStream> ins = new ArrayList<>();
+    List<ObjectOutputStream> outs = new ArrayList<>();
 
-    public static void main(String[] argv) {
-
-        try (
-            ServerSocket serverSocket = new ServerSocket(DEFAULT_SOCKET_PORT)) {
-
-            DesktopDispatcher dispatcher = new DesktopDispatcher();
-            System.out.println("dispatcher started");
-            while (true) {
-                try {
-                    Socket client = serverSocket.accept();
-                    ThreadDispatcher t = new ThreadDispatcher(client, dispatcher);
-                    t.start();
-                } catch (IOException e) {
-                    GemLogger.logException(e);
-                }
-                if (dispatcher.ins.size() > 1000) //sonar end loop
-                    break;
-            }
+    public DesktopDispatcher(int _port) {
+        port = _port;
+        try {
+            serverSocket = new ServerSocket(port);
         } catch (IOException e) {
             GemLogger.logException(e);
             return;
         }
     }
+    
+    public void start() {
+        System.out.println("dispatcher started port:"+port);
+        while (true) {
+            try {
+                Socket client = serverSocket.accept();
+                ThreadDispatcher t = new ThreadDispatcher(client, this);
+                t.start();
+            } catch (IOException e) {
+                GemLogger.logException(e);
+            }
+        }
+        
     }
+            
+    public static void main(String[] argv) {
+        int port = argv.length > 0 ? Integer.parseInt(argv[0]) : DesktopDispatcher.DEFAULT_SOCKET_PORT;
+
+        DesktopDispatcher dispatcher = new DesktopDispatcher(port);
+        dispatcher.start();
+
+    }
+}

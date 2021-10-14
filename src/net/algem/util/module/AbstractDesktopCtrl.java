@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -52,6 +53,7 @@ import net.algem.util.*;
 import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
 import net.algem.util.event.GemRemoteEvent;
+import net.algem.util.event.LoginEvent;
 import net.algem.util.event.MessageEvent;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.postit.CreatePostitEvent;
@@ -219,8 +221,9 @@ public abstract class AbstractDesktopCtrl
                             return;
                         }
                     }
-                    if (nerr > 3)
+                    if (nerr > 3) {
                         break;
+                    }
                 }
             }
         }).start();
@@ -247,20 +250,20 @@ public abstract class AbstractDesktopCtrl
         }
         String path = System.getProperty("user.home") + FileUtil.FILE_SEPARATOR;
         try (
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + ".gemdesktop"))) {
-        // test ferme tous les modules
-        Enumeration enu = modules.elements();
-        // Sérialisation des modules ouverts dans une liste
-        java.util.List<GemModuleSID> lm = new ArrayList<GemModuleSID>();
-        while (enu.hasMoreElements()) {
-            GemModule m = (GemModule) enu.nextElement();
-            GemModuleSID moduleSID = new GemModuleSID(m.getClass().getSimpleName(), m.getSID(), m.getLabel());
-            // save optional state
-            moduleSID.setState(m.getState());
-            lm.add(moduleSID);
-            m.close();
-        }
-        out.writeObject(lm);
+                ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + ".gemdesktop"))) {
+            // test ferme tous les modules
+            Enumeration enu = modules.elements();
+            // Sérialisation des modules ouverts dans une liste
+            java.util.List<GemModuleSID> lm = new ArrayList<GemModuleSID>();
+            while (enu.hasMoreElements()) {
+                GemModule m = (GemModule) enu.nextElement();
+                GemModuleSID moduleSID = new GemModuleSID(m.getClass().getSimpleName(), m.getSID(), m.getLabel());
+                // save optional state
+                moduleSID.setState(m.getState());
+                lm.add(moduleSID);
+                m.close();
+            }
+            out.writeObject(lm);
         } catch (IOException e) {
             GemLogger.logException(e);
         }
@@ -269,6 +272,8 @@ public abstract class AbstractDesktopCtrl
             postitScheduledExecutor.shutdown();
         }
         // deconnexion
+        JournalIO.log(JournalIO.LOGIN, "deconnexion");
+
         dc.close();
         try {
             closeDispatcher();
@@ -397,6 +402,7 @@ public abstract class AbstractDesktopCtrl
     }
 
     public abstract void addModule(GemModule module, boolean iconified);
+
     public abstract void retourModule(GemModule module, boolean arbre);
 
     @Override
@@ -504,10 +510,12 @@ public abstract class AbstractDesktopCtrl
         }
         return false;
     }
-@Override
-public void showModule(String key) {
-    
-}
+
+    @Override
+    public void showModule(String key) {
+
+    }
+
     /**
      * Sets wait cursor in <strong>foreground</strong>.
      */
@@ -537,13 +545,19 @@ public void showModule(String key) {
      * @throws IOException
      */
     protected void initDispatcher() throws UnknownHostException, IOException {
-        dispatcher = new Socket(props.getProperty("hostdispatcher"), DesktopDispatcher.DEFAULT_SOCKET_PORT);
-        // dispatcher.getPort() -> DEFAULT_SOCKET_PORT
-        //InetAddress ia = dispatcher.getLocalAddress();
+       String[] args = props.getProperty("hostdispatcher").split(":");
+
+        int port = args.length > 1 ? Integer.parseInt(args[1]) : DesktopDispatcher.DEFAULT_SOCKET_PORT;
+
+        dispatcher = new Socket(args[0], port);
+        InetAddress ia = dispatcher.getLocalAddress();
+        remoteId = dataCache.getUser().getLogin() + "/" + ia;
+       
         remoteId = dataCache.getUser().getLogin() + "/" + dispatcher.toString();
         GemLogger.log(Level.INFO, "remoteId " + remoteId);
         iDispatcher = new ObjectInputStream(dispatcher.getInputStream());
         oDispatcher = new ObjectOutputStream(dispatcher.getOutputStream());
+        oDispatcher.writeObject(new GemRemoteEvent(new LoginEvent(this, "connexion"), remoteId));        
         GemLogger.log(Level.INFO, "Connexion dispatcher ok");
     }
 
@@ -554,6 +568,8 @@ public void showModule(String key) {
      */
     protected void closeDispatcher() throws IOException {
         if (dispatcher != null && !dispatcher.isClosed()) {
+            oDispatcher.writeObject(new GemRemoteEvent(new LoginEvent(this, "deconnexion"), remoteId));
+
             dispatcher.close();
         }
     }
@@ -565,7 +581,7 @@ public void showModule(String key) {
      */
     protected abstract void initMenuBar();
 
-        /**
+    /**
      * Gets main menu bar.
      *
      * @return a jMenuBar
@@ -574,7 +590,7 @@ public void showModule(String key) {
         JMenuBar menuBar;
         JMenuItem menu;
 
-        System.out.println("Bundle:"+BundleUtil.getLabel("Menu.file.label"));
+        System.out.println("Bundle:" + BundleUtil.getLabel("Menu.file.label"));
         menuBar = new JMenuBar();
 
         mFile = new JMenu(BundleUtil.getLabel("Menu.file.label"));
@@ -583,8 +599,6 @@ public void showModule(String key) {
         menu.addActionListener(this);
         mFile.addSeparator();
 
-        
-
         menu = mFile.add(new JMenuItem(BundleUtil.getLabel("Menu.quit.label"), 'q'));
         menu.addActionListener(this);
 
@@ -592,8 +606,6 @@ public void showModule(String key) {
 
         return menuBar;
     }
-        
-
 
     protected void detachCurrent() {
         System.out.println("detacheCurrent");

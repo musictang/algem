@@ -37,6 +37,7 @@ public class GemEvent extends java.util.EventObject
   public static final int SUPPRESSION = 3;
   public static final int SELECTION = 4;
   public static final int CANCEL = 5;
+  public static final int INFO = 6;
   // type
   public static final int DATE = 1;
   public static final int PLANNING = 2;

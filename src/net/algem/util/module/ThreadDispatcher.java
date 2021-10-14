@@ -50,8 +50,8 @@ public class ThreadDispatcher
     in = new ObjectInputStream(s.getInputStream());
 
     synchronized (dispatcher) {
-      dispatcher.ins.addElement(in);
-      dispatcher.outs.addElement(out);
+      dispatcher.ins.add(in);
+      dispatcher.outs.add(out);
     }
     GemLogger.log(Level.INFO, "Connexion client:" + s);
   }
@@ -61,17 +61,15 @@ public class ThreadDispatcher
     for (;;) {
       GemRemoteEvent evt = null;
       try {
-        GemLogger.log(Level.INFO, "Attente evt");
         evt = (GemRemoteEvent) in.readObject();
       } catch (Exception e) {
         evt = null;
       }
       if (evt == null) {
-        GemLogger.log(Level.INFO, "fermeture flux");
         synchronized (dispatcher) {
           int idx = dispatcher.ins.indexOf(in);
-          dispatcher.ins.removeElementAt(idx);
-          dispatcher.outs.removeElementAt(idx);
+          dispatcher.ins.remove(idx);
+          dispatcher.outs.remove(idx);
         }
         try {
           in.close();
@@ -87,11 +85,10 @@ public class ThreadDispatcher
       GemLogger.log(Level.INFO, "evt:" + evt);
       synchronized (dispatcher) {
         for (int i = 0; i < dispatcher.outs.size(); i++) {
-          ObjectOutputStream os = (ObjectOutputStream) dispatcher.outs.elementAt(i);
+          ObjectOutputStream os = (ObjectOutputStream) dispatcher.outs.get(i);
           if (os.equals(out)) {
             continue;
           }
-          //System.out.println("forward evt "+i);
           try {
             os.writeObject(evt);
           } catch (Exception ignore) {
