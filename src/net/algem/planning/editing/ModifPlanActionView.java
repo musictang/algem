@@ -24,12 +24,14 @@ package net.algem.planning.editing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import net.algem.config.*;
 import net.algem.contact.Note;
@@ -119,21 +121,26 @@ class ModifPlanActionView
     GemPanel p = new GemPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
     gb.insets = new Insets(4, 2, 4, 2);
-    gb.add(new GemLabel(BundleUtil.getLabel("Status.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(status, 1, 0, 1, 1, GridBagHelper.WEST);
+
+        gb.add(new GemLabel(BundleUtil.getLabel("Status.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(status, 1, 0, GridBagHelper.REMAINDER, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(level, 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(level, 1, 1, GridBagHelper.REMAINDER, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Menu.age.range.label")), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(ageRange, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(ageRange, 1, 2, GridBagHelper.REMAINDER, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Place.number.label")), 0, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(places, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(places, 1, 3, GridBagHelper.REMAINDER, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Color.label")), 0, 4, 1, 1, GridBagHelper.WEST);
     colorPanel.setPreferredSize(new Dimension(colorPanel.getPreferredSize().width, places.getPreferredSize().height));
-    gb.add(colorPanel, 1, 4, 1, 1, GridBagHelper.NORTHWEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Note.label")), 0, 5, 1, 1, GridBagHelper.NORTHWEST);
-    gb.add(noteArea, 1, 5, 1, 1, GridBagHelper.NORTHWEST);
+    gb.add(colorPanel, 1, 4, GridBagHelper.REMAINDER, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Note.label")), 0, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(noteArea, 1, 5, GridBagHelper.REMAINDER, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
 
-    add(p);
+    gb.add(new JLabel(""), 1, 6, 1, 1, GridBagHelper.NONE, GridBagConstraints.BASELINE_TRAILING, 1,0);
+    gb.add(new JLabel(""), 2, 6, 1, 1, GridBagHelper.NONE, GridBagConstraints.BASELINE_TRAILING);
+
+    setLayout(new BorderLayout());
+    add(p, BorderLayout.CENTER);
   }
   
   private void setBgColor(Color color) {
