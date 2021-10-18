@@ -48,7 +48,7 @@ public class AccountMatchingTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    AccountPref p = (AccountPref) tuples.elementAt(line);
+    AccountPref p = (AccountPref) tuples.get(line);
     switch (col) {
       case 0:
         return p.getAccount();
@@ -77,7 +77,7 @@ public class AccountMatchingTableModel
 
   @Override
   public void setValueAt(Object value, int line, int column) {
-    AccountPref p = tuples.elementAt(line);
+    AccountPref p = tuples.get(line);
     switch (column) {
       case 0:
         p.setAccount((Account) value);

@@ -28,7 +28,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.RootPaneContainer;
 import net.algem.config.AgeRange;
 import net.algem.config.ColorPrefs;
@@ -77,7 +77,7 @@ public abstract class ScheduleCanvas
   protected int step_y;
   protected ActionListener listener;
   protected Schedule clickSchedule;
-  protected Vector<ScheduleRangeObject> clickRange;
+  protected List<ScheduleRangeObject> clickRange;
   protected int clickX;
   protected int clickY;
   protected Image img;
@@ -229,7 +229,7 @@ public abstract class ScheduleCanvas
   }
 
   @Override
-  public Vector<ScheduleRangeObject> getScheduleRanges() {
+  public List<ScheduleRangeObject> getScheduleRanges() {
     return clickRange;
   }
 
@@ -264,10 +264,10 @@ public abstract class ScheduleCanvas
    * @param hc time grid position
    * @return a schedule
    */
-  protected ScheduleObject getClickedSchedule(Vector<ScheduleObject> v, Hour hc) {
+  protected ScheduleObject getClickedSchedule(List<ScheduleObject> v, Hour hc) {
     if (v != null) {
       for (int i = 0; i < v.size(); i++) {
-        ScheduleObject p = v.elementAt(i);
+        ScheduleObject p = v.get(i);
         Hour hd = p.getStart();
         Hour hf = p.getEnd();
         if (hc.ge(hd) && hc.le(hf)) {

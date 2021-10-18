@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import net.algem.planning.DateFr;
 import net.algem.planning.Schedule;
@@ -111,7 +110,7 @@ public class DefaultUserService
 
     @Override
     public List<User> findAll(String where) {
-        List<User> v = new Vector<User>();
+        List<User> v = new ArrayList<>();
         try {
             v = dao.find(where);
         } catch (SQLException ex) {

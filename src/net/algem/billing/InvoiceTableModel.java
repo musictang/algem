@@ -63,7 +63,7 @@ public class InvoiceTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Quote q = tuples.elementAt(line);
+    Quote q = tuples.get(line);
     switch (col) {
       case 0:
         return q.getNumber();

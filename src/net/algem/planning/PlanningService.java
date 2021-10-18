@@ -24,7 +24,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormatSymbols;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+//import java.util.*;
 import net.algem.contact.EmployeeIO;
 import net.algem.contact.Note;
 import net.algem.contact.NoteIO;
@@ -75,7 +80,7 @@ public class PlanningService {
   }
 
   public List<DateFr> generationDate(Action a) {
-    List<DateFr> v = new ArrayList<DateFr>();
+    List<DateFr> v = new ArrayList<>();
 
     int i = 0; // sessions number
     Calendar start = Calendar.getInstance(Locale.FRANCE);
@@ -563,7 +568,7 @@ public class PlanningService {
     ScheduleIO.update(s, dc);
   }
 
-  public Vector<ScheduleTestConflict> checkRange(ScheduleObject orig, ScheduleObject range)
+  public List<ScheduleTestConflict> checkRange(ScheduleObject orig, ScheduleObject range)
     throws SQLException {
     return conflictService.getRangeConflicts(orig, range, orig.getDate(), orig.getDate());
   }
@@ -749,7 +754,7 @@ public class PlanningService {
         int offset = model.getStart().getLength(copy.getStart());
 
         String where = "pg WHERE pg.idplanning = " + model.getId();
-        Vector<ScheduleRange> vpg = ScheduleRangeIO.find(where, dc);
+        List<ScheduleRange> vpg = ScheduleRangeIO.find(where, dc);
 
         for (ScheduleRange pl : vpg) {
           ScheduleRange pg = new ScheduleRange();
@@ -782,10 +787,10 @@ public class PlanningService {
       dc.setAutoCommit(false);
       //modifier les commande_cours jusqu'à la date de début
       String where = "WHERE cc.idaction = " + a.getId();
-      Vector<CourseOrder> vcc = CourseOrderIO.find(where, dc);
+      List<CourseOrder> vcc = CourseOrderIO.find(where, dc);
 
       // selection planning
-      Vector<Schedule> vp = ScheduleIO.find("WHERE action = " + a.getId() + " AND jour >= '" + a.getStartDate() + "'", dc);
+      List<Schedule> vp = ScheduleIO.find("WHERE action = " + a.getId() + " AND jour >= '" + a.getStartDate() + "'", dc);
 
       //creer nouvelle action
       actionIO.insert(a);
@@ -894,7 +899,7 @@ public class PlanningService {
   public void deleteRehearsal(DateFr start, DateFr end, ScheduleObject plan) throws SQLException {
     ScheduleIO.deleteRehearsal(start, end, plan, dc);
     // supprimer action si le planning ne la référence plus
-    Vector<Schedule> vp = ScheduleIO.find("WHERE action = " + plan.getIdAction(), dc);
+    List<Schedule> vp = ScheduleIO.find("WHERE action = " + plan.getIdAction(), dc);
     if (vp == null || vp.isEmpty()) {
       actionIO.delete(plan.getIdAction());
     }
@@ -922,11 +927,11 @@ public class PlanningService {
       + " AND p.debut <='" + startTime + "' AND p.fin >='" + endTime + "'"
       + " AND p.lieux=" + room;
 
-    Vector<Schedule> v = ScheduleIO.find(where, dc);
+    List<Schedule> v = ScheduleIO.find(where, dc);
     try {
       dc.setAutoCommit(false);
       for (int i = 0; i < v.size(); i++) {
-        Schedule p = v.elementAt(i);
+        Schedule p = v.get(i);
         ScheduleRange pl = new ScheduleRange(p);
         pl.setStart(a.getStartTime());
         pl.setEnd(a.getEndTime());
@@ -1092,17 +1097,13 @@ public class PlanningService {
     ScheduleIO.updateFollowUp(id, up, dc);
   }
 
-  public Vector<Course> getCourseByTeacher(int teacherId, String dateStart) {
+  public List<Course> getCourseByTeacher(int teacherId, String dateStart) {
     String query = ", planning p, action a WHERE "
       + "p.action = a.id AND a.cours = c.id"
       + " AND p.idper = " + teacherId
       + " AND p.jour >= '" + dateStart + "'";
-    try {
+
       return ((CourseIO) DataCache.getDao(Model.Course)).find(query);
-    } catch (SQLException ex) {
-      GemLogger.log(getClass().getName(), "getCourseByTeacher", ex);
-    }
-    return null;
   }
 
   public Course getCourseFromAction(int idaction) throws SQLException {
@@ -1237,7 +1238,7 @@ public class PlanningService {
     }
   }
 
-  public Vector<ScheduleObject> getSchedule(String where) throws SQLException {
+  public List<ScheduleObject> getSchedule(String where) throws SQLException {
     return ScheduleIO.findObject(where, dc);
   }
 
@@ -1248,14 +1249,14 @@ public class PlanningService {
    * @return a schedule or null if no schedule was found
    */
   public Schedule getScheduleByRange(int rangeId) {
-    Vector<Schedule> vp = ScheduleIO.find(", plage pg where p.id = pg.idplanning and pg.id = " + rangeId, dc);
+    List<Schedule> vp = ScheduleIO.find(", plage pg where p.id = pg.idplanning and pg.id = " + rangeId, dc);
     if (vp.size() > 0) {
-      return vp.elementAt(0);
+      return vp.get(0);
     }
     return null;
   }
 
-  public Vector<ScheduleRangeObject> getScheduleRange(String where) throws SQLException {
+  public List<ScheduleRangeObject> getScheduleRange(String where) throws SQLException {
     return ScheduleRangeIO.findRangeObject(where, this, dc);
   }
 
@@ -1268,19 +1269,19 @@ public class PlanningService {
    */
   public int getEstab(int action) throws SQLException {
 
-    Vector<Schedule> v = ScheduleIO.find("WHERE p.action = " + action + " LIMIT 1", dc);
+    List<Schedule> v = ScheduleIO.find("WHERE p.action = " + action + " LIMIT 1", dc);
 
     if (v.isEmpty()) {
       return -1;
     }
-    Schedule s = v.elementAt(0);
+    Schedule s = v.get(0);
     Room r = (Room) DataCache.findId(s.getIdRoom(), Model.Room);
 
     return r == null ? -1 : r.getEstab();
 
   }
 
-  public Vector<ScheduleTestConflict> testRange(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate)
+  public List<ScheduleTestConflict> testRange(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate)
     throws SQLException {
     return conflictService.testRange(plan, hStart, hEnd, lastDate);
   }
@@ -1307,7 +1308,7 @@ public class PlanningService {
     return ScheduleIO.findBooking(action, dc);
   }
 
-  public Vector<ScheduleTestConflict> checkHour(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, Hour hStart, Hour hEnd)
+  public List<ScheduleTestConflict> checkHour(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, Hour hStart, Hour hEnd)
     throws SQLException {
     return conflictService.testHourConflict(plan, dateStart, dateEnd, hStart, hEnd);
   }
@@ -1327,33 +1328,33 @@ public class PlanningService {
     return conflictService.testRoomConflict(newPlan.getDate(), newPlan.getStart(), newPlan.getEnd(), newPlan.getIdRoom());
   }
 
-  public Vector<ScheduleTestConflict> checkRoomForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
+  public List<ScheduleTestConflict> checkRoomForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
     throws SQLException {
     return conflictService.testRoomConflict(plan.getId(), newPlan);
     //return conflictService.testRoomConflict(newPlan.getIdRoom(), plan.getId(), newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
   }
 
-  public Vector<ScheduleTestConflict> checkRoomForScheduleLengthModif(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate)
+  public List<ScheduleTestConflict> checkRoomForScheduleLengthModif(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate)
     throws SQLException {
     return conflictService.testRoomConflict(plan, hStart, hEnd, lastDate);
   }
 
-  public Vector<ScheduleTestConflict> checkTeacherForScheduleLengthModif(ScheduleObject plan, DateFr lastDate, Hour hStart, Hour hEnd)
+  public List<ScheduleTestConflict> checkTeacherForScheduleLengthModif(ScheduleObject plan, DateFr lastDate, Hour hStart, Hour hEnd)
     throws SQLException {
     return conflictService.testTeacherConflictForScheduleLength(plan, lastDate, hStart, hEnd);
   }
 
-  public Vector<ScheduleTestConflict> checkTeacherForScheduleCopy(ScheduleObject plan, ScheduleObject newPlan)
+  public List<ScheduleTestConflict> checkTeacherForScheduleCopy(ScheduleObject plan, ScheduleObject newPlan)
     throws SQLException {
     return conflictService.testTeacherConflict(plan.getIdPerson(), newPlan);
   }
 
-  public Vector<ScheduleTestConflict> checkTeacherForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
+  public List<ScheduleTestConflict> checkTeacherForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
     throws SQLException {
     return conflictService.testTeacherConflict(plan, newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
   }
 
-  public Vector<ScheduleTestConflict> checkChangeTeacher(ScheduleObject orig, ScheduleObject range, DateFr dateStart, DateFr dateEnd)
+  public List<ScheduleTestConflict> checkChangeTeacher(ScheduleObject orig, ScheduleObject range, DateFr dateStart, DateFr dateEnd)
     throws PlanningException {
     try {
       return conflictService.testTeacherConflict(orig, range, dateStart, dateEnd);
@@ -1367,12 +1368,12 @@ public class PlanningService {
     return conflictService.testRoomAndPersonConflicts(d, a);
   }
 
-  private void debug(Vector<DateFr> sessions, int hId) {
-    Vector<DateFr> v = new Vector<DateFr>();
+  private void debug(List<DateFr> sessions, int hId) {
+    List<DateFr> v = new ArrayList<>();
     for (DateFr d : sessions) {
       if (VacationIO.findDay(d.getDate(), hId, dc) == null) {
         // si cette date ne correspond pas à un date de vacances du type sélectionné
-        v.addElement(d);
+        v.add(d);
       }
     }
     System.out.println("sessions :");

@@ -18,13 +18,12 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.config;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.util.DataConnection;
 import net.algem.util.model.Cacheable;
 
@@ -35,54 +34,54 @@ import net.algem.util.model.Cacheable;
  * @since 2.8.v 13/06/14
  */
 public class StudioTypeIO
-extends GemParamIO
-  implements Cacheable
-{
+        extends GemParamIO
+        implements Cacheable {
 
-  public final static String TABLE = "categorie_studio";
-  private final static String COLS = "id, nom";
-  private final static String SEQUENCE = "categorie_studio_id_seq";
+    public final static String TABLE = "categorie_studio";
+    private final static String COLS = "id, nom";
+    private final static String SEQUENCE = "categorie_studio_id_seq";
 
-  public StudioTypeIO(DataConnection dc) {
-    this.dc = dc;
-  }
-
-  @Override
-  protected String getSequence() {
-    return SEQUENCE;
-  }
-
-  @Override
-  protected String getTable() {
-    return TABLE;
-  }
-
-  @Override
-  public List<GemParam> load() throws SQLException {
-    return find();
-  }
-
-  @Override
-  public GemParam find(int id) throws SQLException {
-    Vector<GemParam> vp = find(" WHERE id = " + id);
-    return vp != null && vp.size() > 0 ? vp.elementAt(0) : null;
-  }
-
-  @Override
-  public Vector<GemParam> find(String where) throws SQLException {
-    String query = "SELECT " + COLS + " FROM " + getTable();
-    if (where != null) {
-      query += " " + where;
+    public StudioTypeIO(DataConnection dc) {
+        this.dc = dc;
     }
-    query += " ORDER BY id";
-    Vector<GemParam> vp = new Vector<GemParam>();
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      GemParam n = new GemParam(rs.getInt(1));
-      n.setLabel(rs.getString(2));
-      vp.addElement(n);
+
+    @Override
+    protected String getSequence() {
+        return SEQUENCE;
     }
-    return vp;
-  }
+
+    @Override
+    protected String getTable() {
+        return TABLE;
+    }
+
+    @Override
+    public List<GemParam> load() throws SQLException {
+        return find();
+    }
+
+    @Override
+    public GemParam find(int id) throws SQLException {
+        List<GemParam> vp = find(" WHERE id = " + id);
+        return vp != null && vp.size() > 0 ? vp.get(0) : null;
+    }
+
+    @Override
+    public List<GemParam> find(String where) throws SQLException {
+        String query = "SELECT " + COLS + " FROM " + getTable();
+        if (where != null) {
+            query += " " + where;
+        }
+        query += " ORDER BY id";
+        List<GemParam> vp = new ArrayList<>();
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                GemParam n = new GemParam(rs.getInt(1));
+                n.setLabel(rs.getString(2));
+                vp.add(n);
+            }
+        }
+        return vp;
+    }
 
 }

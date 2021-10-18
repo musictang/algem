@@ -20,7 +20,8 @@
  */
 package net.algem.planning.day;
 
-import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
 import net.algem.contact.Person;
 import net.algem.contact.teacher.Teacher;
 import net.algem.planning.CourseSchedule;
@@ -50,7 +51,7 @@ public class DayPlanTeacherView
   }
 
   @Override
-  public void load(java.util.Date d, Vector<ScheduleObject> schedules, Vector<ScheduleRangeObject> ranges) {
+  public void load(java.util.Date d, List<ScheduleObject> schedules, List<ScheduleRangeObject> ranges) {
 
     int cpt = 0;
 
@@ -61,8 +62,8 @@ public class DayPlanTeacherView
 
     for (int i = 0; i < teacherList.getSize(); i++) {
       Teacher t = (Teacher) teacherList.getElementAt(i);
-      Vector<ScheduleObject> v1 = getSchedule(schedules, t.getId());
-      Vector<ScheduleRangeObject> v2 = getSchedule(ranges, t.getId());
+      List<ScheduleObject> v1 = getSchedule(schedules, t.getId());
+      List<ScheduleRangeObject> v2 = getSchedule(ranges, t.getId());
 
       if ((v1.size() + v2.size()) > 0) {
         DayPlan pj = new DayPlan();
@@ -81,17 +82,17 @@ public class DayPlanTeacherView
     setScrollBarToZero();
   }
 
-  public <T extends ScheduleObject> Vector<T> getSchedule(Vector<T> t, int teacherId) {
-    Vector<T> v = new Vector<T>();
+  public <T extends ScheduleObject> List<T> getSchedule(List<T> t, int teacherId) {
+    List<T> v = new ArrayList<>();
 
     for (int i = 0; i < t.size(); i++) {
-      ScheduleObject plan = t.elementAt(i);
+      ScheduleObject plan = t.get(i);
       if (!(plan instanceof CourseSchedule && Schedule.ADMINISTRATIVE != plan.getType())) {
         continue;
       }
       Person p = plan.getPerson();
       if (p != null && p.getId() == teacherId) {
-        v.addElement(t.elementAt(i));
+        v.add(t.get(i));
       }
     }
     return v;

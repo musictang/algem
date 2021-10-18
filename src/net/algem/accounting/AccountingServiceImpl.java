@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import net.algem.billing.ItemIO;
 import net.algem.config.ActivableParam;
 import net.algem.config.ActivableParamTableIO;
@@ -63,7 +62,7 @@ public class AccountingServiceImpl implements AccountingService {
   }
 
   @Override
-  public Vector<PlanningLib> getPlanningLib(String start, String end, int school, boolean catchup) throws SQLException {
+  public List<PlanningLib> getPlanningLib(String start, String end, int school, boolean catchup) throws SQLException {
     String where = "WHERE jour >= '" + start + "' AND jour <= '" + end + "' AND ecole = " + school;
     if(!catchup) {
       where += " AND salle !~* 'rattrap'";
@@ -73,7 +72,7 @@ public class AccountingServiceImpl implements AccountingService {
   }
 
   @Override
-  public Vector<PlanningLib> getPlanningLib(String start, String end, int school, int teacherId, boolean catchup) throws SQLException {
+  public List<PlanningLib> getPlanningLib(String start, String end, int school, int teacherId, boolean catchup) throws SQLException {
     String where = "WHERE jour >= '" + start + "' AND jour <= '" + end + "' AND ecole =" + school + " AND profid = " + teacherId;
     if(!catchup) {
       where += " AND salle !~* 'rattrap'";
@@ -83,7 +82,7 @@ public class AccountingServiceImpl implements AccountingService {
   }
 
   @Override
-  public Vector<ScheduleRange> getCourseScheduleRange(int idplanning) throws SQLException {
+  public List<ScheduleRange> getCourseScheduleRange(int idplanning) throws SQLException {
     // on ne comptabilise pas les plages de pause (adherent = 0)
     return ScheduleRangeIO.find("pg WHERE pg.idplanning = " + idplanning + " AND pg.adherent > 0 ORDER BY pg.debut", dc);
   }
@@ -210,7 +209,7 @@ public class AccountingServiceImpl implements AccountingService {
    */
   private String isAccountUsed(Param c) throws AccountDeleteException, SQLException {
     String where = "WHERE " + OrderLineIO.ACCOUNT_COLUMN + " = '" + c.getId() + "'";
-    Vector<OrderLine> e = OrderLineIO.find(where, 1, dc);
+    List<OrderLine> e = OrderLineIO.find(where, 1, dc);
     // order lines
     if (e != null && e.size() > 0) {
       return MessageUtil.getMessage("account.delete.exception.orderline");
@@ -232,7 +231,7 @@ public class AccountingServiceImpl implements AccountingService {
 
   private String isCostAccountUsed(Param p) throws AccountDeleteException, SQLException {
     String where = "WHERE " + OrderLineIO.COST_COLUMN + " = '" + p.getKey() + "'";
-    Vector<OrderLine> e = OrderLineIO.find(where, 1, dc);
+    List<OrderLine> e = OrderLineIO.find(where, 1, dc);
      if (e != null && e.size() > 0) {
       return MessageUtil.getMessage("account.delete.exception.orderline");
     }

@@ -21,9 +21,12 @@
 package net.algem.planning;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import net.algem.util.model.GemList;
 import net.algem.util.ui.GemPanel;
 
 /**
@@ -38,36 +41,36 @@ public class ConflictView
 {
 
   private JList list;
-  private Vector<String> values;
+  private List<String> values;
 
   public ConflictView() {
-    values = new Vector<String>();
-    list = new JList(values);
+    values = new ArrayList<>();
+    list = new JList(new GemList(values));
     JScrollPane sp = new JScrollPane(list);
     setLayout(new BorderLayout());
     add(sp, BorderLayout.CENTER);
   }
 
   public void setTotal(int n) {
-    values = new Vector<String>();
-    values.addElement(n + " sessions à modifier");
+    values = new ArrayList<>();
+    values.add(n + " sessions à modifier");
   }
 
   public void setConclusion(String s) {
-    values.addElement(s);
-    list.setListData(values);
+    values.add(s);
+    list.setListData(new Vector(values));
   }
 
   public void addScheduleRange(ScheduleRange p) {
-    values.addElement("Vérification " + p);
+    values.add("Vérification " + p);
   }
 
   public void addSchedule(Schedule p) {
-    values.addElement("Vérification " + p);
+    values.add("Vérification " + p);
   }
 
   public void addConflict(ScheduleRange p) {
-    values.addElement("-->Conflit: " + p.getDay() + " " + p.getStart() + " " + p.getEnd());
+    values.add("-->Conflit: " + p.getDay() + " " + p.getStart() + " " + p.getEnd());
   }
 
   public void addConflict(Schedule p, PlanningLib pv) {
@@ -77,6 +80,6 @@ public class ConflictView
             + pv.getRoom() + " "
             + pv.getTeacher();
 
-    values.addElement("-->Conflit: " + label);
+    values.add("-->Conflit: " + label);
   }
 }

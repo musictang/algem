@@ -64,7 +64,7 @@ public class GenericTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    GenericTable v = (GenericTable) tuples.elementAt(ligne);
+    GenericTable v = (GenericTable) tuples.get(ligne);
     switch (colonne) {
       case 0:
         return Integer.valueOf(v.getId());

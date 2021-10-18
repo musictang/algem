@@ -21,7 +21,8 @@
 package net.algem.config;
 
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.Collections;
+import java.util.List;
 import net.algem.util.BundleUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
@@ -50,7 +51,7 @@ public class SchoolCtrl extends ParamTableCtrl
 
   @Override
   public void load() {
-    load(ParamTableIO.find(TABLE, SORT_COLUMN, dc).elements());
+    load(Collections.enumeration(ParamTableIO.find(TABLE, SORT_COLUMN, dc)));
   }
 
   @Override
@@ -66,7 +67,7 @@ public class SchoolCtrl extends ParamTableCtrl
   @Override
   public void suppression(Param p) throws SQLException, ConfigException {
     //TODO check if school id is used in order lines
-    Vector<Param> vp = ParamTableIO.find(TABLE, SORT_COLUMN, dc);
+    List<Param> vp = ParamTableIO.find(TABLE, SORT_COLUMN, dc);
     if (vp != null && vp.size() <= 1) {
       throw new ConfigException(MessageUtil.getMessage("school.delete.info"));
     }

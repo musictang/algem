@@ -29,10 +29,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Vector;
 import java.util.prefs.Preferences;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -205,8 +205,8 @@ public class PersonFileTabView
         memberEditor.set(dossier.getMember());
         if (dossier.getContact().getAddress() == null && dossier.getContact().getTele() == null) {
             if (Algem.isFeatureEnabled("cc-mdl")) { //ERIC 2.17
-              Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getFamily(), DataCache.getDataConnection());
-              Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getFamily(), DataCache.getDataConnection());
+              List<Address> addressLink = AddressIO.findId(dossier.getMember().getFamily(), DataCache.getDataConnection());
+              List<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getFamily(), DataCache.getDataConnection());
 
               if (addressLink.size() > 0 || phoneLink.size() > 0) {
                 cbTelAdresse = new JCheckBox(MessageUtil.getMessage("family.link.info", dossier.getMember().getFamily()), true);
@@ -215,8 +215,8 @@ public class PersonFileTabView
                 contactFileEditor.setLinkTelAddress(addressLink, phoneLink, cbTelAdresse);
               }
             } else {
-              Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
-              Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
+              List<Address> addressLink = AddressIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
+              List<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
 
               if (addressLink.size() > 0 || phoneLink.size() > 0) {
                 cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info", dossier.getMember().getPayer()), true);
@@ -765,12 +765,12 @@ public class PersonFileTabView
       return false;
     }
     if (groupView == null) {
-      Vector<Musician> vm = new Vector<Musician>();
+      List<Musician> vm = new ArrayList<>();
       for (Group g : dossier.getGroups()) {
         //Musicien m = g.getMusician(dossier.getId());
         Musician m = getMusician(g, dossier.getId());
         if (m != null) {
-          vm.addElement(m);
+          vm.add(m);
         }
       }
       if (vm.size() > 0) {

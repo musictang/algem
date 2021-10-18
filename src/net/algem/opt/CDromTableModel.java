@@ -43,7 +43,7 @@ public class CDromTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    CDrom m = (CDrom) tuples.elementAt(i);
+    CDrom m = (CDrom) tuples.get(i);
     return m.getId();
   }
 
@@ -68,10 +68,10 @@ public class CDromTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    CDrom m = (CDrom) tuples.elementAt(ligne);
+    CDrom m = (CDrom) tuples.get(ligne);
     switch (colonne) {
       case 0:
-        return new Integer(m.getId());
+        return Integer.valueOf(m.getId());
       case 1:
         return m.getAlbum();
       case 2:

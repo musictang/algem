@@ -76,7 +76,7 @@ public class SubstituteTeacherTableModel
     if (tuples.isEmpty()) {
       return null;
     }
-    SubstituteTeacher r = tuples.elementAt(line);
+    SubstituteTeacher r = tuples.get(line);
     boolean days[] = r.daysToArray();
     switch (col) {
       case 0:

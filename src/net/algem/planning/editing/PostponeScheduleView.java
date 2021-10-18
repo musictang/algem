@@ -26,7 +26,7 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import net.algem.planning.*;
 import net.algem.room.Room;
 import net.algem.room.RoomChoice;
@@ -198,7 +198,7 @@ public class PostponeScheduleView
       ScheduleObject range = new CourseSchedule();
       range.setStart(postPoneRange.getStart());
       range.setEnd(postPoneRange.getEnd());
-      Vector<ScheduleTestConflict> v = service.checkRange(orig, range);
+      List<ScheduleTestConflict> v = service.checkRange(orig, range);
       if (v != null && v.size() > 0) {
         MessagePopup.warning(this, MessageUtil.getMessage("invalid.time.slot"));
         resetRange();

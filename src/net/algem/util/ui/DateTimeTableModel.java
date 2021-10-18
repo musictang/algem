@@ -65,7 +65,7 @@ public class DateTimeTableModel
   }
   @Override
   public Object getValueAt(int row, int col) {
-    DateTimeActionModel a = tuples.elementAt(row);
+    DateTimeActionModel a = tuples.get(row);
     switch(col) {
       case 0:
         return a.getDate();
@@ -87,7 +87,7 @@ public class DateTimeTableModel
 
   @Override
   public void setValueAt(Object value, int row, int col) {
-    DateTimeActionModel a = tuples.elementAt(row);
+    DateTimeActionModel a = tuples.get(row);
     switch(col) {
       case 0:
         a.setDate((DateFr) value);

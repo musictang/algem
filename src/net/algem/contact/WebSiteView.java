@@ -20,7 +20,8 @@
  */
 package net.algem.contact;
 
-import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
 import net.algem.config.Param;
 import net.algem.util.BundleUtil;
 import net.algem.util.jdesktop.DesktopBrowseHandler;
@@ -35,20 +36,20 @@ public class WebSiteView
         extends InfoView
 {
 
-  private Vector<Param> vp;
+  private List<Param> vp;
   private DesktopBrowseHandler browser;
 
-  public WebSiteView(Vector<Param> vp) {
+  public WebSiteView(List<Param> vp) {
     this(vp, true);
   }
 
-  public WebSiteView(Vector<Param> vp, boolean border) {
+  public WebSiteView(List<Param> vp, boolean border) {
     super(BundleUtil.getLabel("Website.label"), border);
     this.vp = vp;
     browser = new DesktopBrowseHandler();
   }
 
-  public void setSites(Vector<WebSite> sites) {
+  public void setSites(List<WebSite> sites) {
     clearAll();
     if (sites != null && sites.size() > 0) {
       for (WebSite s : sites) {
@@ -64,8 +65,8 @@ public class WebSiteView
     }
   }
 
-  public Vector<WebSite> getSites() {
-    Vector<WebSite> v = new Vector<WebSite>();
+  public List<WebSite> getSites() {
+    List<WebSite> v = new ArrayList<>();
     int i = 0;
     for (InfoPanel pi : rows) {
       WebSite s = ((WebSitePanel) pi).getSite();

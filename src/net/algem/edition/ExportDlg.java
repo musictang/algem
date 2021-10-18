@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.algem.config.ConfigUtil;
@@ -283,7 +283,7 @@ public abstract class ExportDlg
 
     String query = getRequest();
 
-    Vector<Contact> contacts = ContactIO.find(query, true, dc);
+    List<Contact> contacts = ContactIO.find(query, true, dc);
     Collections.sort(selectedOptions);
     try (PrintWriter out = new PrintWriter(new File(path), "UTF-16LE")) {
       printHeader(out, selectedOptions);
@@ -365,8 +365,8 @@ public abstract class ExportDlg
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < v.size(); i++) {
       Contact c = v.get(i);
-      Vector<Telephone> t = c.getTele();
-      Vector<Email> emails = c.getEmail();
+      List<Telephone> t = c.getTele();
+      List<Email> emails = c.getEmail();
 
       boolean single = selectedOptions.size() == 1;
       for (String key : selectedOptions) {

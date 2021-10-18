@@ -72,7 +72,7 @@ public class EquipTableModel
   @Override
   public Object getValueAt(int line, int col) {
 
-    Equipment e = tuples.elementAt(line);
+    Equipment e = tuples.get(line);
     switch (col) {
       case 0:
         return e.getQuantity();
@@ -88,7 +88,7 @@ public class EquipTableModel
 
   @Override
   public void setValueAt(Object e, int line, int col) {
-    Equipment equip = tuples.elementAt(line);
+    Equipment equip = tuples.get(line);
     switch (col) {
       case 0:
         equip.setQuantity((Integer) e);

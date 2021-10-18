@@ -73,7 +73,7 @@ public class MultiBranchTableModel
   @Override
   public Object getValueAt(int line, int col) {
 
-    BankBranch bb = tuples.elementAt(line);
+    BankBranch bb = tuples.get(line);
     Address adr = bb.getAddress();
     switch (col) {
       case 0:
@@ -96,7 +96,7 @@ public class MultiBranchTableModel
 
   @Override
   public void setValueAt(Object value, int line, int column) {
-    BankBranch bb = tuples.elementAt(line);
+    BankBranch bb = tuples.get(line);
     switch(column) {
       case 3:
         bb.setBicCode((String)value);

@@ -23,7 +23,7 @@ package net.algem.rental;
 import net.algem.course.*;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.model.Model;
@@ -89,7 +89,7 @@ public class RentSearchCtrl
 
         query += " ORDER BY type, marque";
 
-        Vector<RentableObject> v = null;
+        List<RentableObject> v = null;
         //try {
             v = ((RentableObjectIO) DataCache.getDao(Model.RentableObject)).find(query);
         //} catch (SQLException ex) {
@@ -99,7 +99,7 @@ public class RentSearchCtrl
             setStatus(EMPTY_LIST);
         } else if (v.size() == 1) {
             ((CardLayout) wCard.getLayout()).show(wCard, "masque");
-            mask.loadCard(v.elementAt(0));
+            mask.loadCard(v.get(0));
         } else {
             ((CardLayout) wCard.getLayout()).show(wCard, "liste");
             list.loadResult(v);

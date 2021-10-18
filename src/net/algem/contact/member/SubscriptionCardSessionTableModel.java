@@ -70,7 +70,7 @@ public class SubscriptionCardSessionTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    SubscriptionCardSession session = tuples.elementAt(line);
+    SubscriptionCardSession session = tuples.get(line);
     Hour start = session.getStart();
     Hour end = session.getEnd();
     switch (col) {

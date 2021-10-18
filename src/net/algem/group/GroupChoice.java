@@ -20,7 +20,7 @@
  */
 package net.algem.group;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemChoice;
 
@@ -35,7 +35,7 @@ public class GroupChoice
         extends GemChoice
 {
 
-  public GroupChoice(Vector<Group> groups, boolean none) {
+  public GroupChoice(List<Group> groups, boolean none) {
     super(groups);
 
     if (none) {
@@ -44,7 +44,7 @@ public class GroupChoice
     }
   }
 
-  public GroupChoice(Vector<Group> groups) {
+  public GroupChoice(List<Group> groups) {
     this(groups, false);
   }
 

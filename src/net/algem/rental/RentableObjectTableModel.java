@@ -44,7 +44,7 @@ public class RentableObjectTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    RentableObject o = tuples.elementAt(i);
+    RentableObject o = tuples.get(i);
     return o.getId();
   }
 
@@ -69,7 +69,7 @@ public class RentableObjectTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    RentableObject o = tuples.elementAt(line);
+    RentableObject o = tuples.get(line);
     switch (col) {
       case 0:
         return o.getId();

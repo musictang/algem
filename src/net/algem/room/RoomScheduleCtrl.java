@@ -24,7 +24,7 @@ package net.algem.room;
 import java.awt.BorderLayout;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import net.algem.planning.ScheduleDetailCtrl;
 import net.algem.planning.ScheduleObject;
 import net.algem.planning.ScheduleRangeObject;
@@ -74,12 +74,12 @@ extends AbstractMonthScheduleCtrl
             + " ORDER BY p.jour,p.debut";
 
     try {
-      Vector<ScheduleObject> vpl = planningService.getSchedule(query);
+      List<ScheduleObject> vpl = planningService.getSchedule(query);
       
       query = " AND p.lieux = " + roomId
                 + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
                 + " ORDER BY p.jour, pg.debut";
-      Vector<ScheduleRangeObject> vpg = planningService.getScheduleRange(query);
+      List<ScheduleRangeObject> vpg = planningService.getScheduleRange(query);
       monthSchedule.setSchedule(start.getDate(), end.getDate(), vpl);
 
       // setup des plages

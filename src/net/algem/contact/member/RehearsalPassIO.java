@@ -23,7 +23,8 @@ package net.algem.contact.member;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -59,8 +60,8 @@ public class RehearsalPassIO
     return c;
   }
 
-  public static Vector<RehearsalPass> findAll(String where, DataConnection dc) throws SQLException {
-    Vector<RehearsalPass> v = new Vector<RehearsalPass>();
+  public static List<RehearsalPass> findAll(String where, DataConnection dc) throws SQLException {
+    List<RehearsalPass> v = new ArrayList<>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
@@ -70,7 +71,7 @@ public class RehearsalPassIO
       c.setAmount(rs.getFloat(3));
       c.setMin(rs.getInt(4));
       c.setTotalTime(rs.getInt(5));
-      v.addElement(c);
+      v.add(c);
     }
     return v;
   }

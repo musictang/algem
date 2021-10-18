@@ -72,7 +72,7 @@ public class VacationTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Vacation v = tuples.elementAt(line);
+    Vacation v = tuples.get(line);
     switch (col) {
       case 0:
         return v.getDay();

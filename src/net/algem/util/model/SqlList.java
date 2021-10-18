@@ -20,6 +20,8 @@
  */
 package net.algem.util.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JList;
 import net.algem.util.DataCache;
@@ -36,21 +38,21 @@ public class SqlList
 {
 
   private DataCache dataCache;
-  private Vector<SQLkey> values;
+  private List<SQLkey> values;
 
   public SqlList(int l, DataCache _dc) {
     dataCache = _dc;
-    values = new Vector<SQLkey>();
+    values = new ArrayList<SQLkey>();
     setVisibleRowCount(l);
   }
 
-  public void loadSQL(Vector<SQLkey> sqlist) {
+  public void loadSQL(List<SQLkey> sqlist) {
 //    int key = 0;
 //    String lib = null;
     //System.out.println(query);
     //removeAll();
     values = sqlist;
-    setListData(values);
+    setListData(new Vector(values));
 //    try {
 //      ResultSet rs = dc.executeQuery(query);
 //      while (rs.next()) {
@@ -66,11 +68,11 @@ public class SqlList
 
   @Override
   public void removeAll() {
-    values = new Vector<SQLkey>();
-    setListData(values);
+    values = new ArrayList<>();
+    setListData(new Vector(values));
   }
 
-  public Vector<SQLkey> getValues() {
+  public List<SQLkey> getValues() {
     return values;
   }
 
@@ -78,7 +80,7 @@ public class SqlList
     if (getSelectedIndex() < 0) {
       return -1;
     }
-    SQLkey k = values.elementAt(getSelectedIndex());
+    SQLkey k = values.get(getSelectedIndex());
     return k.getKey();
   }
 
@@ -86,14 +88,14 @@ public class SqlList
     if (getSelectedIndex() < 0) {
       return "";
     }
-    SQLkey k = values.elementAt(getSelectedIndex());
+    SQLkey k = values.get(getSelectedIndex());
     return k.getLabel();
   }
 
   public void setLabel(String l) {
     SQLkey key = null;
     for (int i = 0; i < values.size(); i++) {
-      key = values.elementAt(i);
+      key = values.get(i);
       if (l.equals(key.getLabel())) {
         setSelectedIndex(i);
         return;
@@ -109,13 +111,13 @@ public class SqlList
     if (values.isEmpty()) {
       return null;
     }
-    return values.elementAt(index);
+    return values.get(index);
   }
 
   public void selectKey(int k) {
     SQLkey key = null;
     for (int i = 0; i < values.size(); i++) {
-      key = values.elementAt(i);
+      key = values.get(i);
       if (key.getKey() == k) {
         setSelectedIndex(i);
         return;

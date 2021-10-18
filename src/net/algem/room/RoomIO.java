@@ -23,8 +23,8 @@ package net.algem.room;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
 import net.algem.contact.Person;
@@ -198,9 +198,9 @@ public class RoomIO
     public Room findId(int n) {
 
         String query = "WHERE id = " + n;
-        Vector<Room> v = find(query);
+        List<Room> v = find(query);
         if (v != null && v.size() > 0) {
-            return v.elementAt(0);
+            return v.get(0);
         }
         return null;
     }
@@ -227,20 +227,19 @@ public class RoomIO
         return findId(s);
     }
 
-    public Vector<Room> findAll() {
+    public List<Room> findAll() {
         String query = "SELECT * FROM " + TABLE + " ORDER BY nom";
         return findAll(query);
     }
 
-    public Vector<Room> find(String where) {
+    public List<Room> find(String where) {
         String query = "SELECT " + TABLE + ".* FROM " + TABLE + " " + where;
         return findAll(query);
     }
 
-    private Vector<Room> findAll(String query) {
-        Vector<Room> v = new Vector<Room>();
-        try {
-            ResultSet rs = dc.executeQuery(query);
+    private List<Room> findAll(String query) {
+        List<Room> v = new ArrayList<>();
+        try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
                 Room s = new Room();
                 s.setId(rs.getInt(1));
@@ -256,20 +255,18 @@ public class RoomIO
                 s.setContact(c);
                 s.setPayer(loadPayer(rs.getInt(10)));
                 s.setAvailable(rs.getBoolean(11));
-                v.addElement(s);
+                v.add(s);
             }
-            rs.close();
         } catch (SQLException e) {
             GemLogger.logException(query, e);
         }
         return v;
     }
 
-    public Vector<Equipment> loadEquip(int idsalle) {
-        Vector<Equipment> v = new Vector<Equipment>();
+    public List<Equipment> loadEquip(int idsalle) {
+        List<Equipment> v = new ArrayList<>();
         String query = "SELECT * FROM " + EQUIP_TABLE + " WHERE idsalle = " + idsalle + " ORDER BY idx";
-        try {
-            ResultSet rs = dc.executeQuery(query);
+        try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
                 Equipment e = new Equipment();
                 e.setRoom(rs.getInt(1));
@@ -279,9 +276,8 @@ public class RoomIO
                 e.setVisible(rs.getBoolean(5));
                 e.setFixedAssetNumber(rs.getString(6));
 
-                v.addElement(e);
+                v.add(e);
             }
-            rs.close();
         } catch (SQLException e) {
             GemLogger.logException(query, e);
         }
@@ -311,7 +307,6 @@ public class RoomIO
         return findAll();
     }
 
-//  @Override
     public List<Room> load(int userId) {
         return find(" JOIN etablissement ON salle.etablissement = etablissement.id "
                 + "WHERE etablissement.actif = TRUE AND etablissement.idper = " + userId + " ORDER BY salle.nom");

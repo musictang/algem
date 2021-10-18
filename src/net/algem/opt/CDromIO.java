@@ -22,7 +22,8 @@ package net.algem.opt;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -83,20 +84,19 @@ public class CDromIO
 	public static CDrom findId(int n, DataConnection dc) 
 	{
 		String query = "WHERE id = " + n;
-		Vector<CDrom> v = find(query, dc);
+		List<CDrom> v = find(query, dc);
 		if (v.size() > 0) {
-			return v.elementAt(0);
+			return v.get(0);
 		}
 		return null;
 	}
 
 
-	public static Vector<CDrom> find(String where, DataConnection dc) 
+	public static List<CDrom> find(String where, DataConnection dc) 
 	{
-		Vector<CDrom> v = new Vector<CDrom>();
+		List<CDrom> v = new ArrayList<>();
 		String query = "SELECT * FROM " +	TABLE + " " + where;
-		try {
-			ResultSet rs = dc.executeQuery(query);
+		try (ResultSet rs = dc.executeQuery(query)) {
 			while (rs.next()) {
 				CDrom c = new CDrom();
 				c.setId(rs.getInt(1));
@@ -106,9 +106,8 @@ public class CDromIO
 				c.setRef(rs.getString(5));
 				c.setGenre(rs.getString(6));
 
-				v.addElement(c);
+				v.add(c);
 			}
-			rs.close();
 		} catch (Exception e) {
 			GemLogger.logException(query, e);
 		}

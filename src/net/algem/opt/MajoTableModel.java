@@ -65,14 +65,14 @@ public class MajoTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    Majoration m = (Majoration) tuples.elementAt(ligne);
+    Majoration m = (Majoration) tuples.get(ligne);
     switch (colonne) {
       case 0:
-        return new Integer(m.getId());
+        return Integer.valueOf(m.getId());
       case 1:
         return m.getMode();
       case 2:
-        return new Integer(m.getPCent());
+        return Integer.valueOf(m.getPCent());
     }
     return null;
   }

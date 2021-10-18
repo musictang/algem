@@ -22,7 +22,8 @@ package net.algem.opt;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -62,16 +63,15 @@ public class CdTitleIO
 	public static void delete(CdTitle t, DataConnection dc) throws SQLException {
 	}
 
-	public static Vector<CdTitle> findId(int n, DataConnection dc) {
+	public static List<CdTitle> findId(int n, DataConnection dc) {
 		String query = "WHERE cd = " + n;
 		return find(query, dc);
 	}
 
-	public static Vector<CdTitle> find(String where, DataConnection dc) {
-		Vector<CdTitle> v = new Vector<CdTitle>();
+	public static List<CdTitle> find(String where, DataConnection dc) {
+		List<CdTitle> v = new ArrayList<>();
 		String query = "SELECT * from cdtitre " + where;
-		try {
-			ResultSet rs = dc.executeQuery(query);
+		try (ResultSet rs = dc.executeQuery(query)) {
 			while (rs.next()) {
 				CdTitle t = new CdTitle();
 				t.setCd(rs.getInt(1));
@@ -79,9 +79,8 @@ public class CdTitleIO
 				t.setTitle(rs.getString(3));
 				t.setPerformer(rs.getString(4));
 
-				v.addElement(t);
+				v.add(t);
 			}
-			rs.close();
 		} catch (Exception e) {
 			GemLogger.logException(query, e);
 		}

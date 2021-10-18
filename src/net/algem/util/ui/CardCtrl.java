@@ -23,7 +23,8 @@ package net.algem.util.ui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JPanel;
 import net.algem.util.GemCommand;
 import net.algem.util.event.GemEventListener;
@@ -41,8 +42,8 @@ public abstract class CardCtrl
 {
 
   protected GemPanel buttons;
-  protected Vector<JPanel> panels;
-  protected Vector<String> titles;
+  protected List<JPanel> panels;
+  protected List<String> titles;
   protected int step;
   protected GemLabel title;
   protected GemPanel wCard;
@@ -57,8 +58,8 @@ public abstract class CardCtrl
 
   public CardCtrl() {
 
-    panels = new Vector<JPanel>();
-    titles = new Vector<String>();
+    panels = new ArrayList<>();
+    titles = new ArrayList<>();
 
     title = new GemLabel("", GemLabel.CENTER);
     title.setFont(new Font("Helvetica", Font.PLAIN, 12));
@@ -108,8 +109,8 @@ public abstract class CardCtrl
 
   public void addCard(String t, GemPanel p) {
     wCard.add("etape" + panels.size(), p);
-    panels.addElement(p);
-    titles.addElement(t);
+    panels.add(p);
+    titles.add(t);
   }
 
   public void select(int no) {
@@ -119,7 +120,7 @@ public abstract class CardCtrl
 
     ((CardLayout) wCard.getLayout()).show(wCard, "etape" + no);
 
-    String t = titles.elementAt(no);
+    String t = titles.get(no);
     title.setText(t);
 
     step = no;

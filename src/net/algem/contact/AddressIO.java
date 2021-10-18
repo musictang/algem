@@ -22,7 +22,8 @@ package net.algem.contact;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -36,80 +37,80 @@ import net.algem.util.model.TableIO;
 public class AddressIO
         extends TableIO {
 
-  public static final String TABLE = "adresse";
-  public static final int ADR1_LIMIT = 50;
+    public static final String TABLE = "adresse";
+    public static final int ADR1_LIMIT = 50;
 
-  public static void insert(Address a, DataConnection dc) throws SQLException {
-    assert(a != null && a.getAdr1() != null);
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + a.getId()
-            + ",'" + escape(a.getAdr1())
-            + "','" + (a.getAdr2() == null ? "" : escape(a.getAdr2()))
-            + "','" + (a.getCdp() == null ? "" : escape(a.getCdp()))
-            + "','" + (a.getCity() == null ? "" : escape(a.getCity().toUpperCase()))
-            + "','" + (a.isArchive() ? "t" : "f")
-            + "')";
+    public static void insert(Address a, DataConnection dc) throws SQLException {
+        assert (a != null && a.getAdr1() != null);
+        String query = "INSERT INTO " + TABLE + " VALUES("
+                + a.getId()
+                + ",'" + escape(a.getAdr1())
+                + "','" + (a.getAdr2() == null ? "" : escape(a.getAdr2()))
+                + "','" + (a.getCdp() == null ? "" : escape(a.getCdp()))
+                + "','" + (a.getCity() == null ? "" : escape(a.getCity().toUpperCase()))
+                + "','" + (a.isArchive() ? "t" : "f")
+                + "')";
 
-    dc.executeUpdate(query);
-    if (a.getCdp() != null && a.getCity() != null) {
-      if (CityIO.findCity(a.getCdp(), dc) == null) {
-        City v = new City(a.getCdp(), a.getCity().toUpperCase());
-        CityIO.insert(v, dc);
-      }
+        dc.executeUpdate(query);
+        if (a.getCdp() != null && a.getCity() != null) {
+            if (CityIO.findCity(a.getCdp(), dc) == null) {
+                City v = new City(a.getCdp(), a.getCity().toUpperCase());
+                CityIO.insert(v, dc);
+            }
+        }
     }
-  }
 
-  public static void update(Address a, DataConnection dc) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET "
-            + "adr1='" + escape(a.getAdr1())
-            + "',adr2='" + (a.getAdr2() == null ? "" : escape(a.getAdr2()))
-            + "',cdp='" + (a.getCdp() == null ? "" : escape(a.getCdp()))
-            + "',ville='" + (a.getCity() == null ? "" : escape(a.getCity().toUpperCase()))
-            + "',archive='" + (a.isArchive() ? "t" : "f")
-            + "'";
-    query += " WHERE idper=" + a.getId();
+    public static void update(Address a, DataConnection dc) throws SQLException {
+        String query = "UPDATE " + TABLE + " SET "
+                + "adr1='" + escape(a.getAdr1())
+                + "',adr2='" + (a.getAdr2() == null ? "" : escape(a.getAdr2()))
+                + "',cdp='" + (a.getCdp() == null ? "" : escape(a.getCdp()))
+                + "',ville='" + (a.getCity() == null ? "" : escape(a.getCity().toUpperCase()))
+                + "',archive='" + (a.isArchive() ? "t" : "f")
+                + "'";
+        query += " WHERE idper=" + a.getId();
 
-    dc.executeUpdate(query);
-  }
-
-  public static void delete(int idper, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE idper=" + idper;
-    dc.executeUpdate(query);
-  }
-
-  public static void delete(Address a, DataConnection dc) throws SQLException {
-    delete(a.getId(), dc);
-  }
-
-  public static Vector<Address> findId(int id, DataConnection dc) throws SQLException {
-    String query = "WHERE idper = " + id;
-    return find(query, dc);
-  }
-
-  public static Vector<Address> findId(String id, DataConnection dc) throws SQLException {
-    String query = "WHERE idper = " + id;
-    return find(query, dc);
-  }
-
-  public static Vector<Address> find(String where, DataConnection dc) throws SQLException {
-    Vector<Address> v = new Vector<Address>();
-    String query = "SELECT idper,idper,adr1,adr2,cdp,ville,archive FROM " + TABLE + " " + where;
-    ResultSet rs = dc.executeQuery(query);
-    for (int i = 0; rs.next(); i++) {
-      Address a = new Address();
-      a.setId(rs.getInt(2));
-      String adr1 = rs.getString(3);
-      a.setAdr1(adr1 != null ? adr1.trim() : null);
-      String adr2 = rs.getString(4);
-      a.setAdr2(adr2 != null ? adr2.trim() : null);
-      String cdp = rs.getString(5);
-      a.setCdp(cdp != null ? cdp.trim() : null);
-      String ville = rs.getString(6);
-      a.setCity(ville != null ? ville.trim() : null);
-      a.setArchive(rs.getBoolean(7));
-      v.addElement(a);
+        dc.executeUpdate(query);
     }
-    rs.close();
-    return v;
-  }
+
+    public static void delete(int idper, DataConnection dc) throws SQLException {
+        String query = "DELETE FROM " + TABLE + " WHERE idper=" + idper;
+        dc.executeUpdate(query);
+    }
+
+    public static void delete(Address a, DataConnection dc) throws SQLException {
+        delete(a.getId(), dc);
+    }
+
+    public static List<Address> findId(int id, DataConnection dc) throws SQLException {
+        String query = "WHERE idper = " + id;
+        return find(query, dc);
+    }
+
+    public static List<Address> findId(String id, DataConnection dc) throws SQLException {
+        String query = "WHERE idper = " + id;
+        return find(query, dc);
+    }
+
+    public static List<Address> find(String where, DataConnection dc) throws SQLException {
+        List<Address> v = new ArrayList<>();
+        String query = "SELECT idper,idper,adr1,adr2,cdp,ville,archive FROM " + TABLE + " " + where;
+        try (ResultSet rs = dc.executeQuery(query)) {
+            for (int i = 0; rs.next(); i++) {
+                Address a = new Address();
+                a.setId(rs.getInt(2));
+                String adr1 = rs.getString(3);
+                a.setAdr1(adr1 != null ? adr1.trim() : null);
+                String adr2 = rs.getString(4);
+                a.setAdr2(adr2 != null ? adr2.trim() : null);
+                String cdp = rs.getString(5);
+                a.setCdp(cdp != null ? cdp.trim() : null);
+                String ville = rs.getString(6);
+                a.setCity(ville != null ? ville.trim() : null);
+                a.setArchive(rs.getBoolean(7));
+                v.add(a);
+            }
+        }
+        return v;
+    }
 }

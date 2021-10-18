@@ -20,6 +20,7 @@
  */
 package net.algem.rental;
 
+import java.util.List;
 import java.util.Vector;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoiceModel;
@@ -40,7 +41,7 @@ public class RentableChoiceModel
    super(list);
   }
 
-  public RentableChoiceModel(Vector<RentableObject> list) {
+  public RentableChoiceModel(List<RentableObject> list) {
     this(new GemList<RentableObject>(list));
   }
 

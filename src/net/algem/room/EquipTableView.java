@@ -23,7 +23,7 @@ package net.algem.room;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
@@ -87,7 +87,7 @@ public class EquipTableView
     btDelete.addActionListener(l);
   }
 
-  public Vector<Equipment> getData() {
+  public List<Equipment> getData() {
     TableCellEditor cellEditor = table.getCellEditor();
     if (cellEditor != null) {
       table.getCellEditor().stopCellEditing();

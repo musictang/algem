@@ -20,7 +20,7 @@
  */
 package net.algem.contact.teacher;
 
-import java.util.Vector;
+import java.util.List;
 import javax.swing.AbstractListModel;
 
 /**
@@ -32,13 +32,13 @@ public class SubstituteTeacherList
     extends AbstractListModel
 {
 
-  private Vector<SubstituteTeacher> list;
+  private List<SubstituteTeacher> list;
 
   /**
    *
    * @param list
    */
-  public SubstituteTeacherList(Vector<SubstituteTeacher> list ){
+  public SubstituteTeacherList(List<SubstituteTeacher> list ){
     this.list = list;
   }
 
@@ -53,7 +53,7 @@ public class SubstituteTeacherList
 
   @Override
   public Object getElementAt(int index) {
-    return list.elementAt(index);
+    return list.get(index);
   }
 
   /**
@@ -63,8 +63,8 @@ public class SubstituteTeacherList
    */
   public SubstituteTeacher getTeacher(int id) {
     for (int i = 0; i < list.size(); i++) {
-      if (list.elementAt(i).getSubstitute().getId() == id) {
-        return list.elementAt(i);
+      if (list.get(i).getSubstitute().getId() == id) {
+        return list.get(i);
       }
     }
     return null;
@@ -78,7 +78,7 @@ public class SubstituteTeacherList
   public int getId(Object teacher) {
     int index = list.indexOf(teacher);
     if (index >= 0) {
-      return list.elementAt(index).getSubstitute().getId();
+      return list.get(index).getSubstitute().getId();
     }
     return index;
   }

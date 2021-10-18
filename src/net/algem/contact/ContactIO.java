@@ -23,9 +23,8 @@ package net.algem.contact;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.accounting.DirectDebitIO;
 import net.algem.accounting.OrderLineIO;
 import net.algem.bank.RibIO;
@@ -83,29 +82,29 @@ public class ContactIO
       addCity(a, dc);
       AddressIO.insert(a, dc);
     }
-    Vector<Telephone> v = c.getTele();
+    List<Telephone> v = c.getTele();
     for (int i = 0; v != null && i < v.size(); i++) {
-      Telephone tel = v.elementAt(i);
+      Telephone tel = v.get(i);
       tel.setIdper(c.getId());
       if (tel.getNumber().length() > 0) {
         TeleIO.insert(tel, i, dc);
       }
     }
-    Vector<Email> ve = c.getEmail();
+    List<Email> ve = c.getEmail();
     if (ve != null) {
       for (int j = 0; j < ve.size(); j++) {
-        Email em = ve.elementAt(j);
+        Email em = ve.get(j);
         em.setIdper(c.getId());
         if (em.getEmail() != null && em.getEmail().trim().length() > 0) {
-          EmailIO.insert(ve.elementAt(j), j, dc);
+          EmailIO.insert(ve.get(j), j, dc);
         }
       }
     }
 
-    Vector<WebSite> vsw = c.getSites();
+    List<WebSite> vsw = c.getSites();
     if (vsw != null) {
       for (int j = 0; j < vsw.size(); j++) {
-        WebSite site = vsw.elementAt(j);
+        WebSite site = vsw.get(j);
         site.setIdper(c.getId());
         site.setPtype(c.getType());
         WebSiteIO.insert(site, j, dc);
@@ -142,14 +141,14 @@ public class ContactIO
       AddressIO.delete(ao, dc);
     }
 
-    Vector<Telephone> oldtels = o.getTele();
-    Vector<Telephone> newtels = n.getTele();
+    List<Telephone> oldtels = o.getTele();
+    List<Telephone> newtels = n.getTele();
 
     int i = 0;
     for (; newtels != null && i < newtels.size(); i++) {
-      Telephone nt = newtels.elementAt(i);
+      Telephone nt = newtels.get(i);
       if (oldtels != null && i < oldtels.size()) {
-        if (!nt.equals(oldtels.elementAt(i))) {
+        if (!nt.equals(oldtels.get(i))) {
           nt.setIdper(o.getId());
           TeleIO.update(nt, i, dc);
         }
@@ -164,12 +163,12 @@ public class ContactIO
     }
 
     i = 0;
-    Vector<Email> oldmails = o.getEmail();
-    Vector<Email> newmails = n.getEmail();
+    List<Email> oldmails = o.getEmail();
+    List<Email> newmails = n.getEmail();
     for (; newmails != null && i < newmails.size(); i++) {
-      Email ne = newmails.elementAt(i);
+      Email ne = newmails.get(i);
       if (oldmails != null && i < oldmails.size()) {
-        if (!ne.equals(oldmails.elementAt(i))) {
+        if (!ne.equals(oldmails.get(i))) {
           EmailIO.update(ne, i, dc);
         }
       } else {
@@ -184,17 +183,17 @@ public class ContactIO
 
   }
 
-  public void updateSites(Vector<WebSite> oldsites, Vector<WebSite> newsites, int idper, short ptype) throws SQLException {
+  public void updateSites(List<WebSite> oldsites, List<WebSite> newsites, int idper, short ptype) throws SQLException {
 
     int i = 0;
     for (; newsites != null && i < newsites.size(); i++) {
-      WebSite ns = newsites.elementAt(i);
+      WebSite ns = newsites.get(i);
       ns.setPtype(ptype);
       if (ns.getUrl().length() == 0) {
         continue;
       }
       if (oldsites != null && i < oldsites.size()) {
-        if (!ns.equiv(oldsites.elementAt(i))) {
+        if (!ns.equiv(oldsites.get(i))) {
           ns.setIdper(idper);
           WebSiteIO.update(ns, i, dc);
         }
@@ -205,22 +204,22 @@ public class ContactIO
     }
     // si le nombre d'anciens sites > nombre nouveaux sites
     for (; oldsites != null && i < oldsites.size(); i++) {
-      WebSite s = oldsites.elementAt(i);
+      WebSite s = oldsites.get(i);
       WebSiteIO.delete(s, i, dc);
     }
   }
 
-  public void updateEmails(Vector<Email> oldmails, Vector<Email> newmails, int idper) throws SQLException {
+  public void updateEmails(List<Email> oldmails, List<Email> newmails, int idper) throws SQLException {
 
     int i = 0;
     for (; newmails != null && i < newmails.size(); i++) {
-      Email nm = newmails.elementAt(i);
+      Email nm = newmails.get(i);
       nm.setIdx(i);
       if (nm.getEmail().length() == 0) {
         continue;
       }
       if (oldmails != null && i < oldmails.size()) {
-        if (!nm.equals(oldmails.elementAt(i))) {
+        if (!nm.equals(oldmails.get(i))) {
           nm.setIdper(idper);
           EmailIO.update(nm, i, dc);
         }
@@ -231,7 +230,7 @@ public class ContactIO
     }
     // si le nombre d'anciens sites > nombre nouveaux sites
     for (; oldmails != null && i < oldmails.size(); i++) {
-      Email m = oldmails.elementAt(i);
+      Email m = oldmails.get(i);
       EmailIO.delete(idper, i, dc);
     }
   }
@@ -281,9 +280,9 @@ public class ContactIO
    */
   public static Contact findId(int n, DataConnection dc) {
     String query = "WHERE p.id = " + n;
-    Vector<Contact> v = find(query, true, dc);
+    List<Contact> v = find(query, true, dc);
     if (v.size() > 0) {
-      return v.elementAt(0);
+      return v.get(0);
     }
     return null;
   }
@@ -296,9 +295,9 @@ public class ContactIO
    * @return e contact or null
    */
   public static Contact findId(String query, DataConnection dc) {
-    Vector<Contact> v = find(query, true, dc);
+    List<Contact> v = find(query, true, dc);
     if (v.size() > 0) {
-      return v.elementAt(0);
+      return v.get(0);
     }
     return null;
   }
@@ -313,9 +312,9 @@ public class ContactIO
    */
   public static Contact findId(String n, String p, DataConnection dc) {
     String query = "WHERE nom = '" + n + "' AND prenom = '" + p + "'";
-    Vector<Contact> v = find(query, true, dc);
+    List<Contact> v = find(query, true, dc);
     if (v.size() > 0) {
-      return v.elementAt(0);
+      return v.get(0);
     }
     return null;
   }
@@ -328,21 +327,19 @@ public class ContactIO
    * @param dc
    * @return a list of contacts
    */
-  public static Vector<Contact> find(String where, boolean complete, DataConnection dc) {
+  public static List<Contact> find(String where, boolean complete, DataConnection dc) {
 
-    Vector<Contact> v = new Vector<Contact>();
-    Vector<Person> pl = PersonIO.find(where, dc);
+    List<Contact> v = new ArrayList<>();
+    List<Person> pl = PersonIO.find(where, dc);
     if (pl.isEmpty()) {
       return v;
     }
-    Enumeration<Person> enu = pl.elements();
-    while (enu.hasMoreElements()) {
-      Person p = enu.nextElement();
+    for (Person p : pl) {
       Contact c = new Contact(p);
       if (complete) {
         complete(c, dc);
       }
-      v.addElement(c);
+      v.add(c);
     }
     return v;
   }
@@ -511,13 +508,13 @@ public class ContactIO
         throw new ContactDeleteException(msg);
       }
       // checks if contact is scheduled
-      Vector<ScheduleRange> vp = ScheduleRangeIO.find("pg WHERE pg.adherent = " + c.getId(), dc);
+      List<ScheduleRange> vp = ScheduleRangeIO.find("pg WHERE pg.adherent = " + c.getId(), dc);
       if (vp != null && vp.size() > 0) {
         msg += MessageUtil.getMessage("contact.delete.range.warning", vp.size());
         throw new ContactDeleteException(msg);
       }
       // checks if contact is scheduled (teacher or rehearsal)
-      Vector<Schedule> vpl = ScheduleIO.find(" WHERE p.idper = " + c.getId(), dc);
+      List<Schedule> vpl = ScheduleIO.find(" WHERE p.idper = " + c.getId(), dc);
       if (vpl != null && vpl.size() > 0) {
         msg += MessageUtil.getMessage("contact.delete.schedule.warning", vpl.size());
         throw new ContactDeleteException(msg);

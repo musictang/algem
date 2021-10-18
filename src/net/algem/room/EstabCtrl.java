@@ -23,7 +23,6 @@ package net.algem.room;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
 import net.algem.contact.*;
 import net.algem.util.*;
 import net.algem.util.event.GemEvent;
@@ -211,7 +210,7 @@ public class EstabCtrl
     }
     e.setPerson(p);
 
-    Vector<Address> va = contactEditor.getAddressAll();
+    List<Address> va = contactEditor.getAddressAll();
     if (va != null) {
       for (Address a : va) {
         a.setId(e.getId());
@@ -219,7 +218,7 @@ public class EstabCtrl
       e.setAddress(va);
     }
 
-    Vector<Telephone> telephones = contactEditor.getTele();
+    List<Telephone> telephones = contactEditor.getTele();
     int i = 0;
     if (telephones != null) {
       for (Telephone t : telephones) {
@@ -230,7 +229,7 @@ public class EstabCtrl
       e.setTele(telephones);
     }
 
-    Vector<Email> emails = contactEditor.getEmail();
+    List<Email> emails = contactEditor.getEmail();
     i = 0;
     if (emails != null) {
       for (Email em : emails) {

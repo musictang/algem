@@ -54,7 +54,7 @@ public class CsvContactTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    ContactImport c = tuples.elementAt(line);
+    ContactImport c = tuples.get(line);
     Contact p = c.getParent();
     Address a = c.getAddress();
 

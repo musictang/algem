@@ -23,6 +23,7 @@ package net.algem.planning;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -132,14 +133,14 @@ public abstract class AbstractHistoRehearsal
    */
   public void load(boolean all) {
     int min = 0;
-    Vector<Schedule> vp = getSchedule(all);
+    List<Schedule> vp = getSchedule(all);
 
     if (vp != null && vp.size() > 0) {
       loaded = true;
     }
     if (vp != null) {
       for (int i = 0, len = vp.size(); i < len; i++) {
-        Schedule p = vp.elementAt(i);
+        Schedule p = vp.get(i);
         Hour hd = p.getStart();
         Hour hf = p.getEnd();
         min += hd.getLength(hf);
@@ -179,5 +180,5 @@ public abstract class AbstractHistoRehearsal
    * @param all all the schedules from the beginning
    * @return a list of schedules
    */
-  public abstract Vector<Schedule> getSchedule(boolean all);
+  public abstract List<Schedule> getSchedule(boolean all);
 }

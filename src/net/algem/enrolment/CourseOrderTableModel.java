@@ -50,7 +50,7 @@ public class CourseOrderTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    CourseOrder m = (CourseOrder) tuples.elementAt(i);
+    CourseOrder m = (CourseOrder) tuples.get(i);
     return m.getIdOrder();
   }
 
@@ -75,7 +75,7 @@ public class CourseOrderTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    CourseOrder m = tuples.elementAt(ligne);
+    CourseOrder m = tuples.get(ligne);
     switch (colonne) {
       case 0:
         return m.getCourseModuleInfo().getCode().getLabel();

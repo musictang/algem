@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import net.algem.Algem;
 import net.algem.accounting.*;
 import net.algem.config.*;
@@ -410,9 +409,9 @@ public class EnrolmentOrderUtil {
    * @param orderDateEnd
    * @return a list of dates
    */
-  public Vector<DateFr> getQuarterPaymentDates(DateFr orderDateStart, DateFr orderDateEnd) {
+  public List<DateFr> getQuarterPaymentDates(DateFr orderDateStart, DateFr orderDateEnd) {
 
-    Vector<DateFr> dates = new Vector<DateFr>();
+    List<DateFr> dates = new ArrayList<>();
 
     int nbMonths = 0;
     int nbOrderLines = 0;
@@ -509,9 +508,9 @@ public class EnrolmentOrderUtil {
    * @param endOrderDate
    * @return a list of dates
    */
-  Vector<DateFr> getMonthPaymentDates(DateFr startOrderDate, DateFr endOrderDate) {
+  List<DateFr> getMonthPaymentDates(DateFr startOrderDate, DateFr endOrderDate) {
 
-    Vector<DateFr> dates = new Vector<DateFr>();
+    List<DateFr> dates = new ArrayList<>();
 
     DateFr firstOrderLine = getFirstDateOfPayment(startOrderDate);
     dates.add(new DateFr(firstOrderLine));
@@ -534,7 +533,7 @@ public class EnrolmentOrderUtil {
    */
   ArrayList<OrderLine> setMonthOrderLines(ModuleOrder moduleOrder, OrderLine e, List<DateFr> dates) {
     ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
-//    Vector<DateFr> orderDates = getMonthPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
+//    List<DateFr> orderDates = getMonthPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
     int firstDocumentNumber = 0;
     try {
       firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey()));
@@ -581,9 +580,9 @@ public class EnrolmentOrderUtil {
    */
   //ERIC 2.17 23/08/2019
   //FIXME
-  public Vector<DateFr> getSemesterPaymentDates(DateFr orderDateStart, DateFr orderDateEnd) {
+  public List<DateFr> getSemesterPaymentDates(DateFr orderDateStart, DateFr orderDateEnd) {
 
-    Vector<DateFr> dates = new Vector<DateFr>();
+    List<DateFr> dates = new ArrayList<>();
 
     int nbMonths = 0;
     int nbOrderLines = 0;
@@ -613,7 +612,7 @@ public class EnrolmentOrderUtil {
   //FIXME
   ArrayList<OrderLine> setSemesterOrderLines(ModuleOrder moduleOrder, OrderLine e, List<DateFr> dates) {
     ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
-//    Vector<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
+//    List<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
     int firstDocumentNumber = 0;
     try {
       firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey()));

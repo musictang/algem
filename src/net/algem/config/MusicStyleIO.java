@@ -22,8 +22,8 @@ package net.algem.config;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.util.DataConnection;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
@@ -37,73 +37,72 @@ import net.algem.util.model.TableIO;
  */
 public class MusicStyleIO
         extends TableIO
-        implements Cacheable
-{
+        implements Cacheable {
 
-  public static final String DEFAULT_STYLE = "Autre";
-  public static final String TABLE = "stylemus";
-  public static final String SEQUENCE = "stylemus_id_seq";
-  private DataConnection dc;
+    public static final String DEFAULT_STYLE = "Autre";
+    public static final String TABLE = "stylemus";
+    public static final String SEQUENCE = "stylemus_id_seq";
+    private DataConnection dc;
 
-  public MusicStyleIO(DataConnection dc) {
-    this.dc = dc;
-  }
-
-  public void insert(MusicStyle ms) throws SQLException {
-    int n = nextId(SEQUENCE, dc);
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + n
-            + ",'" + ms.getLabel()
-            + "')";
-
-    dc.executeUpdate(query);
-    ms.setId(n);
-  }
-
-  public void update(MusicStyle ms) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET libelle = '" + ms.getLabel() + "' WHERE id = " + ms.getId();
-    dc.executeUpdate(query);
-  }
-
-  public void delete(MusicStyle ms) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + ms.getId();
-    dc.executeUpdate(query);
-  }
-
-  public MusicStyle findId(String l) throws SQLException {
-    String query = "WHERE libelle = '" + l + "'";
-    Vector<MusicStyle> v = find(query);
-    if (v.size() > 0) {
-      return v.elementAt(0);
-    }
-    return null;
-  }
-
-  public MusicStyle findId(int id) throws SQLException {
-    String query = "WHERE id = " + id;
-    Vector<MusicStyle> v = find(query);
-    if (v.size() > 0) {
-      return v.elementAt(0);
-    }
-    return null;
-  }
-
-  public Vector<MusicStyle> find(String where) throws SQLException {
-    Vector<MusicStyle> v = new Vector<MusicStyle>();
-    String query = "SELECT * FROM " + TABLE + " " + where;
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      MusicStyle style = new MusicStyle();
-      style.setId(rs.getInt(1));
-      style.setLabel(rs.getString(2).trim());
-      v.addElement(style);
+    public MusicStyleIO(DataConnection dc) {
+        this.dc = dc;
     }
 
-    return v;
-  }
+    public void insert(MusicStyle ms) throws SQLException {
+        int n = nextId(SEQUENCE, dc);
+        String query = "INSERT INTO " + TABLE + " VALUES("
+                + n
+                + ",'" + ms.getLabel()
+                + "')";
 
-  @Override
-  public List<MusicStyle> load() throws SQLException {
-    return find("ORDER BY libelle");
-  }
+        dc.executeUpdate(query);
+        ms.setId(n);
+    }
+
+    public void update(MusicStyle ms) throws SQLException {
+        String query = "UPDATE " + TABLE + " SET libelle = '" + ms.getLabel() + "' WHERE id = " + ms.getId();
+        dc.executeUpdate(query);
+    }
+
+    public void delete(MusicStyle ms) throws SQLException {
+        String query = "DELETE FROM " + TABLE + " WHERE id = " + ms.getId();
+        dc.executeUpdate(query);
+    }
+
+    public MusicStyle findId(String l) throws SQLException {
+        String query = "WHERE libelle = '" + l + "'";
+        List<MusicStyle> v = find(query);
+        if (v.size() > 0) {
+            return v.get(0);
+        }
+        return null;
+    }
+
+    public MusicStyle findId(int id) throws SQLException {
+        String query = "WHERE id = " + id;
+        List<MusicStyle> v = find(query);
+        if (v.size() > 0) {
+            return v.get(0);
+        }
+        return null;
+    }
+
+    public List<MusicStyle> find(String where) throws SQLException {
+        List<MusicStyle> v = new ArrayList<>();
+        String query = "SELECT * FROM " + TABLE + " " + where;
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                MusicStyle style = new MusicStyle();
+                style.setId(rs.getInt(1));
+                style.setLabel(rs.getString(2).trim());
+                v.add(style);
+            }
+        }
+        return v;
+    }
+
+    @Override
+    public List<MusicStyle> load() throws SQLException {
+        return find("ORDER BY libelle");
+    }
 }

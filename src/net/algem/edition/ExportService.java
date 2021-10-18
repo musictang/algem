@@ -454,15 +454,15 @@ public class ExportService {
   public String getUserEmail(User user) {
     Contact c = new Contact(user);
     ContactIO.complete(c, dc);
-    Vector<Email> emails = c.getEmail();
-    return (emails == null || emails.isEmpty()) ? user.getFirstName() : emails.elementAt(0).getEmail();
+    List<Email> emails = c.getEmail();
+    return (emails == null || emails.isEmpty()) ? user.getFirstName() : emails.get(0).getEmail();
   }
 
-  public Vector<ScheduleObject> getSchedule(DateFr start, DateFr end) throws SQLException {
+  public List<ScheduleObject> getSchedule(DateFr start, DateFr end) throws SQLException {
     return service.getSchedule("WHERE jour >= '" + start + "' AND jour <= '" + end + "'  ORDER BY jour");
   }
 
-  public Vector<ScheduleRangeObject> getScheduleRange(DateFr start, DateFr end) throws SQLException {
+  public List<ScheduleRangeObject> getScheduleRange(DateFr start, DateFr end) throws SQLException {
     String where = "AND p.jour >= '" + start + "' AND p.jour <= '" + end + "' AND pg.adherent != 0 ORDER BY p.jour";
     return ScheduleRangeIO.findRangeObject(where, service, dc);
   }

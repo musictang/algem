@@ -66,13 +66,13 @@ extends JTableModel<AdministrativeActionModel>
   
   @Override
   public int getIdFromIndex(int i) {
-    AdministrativeActionModel a = tuples.elementAt(i);
+    AdministrativeActionModel a = tuples.get(i);
     return Arrays.asList(PlanningService.WEEK_DAYS).indexOf(a.getDay());
   }
 
   @Override
   public Object getValueAt(int line, int col) {
-    AdministrativeActionModel a = tuples.elementAt(line);
+    AdministrativeActionModel a = tuples.get(line);
     switch (col) {
       case 0:
         return a.getDay();
@@ -89,7 +89,7 @@ extends JTableModel<AdministrativeActionModel>
 
   @Override
   public void setValueAt(Object value, int line, int column) {
-    AdministrativeActionModel a = tuples.elementAt(line);
+    AdministrativeActionModel a = tuples.get(line);
     switch(column) {
       case 0:
         a.setDay((DayOfWeek) value);

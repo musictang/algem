@@ -60,7 +60,7 @@ public class MusicianTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Musician p = tuples.elementAt(i);
+    Musician p = tuples.get(i);
     return p.getId();
   }
 
@@ -87,7 +87,7 @@ public class MusicianTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    Musician m = tuples.elementAt(ligne);
+    Musician m = tuples.get(ligne);
     switch (colonne) {
       case 0:
         return m.getId();

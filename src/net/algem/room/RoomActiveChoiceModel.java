@@ -20,7 +20,7 @@
  */
 package net.algem.room;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
 import net.algem.util.ui.GemChoiceFilterModel;
@@ -45,7 +45,7 @@ public class RoomActiveChoiceModel
     selected = this.list.getElementAt(indices.get(0));
   }
 
-  public RoomActiveChoiceModel(Vector<Room> list, boolean active) {
+  public RoomActiveChoiceModel(List<Room> list, boolean active) {
     this(new GemList<Room>(list), active);
   }
 

@@ -21,6 +21,7 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import java.util.Enumeration;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.module.GemDesktop;
@@ -49,7 +50,7 @@ public class CategoryOccupCtrl
 
 	@Override
 	public void load() {
-		load(ParamTableIO.find(TABLE, COLUMN_NAME, dc).elements());
+		load((Enumeration<? extends Param>) ParamTableIO.find(TABLE, COLUMN_NAME, dc));
 	}
 
 	@Override
@@ -61,7 +62,7 @@ public class CategoryOccupCtrl
 	public void insertion(Param _p) throws SQLException {
 		ParamTableIO.insert(TABLE, SEQUENCE, _p, dc);
 		CategoryOccup cp = new CategoryOccup(Integer.parseInt(_p.getKey()), _p.getValue());
-		dataCache.getOccupationalCat().addElement(cp);
+		dataCache.getOccupationalCat().add(cp);
 	}
 
 	@Override

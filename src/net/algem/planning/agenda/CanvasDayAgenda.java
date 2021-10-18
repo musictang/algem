@@ -26,10 +26,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.List;
 import net.algem.planning.*;
 import net.algem.util.ui.GemPanel;
 
@@ -55,7 +56,7 @@ public class CanvasDayAgenda
   int pas_y = 12;
   String[] heures;
   int minutes;
-  Vector plan;
+  List<PlanningLib> plan;
   Calendar cal;
   Dimension dim;
   ActionListener actionListener;
@@ -65,7 +66,7 @@ public class CanvasDayAgenda
     maxplage = max;
 
     cal = Calendar.getInstance(Locale.FRANCE);
-    plan = new Vector();
+    plan = new ArrayList();
 
     heures = new String[maxplage];
     Hour heure = new Hour("09:00");
@@ -79,7 +80,7 @@ public class CanvasDayAgenda
 
   public void set(PlanningLib p) {
     minutes += p.getEnd().toMinutes() - p.getStart().toMinutes();
-    plan.addElement(p);
+    plan.add(p);
   }
 
   public void setDate(Date d) {
@@ -92,14 +93,14 @@ public class CanvasDayAgenda
     return clickPlan;
   }
 
-  public java.util.Vector getScheduleRanges() {
+  public java.util.List getScheduleRanges() {
     return null;
   }
 
   public void clear() {
     top = 0;
     minutes = 0;
-    plan.removeAllElements();
+    plan.clear();
   }
 
   public void setTop(int t) {
@@ -159,7 +160,7 @@ public class CanvasDayAgenda
     }
 
     for (int i = 0; i < plan.size(); i++) {
-      PlanningLib p = (PlanningLib) plan.elementAt(i);
+      PlanningLib p = (PlanningLib) plan.get(i);
       int debpl = p.getStart().toMinutes() - 540;
       int finpl = p.getEnd().toMinutes() - 540;
       int duree = finpl - debpl;

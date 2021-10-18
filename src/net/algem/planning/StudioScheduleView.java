@@ -26,7 +26,6 @@ import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JCheckBox;
 import net.algem.config.*;
 import net.algem.contact.EmployeePanelCtrl;
@@ -77,7 +76,7 @@ class StudioScheduleView
 
     });
 
-    group = new GroupChoice(new Vector<Group>(dataCache.getList(Model.Group).getData()));
+    group = new GroupChoice(dataCache.getList(Model.Group).getData());
     dateTimeCtrl = new DateTimeCtrl();
     dateTimeCtrl.add();
     roomPanelCtrl = new RoomPanelCtrl(dataCache);

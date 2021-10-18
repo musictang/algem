@@ -20,7 +20,7 @@
  */
 package net.algem.config;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemChoice;
 
@@ -35,11 +35,11 @@ public class CategoryOccupChoice
         extends GemChoice
 {
 
-  public CategoryOccupChoice(Vector categories) {
+  public CategoryOccupChoice(List categories) {
     addItem(BundleUtil.getLabel("None.label"));
 
     for (int n = 0; n < categories.size(); n++) {
-      CategoryOccup i = (CategoryOccup) categories.elementAt(n);
+      CategoryOccup i = (CategoryOccup) categories.get(n);
       addItem(i.getLabel());
     }
   }

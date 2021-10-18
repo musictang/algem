@@ -23,7 +23,6 @@ package net.algem.accounting;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
 import net.algem.config.Param;
 import net.algem.course.Module;
 import net.algem.planning.PlanningLib;
@@ -61,11 +60,11 @@ public interface AccountingService {
    */
   List<Param> getActiveCostAccounts();
 
-  Vector<ScheduleRange> getCourseScheduleRange(int idplanning) throws SQLException;
+  List<ScheduleRange> getCourseScheduleRange(int idplanning) throws SQLException;
 
-  Vector<PlanningLib> getPlanningLib(String start, String end, int school, boolean catchup) throws SQLException;
+  List<PlanningLib> getPlanningLib(String start, String end, int school, boolean catchup) throws SQLException;
 
-  Vector<PlanningLib> getPlanningLib(String start, String end, int school, int teacherId, boolean catchup) throws SQLException;
+  List<PlanningLib> getPlanningLib(String start, String end, int school, int teacherId, boolean catchup) throws SQLException;
 
   /**
    *

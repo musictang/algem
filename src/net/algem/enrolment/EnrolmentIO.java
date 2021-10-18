@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Vector;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -102,13 +101,11 @@ public class EnrolmentIO
 
   public static List<Enrolment> find(String where, DataConnection dc) throws SQLException {
     List<Enrolment> enrolments = new ArrayList<Enrolment>();
-    Vector<Order> orders = OrderIO.find(where, dc);
+    List<Order> orders = OrderIO.find(where, dc);
     if (orders.size() < 1) {
       return enrolments;
     }
-    Enumeration<Order> enu = orders.elements();
-    while (enu.hasMoreElements()) {
-      Order o = enu.nextElement();
+    for (Order o : orders) {
       Enrolment e = new Enrolment(o);
       e.setModule(ModuleOrderIO.findByIdOrder(e.getId(), dc));
       e.setCourseOrder(CourseOrderIO.findId(e.getId(), dc));

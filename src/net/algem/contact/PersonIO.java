@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.billing.InvoiceIO;
 import net.algem.enrolment.CourseOrderIO;
 import net.algem.enrolment.OrderIO;
@@ -205,12 +204,12 @@ public class PersonIO
     return p;
   }
 
-  public static Vector<Person> find(String where, DataConnection dc) {
-    Vector<Person> v = new Vector<Person>();
+  public static List<Person> find(String where, DataConnection dc) {
+    List<Person> v = new ArrayList<>();
     String query = PRE_QUERY + where + " ORDER BY p.nom";
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
-        v.addElement(getFromRS(rs));
+        v.add(getFromRS(rs));
       }
     } catch (SQLException e) {
       GemLogger.logException(query, e);

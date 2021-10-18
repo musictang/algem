@@ -44,7 +44,7 @@ public class EstabTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Person p = tuples.elementAt(i).getPerson();
+    Person p = tuples.get(i).getPerson();
     return p.getId();
   }
 
@@ -69,7 +69,7 @@ public class EstabTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Establishment e = tuples.elementAt(line);
+    Establishment e = tuples.get(line);
     Person p = e.getPerson();
     switch (col) {
       case 0:
@@ -84,7 +84,7 @@ public class EstabTableModel
 
   @Override
   public void setValueAt(Object value, int line, int col) {
-    Establishment e = tuples.elementAt(line);
+    Establishment e = tuples.get(line);
     if (col == 2) {
       e.setActive((boolean) value);
     }

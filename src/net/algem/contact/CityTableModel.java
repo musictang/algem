@@ -62,7 +62,7 @@ public class CityTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    City c = tuples.elementAt(line);
+    City c = tuples.get(line);
     switch (col) {
       case 0:
         return c.getCdp();

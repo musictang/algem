@@ -30,8 +30,10 @@ import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormatSymbols;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import javax.swing.JComboBox;
@@ -64,8 +66,8 @@ public abstract class MonthPlanDetailView
   private Calendar cal;
   private MonthPlanView view;
   private String[] monthNames;
-  private Vector<ScheduleObject> schedules = new Vector<ScheduleObject>();
-  private Vector<ScheduleRangeObject> ranges = new Vector<ScheduleRangeObject>();
+  private List<ScheduleObject> schedules = new ArrayList<>();
+  private List<ScheduleRangeObject> ranges = new ArrayList<>();
 
   public MonthPlanDetailView(GemChoice choice) {
     this.choice = choice;
@@ -126,14 +128,14 @@ public abstract class MonthPlanDetailView
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
 
-    Vector<? extends ScheduleObject> v = (Vector<? extends ScheduleObject>) evt.getNewValue();
+    List<? extends ScheduleObject> v = (List<? extends ScheduleObject>) evt.getNewValue();
     //System.out.println("MonthPlanDetailView.propertyChange: "+evt.getPropertyName()+"  v.size:"+v.size());
     if ("planning".equals(evt.getPropertyName())) {
-      schedules = (Vector<ScheduleObject>) v;
+      schedules = (List<ScheduleObject>) v;
       cal.setTime(((MonthSchedule) evt.getSource()).getStart());
       load();
     } else if ("plage".equals(evt.getPropertyName())) {
-      ranges = (Vector<ScheduleRangeObject>) v;
+      ranges = (List<ScheduleRangeObject>) v;
       load();
     }
 
@@ -143,7 +145,7 @@ public abstract class MonthPlanDetailView
     load(cal.getTime(), schedules, ranges);
   }
 
-  public void load(Date date, Vector<ScheduleObject> _schedules, Vector<ScheduleRangeObject> _ranges) {
+  public void load(Date date, List<ScheduleObject> _schedules, List<ScheduleRangeObject> _ranges) {
     //System.out.println("MonthPlanDetailView.load: PL:"+_plannings.size()+" PG:"+plages.size());
     cal.setTime(date);
     int year = cal.get(Calendar.YEAR);
@@ -157,18 +159,18 @@ public abstract class MonthPlanDetailView
     EventQueue.invokeLater(new Runnable()
     {
       public void run() {
-        Vector<ScheduleObject> v1 = new Vector<ScheduleObject>();
+        List<ScheduleObject> v1 = new ArrayList<>();
         for (int i = 0; i < schedules.size(); i++) {
-          ScheduleObject p = schedules.elementAt(i);
+          ScheduleObject p = schedules.get(i);
           if (isNotFiltered(p)) {
-            v1.addElement(p);
+            v1.add(p);
           }
         }
-        Vector<ScheduleRangeObject> v2 = new Vector<ScheduleRangeObject>();
+        List<ScheduleRangeObject> v2 = new ArrayList<>();
         for (int i = 0; i < ranges.size(); i++) {
-          ScheduleRangeObject p = (ScheduleRangeObject) ranges.elementAt(i);
+          ScheduleRangeObject p = (ScheduleRangeObject) ranges.get(i);
           if (isNotFiltered(p)) {
-            v2.addElement(p);
+            v2.add(p);
           }
         }
         view.load(cal.getTime(), v1, v2);

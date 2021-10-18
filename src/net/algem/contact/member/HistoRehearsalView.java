@@ -21,7 +21,7 @@
 package net.algem.contact.member;
 
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.List;
 import net.algem.planning.AbstractHistoRehearsal;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
@@ -47,7 +47,7 @@ public class HistoRehearsalView
   }
 
   @Override
-  public Vector<Schedule> getSchedule(boolean all) {
+  public List<Schedule> getSchedule(boolean all) {
 
     String query = " WHERE p.ptype=" + Schedule.MEMBER + " AND p.idper=" + idper;
     if (!all) {

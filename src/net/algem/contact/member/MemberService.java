@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import net.algem.accounting.Account;
 import net.algem.accounting.AccountIO;
 import net.algem.accounting.AccountPrefIO;
@@ -267,9 +266,9 @@ public class MemberService {
     if (group > 0) {
       where += " AND groupe = " + group;
     }
-    Vector<OrderLine> ve = OrderLineIO.find(where, dc);
+    List<OrderLine> ve = OrderLineIO.find(where, dc);
     if (ve.size() > 0) {
-      OrderLineIO.delete(ve.elementAt(0), dc); // suppression de la première échéance trouvée seulement
+      OrderLineIO.delete(ve.get(0), dc); // suppression de la première échéance trouvée seulement
     }
   }
 
@@ -334,7 +333,7 @@ public class MemberService {
    * @return a list of schedule ranges
    * @throws SQLException
    */
-  public Vector<ScheduleRangeObject> findFollowUp(int memberId, int courseId, boolean collective) throws SQLException {
+  public List<ScheduleRangeObject> findFollowUp(int memberId, int courseId, boolean collective) throws SQLException {
     String where = " AND (pg.note >= 0 OR p.note > 0)"
       + " AND pg.note = s1.id"
       + " AND p.note = s2.id"
@@ -350,7 +349,7 @@ public class MemberService {
    * @return a list of schedule ranges
    * @throws SQLException
    */
-  public Vector<ScheduleRangeObject> findFollowUp(int memberId, DateRange dates) throws SQLException {
+  public List<ScheduleRangeObject> findFollowUp(int memberId, DateRange dates) throws SQLException {
     String where = " AND p.jour BETWEEN '" + dates.getStart() + "' AND '" + dates.getEnd()
       + "' AND (pg.note >= 0 OR p.note > 0)"
       //            + " AND (pg.note = s.id OR p.note = s.id)"
@@ -362,7 +361,7 @@ public class MemberService {
     return ScheduleRangeIO.findFollowUp(where, false, dc);
   }
 
-  public Vector<ScheduleRangeObject> findFollowUp(int memberId, Date date, String actions) throws SQLException {
+  public List<ScheduleRangeObject> findFollowUp(int memberId, Date date, String actions) throws SQLException {
     String where = " AND p.jour >= '" + date + "' AND p.action IN (" + actions + ")"
       + " AND (pg.note >= 0 OR p.note > 0)"
       + " AND pg.note = s1.id"
@@ -372,7 +371,7 @@ public class MemberService {
     return ScheduleRangeIO.findFollowUp(where, false, dc);
   }
 
-  public Vector<ScheduleRangeObject> findFollowUp(int memberId, Date start, Date end, String actions) throws SQLException {
+  public List<ScheduleRangeObject> findFollowUp(int memberId, Date start, Date end, String actions) throws SQLException {
     String where = " AND p.jour BETWEEN '" + start + "' AND '" + end + "' AND p.action IN (" + actions + ")"
       + " AND (pg.note >= 0 OR p.note > 0)"
       + " AND pg.note = s1.id"
@@ -495,24 +494,24 @@ public class MemberService {
     return conflictService.testRoomAndPersonConflicts(debut, a);
   }
 
-  public Vector<ScheduleTestConflict> testRangeSchedule(ScheduleObject plan, DateFr debut, Hour hd, Hour hf) throws SQLException {
+  public List<ScheduleTestConflict> testRangeSchedule(ScheduleObject plan, DateFr debut, Hour hd, Hour hf) throws SQLException {
     return conflictService.testMemberScheduleConflict(plan, debut, hd, hf);
   }
 
-  public Vector<DateFr> generationDate(int day, DateFr start, DateFr end) {
+  public List<DateFr> generationDate(int day, DateFr start, DateFr end) {
 
-    Vector<DateFr> v = new Vector<DateFr>();
+    List<DateFr> v = new ArrayList<>();
     DateFr s = new DateFr(start);
     while (!s.after(end)) {
       if (s.getDayOfWeek() == day) {
-        v.addElement(new DateFr(s));
+        v.add(new DateFr(s));
       }
       s.incDay(1);
     }
     return v;
   }
 
-  public Vector<RehearsalPass> getPassList() throws SQLException {
+  public List<RehearsalPass> getPassList() throws SQLException {
     return RehearsalPassIO.findAll("", dc);
   }
 

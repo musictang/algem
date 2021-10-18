@@ -24,7 +24,7 @@ package net.algem.contact;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import java.util.Vector;
+import java.util.List;
 import net.algem.config.Param;
 import net.algem.config.ParamChoice;
 import static net.algem.contact.InfoPanel.RIGHT_SPACING;
@@ -64,7 +64,7 @@ public class TelPanel extends InfoPanel
   }
 
   @Override
-  protected void init(Vector<Param> v, boolean withArchive) {
+  protected void init(List<Param> v, boolean withArchive) {
     iChoice = new ParamChoice(v);
     iField = new GemField();
     gb.add(iChoice, 0,0,1,1, RIGHT_SPACING, GridBagConstraints.HORIZONTAL, 0.0, 0.0);

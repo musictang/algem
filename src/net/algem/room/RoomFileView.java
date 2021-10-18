@@ -22,7 +22,7 @@ package net.algem.room;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.UIManager;
 import net.algem.accounting.OrderLineEditor;
 import net.algem.accounting.OrderLineTableModel;
@@ -203,7 +203,7 @@ public class RoomFileView
     editor.set(r);
   }
 
-  private void setEquipment(Vector<Equipment> ve) {
+  private void setEquipment(List<Equipment> ve) {
     equipEditor.load(ve);
   }
 }

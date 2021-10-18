@@ -23,7 +23,7 @@ package net.algem.room;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -85,10 +85,10 @@ public class RoomRateSearchCtrl
       query = "ORDER BY hp";
     }
 
-    Vector<RoomRate> v;
+    List<RoomRate> v;
     try {
       v = ((RoomRateIO) DataCache.getDao(Model.RoomRate)).find(query);
-//      v = new Vector<RoomRate>(dataCache.getList(Model.RoomRate).getData());
+//      v = new List<RoomRate>(dataCache.getList(Model.RoomRate).getData());
     } catch (SQLException ex) {
       GemLogger.logException("Tarif salle found exception", ex);
       v = null;
@@ -97,7 +97,7 @@ public class RoomRateSearchCtrl
       setStatus(EMPTY_LIST);
     } else if (v.size() == 1) {
       ((CardLayout) wCard.getLayout()).show(wCard, "masque");
-      mask.loadCard(v.elementAt(0));
+      mask.loadCard(v.get(0));
     } else {
       ((CardLayout) wCard.getLayout()).show(wCard, "liste");
       list.loadResult(v); // remplissage de la liste des tarifs dans la table

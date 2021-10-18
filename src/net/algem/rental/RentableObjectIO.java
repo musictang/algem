@@ -22,13 +22,12 @@ package net.algem.rental;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.Algem;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
-import net.algem.util.MessageUtil;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
 
@@ -104,15 +103,15 @@ public class RentableObjectIO
     public RentableObject findId(int n) {
 
         String query = "WHERE id = " + n;
-        Vector<RentableObject> v = find(query);
+        List<RentableObject> v = find(query);
         if (v != null && v.size() > 0) {
-            return v.elementAt(0);
+            return v.get(0);
         }
         return null;
     }
 
 
-    public Vector<RentableObject> findAll() {
+    public List<RentableObject> findAll() {
         String query = "SELECT * FROM " + TABLE + " ORDER BY type,marque";
         return findAll(query);
     }
@@ -122,15 +121,14 @@ public class RentableObjectIO
         return findAll(query);
     }
 
-    public Vector<RentableObject> find(String where) {
+    public List<RentableObject> find(String where) {
         String query = "SELECT " + TABLE + ".* FROM " + TABLE + " " + where;
         return findAll(query);
     }
 
-    private Vector<RentableObject> findAll(String query) {
-        Vector<RentableObject> v = new Vector<RentableObject>();
-        try {
-            ResultSet rs = dc.executeQuery(query);
+    private List<RentableObject> findAll(String query) {
+        List<RentableObject> v = new ArrayList<>();
+        try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
                 RentableObject s = new RentableObject();
                 s.setId(rs.getInt(1));
@@ -141,9 +139,9 @@ public class RentableObjectIO
                 s.setDescription(rs.getString(6).trim());
                 s.setVendeur(rs.getString(7).trim());
                 s.setActif(rs.getBoolean(8));
-                v.addElement(s);
+                v.add(s);
             }
-            rs.close();
+          
         } catch (SQLException e) {
             GemLogger.logException(query, e);
         }

@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.bank.RibIO;
 import net.algem.contact.*;
 import net.algem.util.DataCache;
@@ -64,7 +63,7 @@ public class EstablishmentIO
       + " WHERE p.ptype = " + Person.ESTABLISHMENT;
     query += where;
 
-    ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
     while (rs.next()) {
       Establishment e = new Establishment(PersonIO.getFromRS(rs));
       e.setActive(rs.getBoolean(PersonIO.COLUMNS_OFFSET));
@@ -74,6 +73,7 @@ public class EstablishmentIO
       e.setSites(WebSiteIO.find(e.getId(), Person.ESTABLISHMENT, dc));
 
       estabs.add(e);
+    }
     }
     return estabs;
   }
@@ -117,8 +117,7 @@ public class EstablishmentIO
   public static void delete(Establishment e, DataConnection dc) throws EstablishmentException {
 
     String query = "SELECT etablissement FROM " + RoomIO.TABLE + " WHERE etablissement = " + e.getId();
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
       if (rs.next()) {
         throw new EstablishmentException(MessageUtil.getMessage("establishment.delete.exception"));
       }
@@ -160,21 +159,21 @@ public class EstablishmentIO
       a.setId(e.getId());
       AddressIO.insert(a, dc);
     }
-    Vector<Telephone> v = e.getTele();
+    List<Telephone> v = e.getTele();
     for (int i = 0; v != null && i < v.size(); i++) {
-      Telephone tel = v.elementAt(i);
+      Telephone tel = v.get(i);
       tel.setIdper(e.getId());
       if (tel.getNumber().length() > 0) {
         TeleIO.insert(tel, i, dc);
       }
     }
-    Vector<Email> ve = e.getEmail();
+    List<Email> ve = e.getEmail();
     if (ve != null) {
       for (int j = 0; j < ve.size(); j++) {
-        Email em = ve.elementAt(j);
+        Email em = ve.get(j);
         em.setIdper(e.getId());
         if (em.getEmail() != null && em.getEmail().trim().length() > 0) {
-          EmailIO.insert(ve.elementAt(j), j, dc);
+          EmailIO.insert(ve.get(j), j, dc);
         }
       }
     }
@@ -205,14 +204,14 @@ public class EstablishmentIO
       AddressIO.insert(a, dc);
     }
 
-    Vector<Telephone> newtels = n.getTele();
-    Vector<Telephone> oldtels = e.getTele();
+    List<Telephone> newtels = n.getTele();
+    List<Telephone> oldtels = e.getTele();
 
     int i = 0;
     for (; newtels != null && i < newtels.size(); i++) {
-      Telephone nt = newtels.elementAt(i);
+      Telephone nt = newtels.get(i);
       if (oldtels != null && i < oldtels.size()) {
-        if (!nt.equals(oldtels.elementAt(i))) {
+        if (!nt.equals(oldtels.get(i))) {
           nt.setIdper(e.getId());
           TeleIO.update(nt, i, dc);
         }
@@ -226,12 +225,12 @@ public class EstablishmentIO
       TeleIO.delete(e.getId(), i, dc);
     }
     i = 0;
-    Vector<Email> oldmails = e.getEmail();
-    Vector<Email> newmails = n.getEmail();
+    List<Email> oldmails = e.getEmail();
+    List<Email> newmails = n.getEmail();
     for (; newmails != null && i < newmails.size(); i++) {
-      Email ne = newmails.elementAt(i);
+      Email ne = newmails.get(i);
       if (oldmails != null && i < oldmails.size()) {
-        if (!ne.equals(oldmails.elementAt(i))) {
+        if (!ne.equals(oldmails.get(i))) {
           EmailIO.update(ne, i, dc);
         }
       } else {

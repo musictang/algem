@@ -34,5 +34,5 @@ public interface ScheduleView
 
   public Schedule getSchedule();
 
-  public java.util.Vector<ScheduleRangeObject> getScheduleRanges();
+  public java.util.List<ScheduleRangeObject> getScheduleRanges();
 }

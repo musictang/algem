@@ -20,7 +20,8 @@
  */
 package net.algem.contact;
 
-import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
 import net.algem.util.BundleUtil;
 import net.algem.util.jdesktop.DesktopMailHandler;
 
@@ -39,7 +40,7 @@ public class EmailView extends InfoView
     mailHandler = new DesktopMailHandler();
   }
 
-  public void setEmails(Vector<Email> emails) {
+  public void setEmails(List<Email> emails) {
     clearAll();
     if (emails != null && emails.size() > 0) {
       for (Email e : emails) {
@@ -53,8 +54,8 @@ public class EmailView extends InfoView
     }
   }
 
-  public Vector<Email> getEmails() {
-    Vector<Email> v = new Vector<Email>();
+  public List<Email> getEmails() {
+    List<Email> v = new ArrayList<>();
     for (InfoPanel pm : rows) {
       Email e = ((MailPanel) pm).getEmail();
       if (e.getEmail() != null && !e.getEmail().isEmpty()) {

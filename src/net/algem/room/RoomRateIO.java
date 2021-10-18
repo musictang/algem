@@ -22,8 +22,8 @@ package net.algem.room;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
@@ -102,24 +102,24 @@ public class RoomRateIO
   public RoomRate findId(int id) throws SQLException {
     RoomRate t = null;
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id = " + id;
-    ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
     if (rs.next()) {
       t = getRateFromRS(rs);
     }
-    rs.close();
+    }
     return t;
   }
 
-  public Vector<RoomRate> find(String where) throws SQLException {
+  public List<RoomRate> find(String where) throws SQLException {
 
-    Vector<RoomRate> v = new Vector<RoomRate>();
+    List<RoomRate> v = new ArrayList<>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
 
-    ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
     while (rs.next()) {
-      v.addElement(getRateFromRS(rs));
+      v.add(getRateFromRS(rs));
     }
-    rs.close();
+    }
 
     return v;
 

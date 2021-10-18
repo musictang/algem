@@ -20,8 +20,8 @@
  */
 package net.algem.enrolment;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Vector;
 
 /**
  * Enrolment object model.
@@ -37,8 +37,8 @@ public class Enrolment
   private static final long serialVersionUID = -5136771138587799827L;
   
   private Order c;
-  private Vector<ModuleOrder> cmm;
-  private Vector<CourseOrder> cmc;
+  private List<ModuleOrder> cmm;
+  private List<CourseOrder> cmc;
 
   public Enrolment() {
   }
@@ -55,19 +55,19 @@ public class Enrolment
     c = v;
   }
 
-  public Vector<ModuleOrder> getModule() {
+  public List<ModuleOrder> getModule() {
     return cmm;
   }
 
-  public void setModule(Vector<ModuleOrder> v) {
+  public void setModule(List<ModuleOrder> v) {
     cmm = v;
   }
 
-  public Vector<CourseOrder> getCourseOrder() {
+  public List<CourseOrder> getCourseOrder() {
     return cmc;
   }
 
-  public void setCourseOrder(Vector<CourseOrder> v) {
+  public void setCourseOrder(List<CourseOrder> v) {
     cmc = v;
   }
 

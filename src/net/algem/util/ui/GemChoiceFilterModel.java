@@ -22,7 +22,6 @@ package net.algem.util.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.event.ListDataEvent;
 import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
@@ -38,13 +37,13 @@ import net.algem.util.model.GemModel;
 public abstract class GemChoiceFilterModel
         extends GemChoiceModel {
 
-  protected List<Integer> indices = new ArrayList<Integer>();
+  protected List<Integer> indices = new ArrayList<>();
 
   public <T extends GemModel> GemChoiceFilterModel(GemList<T> list) {
     super(list);
   }
 
-  public <T extends GemModel> GemChoiceFilterModel(Vector<T> list) {
+  public <T extends GemModel> GemChoiceFilterModel(List<T> list) {
     this(new GemList<T>(list));
   }
 

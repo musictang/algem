@@ -52,7 +52,7 @@ public class ModuleOrderTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    ModuleOrder m = tuples.elementAt(i);
+    ModuleOrder m = tuples.get(i);
     return m.getIdOrder();
   }
 
@@ -84,7 +84,7 @@ public class ModuleOrderTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    ModuleOrder m = tuples.elementAt(ligne);
+    ModuleOrder m = tuples.get(ligne);
     switch (colonne) {
       case 0:
         return Integer.valueOf(m.getModule());//id du module

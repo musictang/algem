@@ -53,7 +53,7 @@ public class StatTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    StatElement e = tuples.elementAt(line);
+    StatElement e = tuples.get(line);
     switch (col) {
       case 0:
         return e.getKey();
@@ -82,7 +82,7 @@ public class StatTableModel
 
   @Override
   public void setValueAt(Object value, int line, int column) {
-    StatElement e = tuples.elementAt(line);
+    StatElement e = tuples.get(line);
     if (column == 2) {
       e.setActive((boolean) value);
     }

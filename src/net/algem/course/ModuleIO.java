@@ -26,9 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import net.algem.config.GemParam;
 import net.algem.config.Preset;
@@ -185,15 +183,15 @@ public class ModuleIO
      */
     public Module findId(int n) throws SQLException {
         String query = "WHERE id = " + n;
-        Vector<Module> v = find(query);
+        List<Module> v = find(query);
         if (v != null && v.size() > 0) {
-            return v.elementAt(0);
+            return v.get(0);
         }
         return null;
     }
 
-    public Vector<Module> find(String where) throws SQLException {
-        Vector<Module> v = new Vector<Module>();
+    public List<Module> find(String where) throws SQLException {
+        List<Module> v = new ArrayList<>();
         String query = "SELECT " + TABLE + ".* FROM " + TABLE + " " + where;
         try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
@@ -209,7 +207,7 @@ public class ModuleIO
 
                 m.setCourses(findCourses(m.getId()));
 //        m.setCourses(DataCache.getModuleCourse(m.getId()));  // ERIC 11-06-2019 en attente de gérer les mises à jour
-                v.addElement(m);
+                v.add(m);
             }
         }
 

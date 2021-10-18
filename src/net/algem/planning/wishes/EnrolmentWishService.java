@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
 import net.algem.contact.teacher.TeacherService;
@@ -37,7 +36,6 @@ import net.algem.enrolment.OrderIO;
 import net.algem.planning.Action;
 import net.algem.planning.CourseSchedulePrintDetail;
 import net.algem.planning.DateFr;
-import net.algem.planning.HourRange;
 import net.algem.planning.PlanningService;
 import net.algem.planning.ScheduleObject;
 import net.algem.util.DataCache;
@@ -62,7 +60,7 @@ public class EnrolmentWishService {
     private PersonIO personIO;
     private PlanningService planningService;
     private TeacherService teacherService;
-    private Vector<Course> courseByTeacher = new Vector();
+    private List<Course> courseByTeacher = new ArrayList();
     private List<EnrolmentWish> wishesByTeacher = new ArrayList();
     private List<EnrolmentWish> wishesByCourse = new ArrayList();
 
@@ -196,8 +194,8 @@ public class EnrolmentWishService {
         return studentsWithOrders;
     }
 
-    public Vector<String[]> getCurrentEnrolmentForStudent(int student) { //FIXME existe qq part ?
-        Vector v = new Vector();
+    public List<String[]> getCurrentEnrolmentForStudent(int student) { //FIXME existe qq part ?
+        List<String[]> v = new ArrayList<>();
         String query = "select distinct c.titre, extract (dow from pl.jour) as dow, pg.debut,pg.fin,p.nom from planning pl join plage pg on pg.idplanning = pl.id join action a on a.id = pl.action join cours c on c.id = a.cours join personne p on pl.idper=p.id where adherent=" + student
                 + " and pl.jour between '" + dataCache.getStartOfPeriod() + "' and '" + dataCache.getEndOfPeriod() + "'";
         try {
@@ -227,15 +225,10 @@ public class EnrolmentWishService {
                 + " AND c.collectif = 'f'";
         //GemLogger.info(query);
 
-        try {
-            return new CourseChoiceTeacherModel(((CourseIO) DataCache.getDao(Model.Course)).find(query));
-        } catch (SQLException ex) {
-            GemLogger.logException("EnrolmentWishService.getCourseByTeacher", ex);
-        }
-        return null;
+        return new CourseChoiceTeacherModel(((CourseIO) DataCache.getDao(Model.Course)).find(query));
     }
 
-    public Vector<? extends ScheduleObject> getScheduleForTeacher(int teacher, String jour) throws SQLException {
+    public List<? extends ScheduleObject> getScheduleForTeacher(int teacher, String jour) throws SQLException {
         return teacherService.getSchedule(teacher, jour, jour);
     }
 

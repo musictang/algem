@@ -29,7 +29,7 @@ import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
 import javax.swing.*;
@@ -623,7 +623,7 @@ public class PersonFileEditor
 
       personFileView.updateEmployee();
 
-      Vector<String> logs = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).update(dossier);
+      List<String> logs = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).update(dossier);
       if (logs.contains(PersonFileIO.CONTACT_CREATE_EVENT)) {
         dataCache.add(dossier.getContact());
         desktop.postEvent(new GemEvent(this, GemEvent.CREATION, GemEvent.CONTACT, dossier.getContact()));
@@ -1009,12 +1009,12 @@ public class PersonFileEditor
    * Gets the number of linked members.
    */
   private int setMemberList() {
-    Vector<PersonFile> v = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE payeur = " + dossier.getId() + " AND p.id != payeur");
+    List<PersonFile> v = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE payeur = " + dossier.getId() + " AND p.id != payeur");
 
     memberList = new PersonFileListCtrl();
 
     for (int i = 0; i < v.size(); i++) {
-      PersonFile d = v.elementAt(i);
+      PersonFile d = v.get(i);
       ContactIO.complete(d.getContact(), dc);
     }
     if (v != null && v.size() > 0) {
@@ -1059,11 +1059,11 @@ public class PersonFileEditor
       if (!Algem.isFeatureEnabled("cc-mdl")) { //ERIC depuis synchro payeur/famille
           return 0;
       }
-    Vector<PersonFile> v = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE famille != 0 AND famille = " + dossier.getId() + " AND p.id != famille");
+    List<PersonFile> v = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE famille != 0 AND famille = " + dossier.getId() + " AND p.id != famille");
     familyList = new PersonFileListCtrl();
 
     for (int i = 0; i < v.size(); i++) {
-      PersonFile d = v.elementAt(i);
+      PersonFile d = v.get(i);
       ContactIO.complete(d.getContact(), dc);
     }
     if (v != null && v.size() > 0) {

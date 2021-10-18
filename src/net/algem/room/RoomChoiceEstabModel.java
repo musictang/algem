@@ -20,7 +20,7 @@
  */
 package net.algem.room;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
 import net.algem.util.ui.GemChoiceFilterModel;
@@ -44,7 +44,7 @@ public class RoomChoiceEstabModel
     load(list);
   }
 
-  public RoomChoiceEstabModel(Vector<Room> list, int estab) {
+  public RoomChoiceEstabModel(List<Room> list, int estab) {
     this(new GemList<Room>(list), estab);
   }
 

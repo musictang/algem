@@ -62,7 +62,7 @@ public class OrganizationTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Organization c = tuples.elementAt(line);
+    Organization c = tuples.get(line);
     switch (col) {
       case 0:
         return c.getName();

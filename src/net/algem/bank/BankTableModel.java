@@ -42,7 +42,7 @@ public class BankTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Bank b = tuples.elementAt(i);
+    Bank b = tuples.get(i);
     // XXX return m.getId();
     return 0;
   }
@@ -67,7 +67,7 @@ public class BankTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Bank b = tuples.elementAt(line);
+    Bank b = tuples.get(line);
     switch (col) {
       case 0:
         return b.getCode();

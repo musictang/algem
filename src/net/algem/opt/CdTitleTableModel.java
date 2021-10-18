@@ -63,7 +63,7 @@ public class CdTitleTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    CdTitle m = (CdTitle) tuples.elementAt(ligne);
+    CdTitle m = (CdTitle) tuples.get(ligne);
     switch (colonne) {
       case 0:
         return new Integer(m.getNumber());

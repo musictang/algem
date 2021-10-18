@@ -22,6 +22,7 @@ package net.algem.config;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Enumeration;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
@@ -51,7 +52,7 @@ public class InstrumentCtrl
 
   @Override
   public void load() {
-    load(ParamTableIO.find(TABLE, COLUMN_NAME, dc).elements());
+    load((Enumeration<? extends Param>) ParamTableIO.find(TABLE, COLUMN_NAME, dc));
   }
 
   @Override
@@ -60,7 +61,7 @@ public class InstrumentCtrl
     Instrument i = new Instrument(Integer.parseInt(_p.getKey()), _p.getValue());
     int index = dataCache.getInstruments().indexOf(i);
     if (index != -1) {
-      dataCache.getInstruments().setElementAt(i, index);
+      dataCache.getInstruments().set(index, i);
       Collections.sort(dataCache.getInstruments(), instrumentComparator);
     }
 
@@ -70,7 +71,7 @@ public class InstrumentCtrl
   public void insertion(Param _p) throws SQLException {
     ParamTableIO.insert(TABLE, SEQUENCE, _p, dc);
     Instrument i = new Instrument(Integer.parseInt(_p.getKey()), _p.getValue());
-    dataCache.getInstruments().addElement(i);
+    dataCache.getInstruments().add(i);
     Collections.sort(dataCache.getInstruments(), instrumentComparator);
   }
 

@@ -24,10 +24,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.ui.GemPanel;
 
 
@@ -55,7 +56,7 @@ public class CanvasPlanTrim
   private SimpleDateFormat df;
   private String[] dayLabels;
   private String[] monthLabels;
-  private Vector[] plan;
+  private List[] plan;
   private Dimension dim;
   private int pas_x;
   private int pas_y;
@@ -104,26 +105,26 @@ public class CanvasPlanTrim
   }
 
   @Override
-  public java.util.Vector getScheduleRanges() {
+  public List getScheduleRanges() {
     return null;
   }
 
-  public void loadPlanning(Vector<Schedule> pl) {
+  public void loadPlanning(List<Schedule> pl) {
 
     if (pl == null) {
       plan = null;
     } else {
       Calendar d = (Calendar) cal.clone();
-      plan = new Vector[12];
+      plan = new ArrayList[12];
       for (int i = 0; i < 12; i++) {
-        plan[i] = new Vector();
+        plan[i] = new ArrayList<Schedule>();
       }
       int x = 0;
       for (int i = 0; i < pl.size(); i++) {
-        Schedule p = pl.elementAt(i);
+        Schedule p = pl.get(i);
         d.setTime(p.getDate().getDate());
         int m = d.get(Calendar.MONTH);
-        plan[m].addElement(p);
+        plan[m].add(p);
       }
     }
     repaint();
@@ -310,7 +311,7 @@ public class CanvasPlanTrim
       g.setColor(Color.red);
       if (plan != null) {
         for (int j = 0; j < plan[m].size(); j++) {
-          Schedule p = (Schedule) plan[m].elementAt(j);
+          Schedule p = (Schedule) plan[m].get(j);
 
           d.setTime(p.getDate().getDate());
           int y1 = y + (d.get(Calendar.DAY_OF_MONTH) * pas_y);

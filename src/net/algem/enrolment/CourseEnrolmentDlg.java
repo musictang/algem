@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -108,7 +109,7 @@ public class CourseEnrolmentDlg
 
   private Course course;
 
-  private Vector<ScheduleRange> pl;	//Plage
+  private List<ScheduleRange> pl;	//Plage
 
   private Frame parent;
 
@@ -353,7 +354,7 @@ public class CourseEnrolmentDlg
         courseOrder.getDateEnd().toString()
     );
     // liste des plages occupées
-    range.setListData(pl);
+    range.setListData(new Vector(pl));
   }
 
   /**
@@ -425,7 +426,7 @@ public class CourseEnrolmentDlg
     estabChoice.setKey(id);
 //    courseOrder.setEstab(id);
     // tous les cours d'un type, d'un code et à partir d'une date spécifiés pour un établissement donné.
-    Vector<SQLkey> sqlist = service.getCoursesFromEstab(id, courseOrder.getDateStart(), courseInfo);
+    List<SQLkey> sqlist = service.getCoursesFromEstab(id, courseOrder.getDateStart(), courseInfo);
     courseList.loadSQL(sqlist); // recupere id et titre des cours
   }
 
@@ -459,7 +460,7 @@ public class CourseEnrolmentDlg
     course = c;
 
     cbDay.removeAllItems();
-    Vector<Schedule> v = service.getCourseWeek(course, courseOrder.getDateStart(), estab);
+    List<Schedule> v = service.getCourseWeek(course, courseOrder.getDateStart(), estab);
 
     if (v == null || v.isEmpty()) {
       return;
@@ -468,7 +469,7 @@ public class CourseEnrolmentDlg
     Schedule po = new Schedule();// permet d'éviter de compter deux fois le même cours
 
     for (int i = 0; i < v.size(); i++) {
-      Schedule p = v.elementAt(i);
+      Schedule p = v.get(i);
       if (p.getIdAction() == po.getIdAction()
         && p.getDate().equals(po.getDate())
         && p.getStart().equals(po.getStart())) // autorise 2 séances dans la même journée (2.8.t)
@@ -561,9 +562,7 @@ public class CourseEnrolmentDlg
       }
 
       if (pl != null) {
-        Enumeration<ScheduleRange> enu = pl.elements();
-        while (enu.hasMoreElements()) {
-          ScheduleRange occup = enu.nextElement();
+        for (ScheduleRange occup : pl) {  
           if (rangeStart.ge(occup.getStart()) && rangeStart.lt(occup.getEnd())
                   || rangeEnd.gt(occup.getStart()) && rangeEnd.le(occup.getEnd())
                   || rangeStart.ge(occup.getStart()) && rangeEnd.le(occup.getEnd())

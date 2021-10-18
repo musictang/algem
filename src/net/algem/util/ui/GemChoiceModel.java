@@ -20,7 +20,7 @@
  */
 package net.algem.util.ui;
 
-import java.util.Vector;
+import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataEvent;
@@ -47,7 +47,7 @@ public class GemChoiceModel<T extends GemModel>
     this.list.addListDataListener(this);
   }
 
-  public GemChoiceModel(Vector<T> v) {
+  public GemChoiceModel(List<T> v) {
    this(new GemList<T>(v));
   }
 

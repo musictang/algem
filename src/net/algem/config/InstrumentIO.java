@@ -23,7 +23,10 @@ package net.algem.config;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -37,110 +40,113 @@ import net.algem.util.model.TableIO;
 public class InstrumentIO
         extends TableIO {
 
-  public static final String TABLE = "instrument";
-  public static final String PERSON_INSTRUMENT_TABLE = "person_instrument";
-  
-  public static final String SEQUENCE = "idinstrument";
+    public static final String TABLE = "instrument";
+    public static final String PERSON_INSTRUMENT_TABLE = "person_instrument";
 
+    public static final String SEQUENCE = "idinstrument";
 
-  public static void insert(Instrument i, DataConnection dc) throws SQLException {
-    int id = nextId(SEQUENCE, dc);
+    public static void insert(Instrument i, DataConnection dc) throws SQLException {
+        int id = nextId(SEQUENCE, dc);
 
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + "'" + id
-            + "','" + i.getName()
-            + "')";
+        String query = "INSERT INTO " + TABLE + " VALUES("
+                + "'" + id
+                + "','" + i.getName()
+                + "')";
 
-    dc.executeUpdate(query);
-    i.setId(id);
-  }
-
-  public static void update(Instrument i, DataConnection dc) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET nom = '" + i.getName() + "' WHERE id = " + i.getId();
-    dc.executeUpdate(query);
-  }
-
-  public static void delete(Instrument i, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id > 0 AND id = " + i.getId();
-    dc.executeUpdate(query);
-  }
-
-  public static Instrument findId(int n, DataConnection dc) throws SQLException {
-    String query = "WHERE id = " + n;
-    Vector<Instrument> v = find(query, dc);
-    if (v.size() > 0) {
-      return (Instrument) v.elementAt(0);
+        dc.executeUpdate(query);
+        i.setId(id);
     }
-    return null;
-  }
-  
-  public static int findUsed(int id, DataConnection dc) throws SQLException {
-    String query = "SELECT count(instrument) FROM " + PERSON_INSTRUMENT_TABLE + " WHERE instrument = " + id;
-    ResultSet rs = dc.executeQuery(query);
-    if (rs.next()) {
-      return rs.getInt(1);
-    }
-    return 0;
-  }
 
-  public static Vector<Instrument> find(String where, DataConnection dc) throws SQLException {
-    Vector<Instrument> v = new Vector<Instrument>();
-    String query = "SELECT * FROM " + TABLE + " " + where;
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      Instrument i = new Instrument();
-      i.setId(rs.getInt(1));
-      i.setName(rs.getString(2).trim());
-      v.addElement(i);
+    public static void update(Instrument i, DataConnection dc) throws SQLException {
+        String query = "UPDATE " + TABLE + " SET nom = '" + i.getName() + "' WHERE id = " + i.getId();
+        dc.executeUpdate(query);
     }
-    return v;
-  }
-  
-  public static List<Integer> find(int idper, int ptype, DataConnection dc) throws SQLException {
-    List<Integer> li = new ArrayList<Integer>();
-    String query = "SELECT instrument FROM " + PERSON_INSTRUMENT_TABLE + " WHERE idper = " + idper + " AND ptype = " + ptype;
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      li.add(rs.getInt(1));
+
+    public static void delete(Instrument i, DataConnection dc) throws SQLException {
+        String query = "DELETE FROM " + TABLE + " WHERE id > 0 AND id = " + i.getId();
+        dc.executeUpdate(query);
     }
-    rs.close();
-    return li.isEmpty() ? null : li;
-  }
-  
-  public static Hashtable<Integer, List<Integer>> load(DataConnection dc) throws SQLException {
-    
-    Hashtable<Integer, List<Integer>> h = new Hashtable<Integer, List<Integer>>();
-    String query = "SELECT idper,array_agg(instrument) FROM " + PERSON_INSTRUMENT_TABLE + " WHERE ptype = " + Instrument.TEACHER + " GROUP BY idper";
-    ResultSet rs = dc.executeQuery(query);
-    
-    while (rs.next()) {  
-      Array a = rs.getArray(2);
-      Integer [] ins = (Integer[])a.getArray();
-      h.put(rs.getInt(1), Arrays.asList(ins));
+
+    public static Instrument findId(int n, DataConnection dc) throws SQLException {
+        String query = "WHERE id = " + n;
+        List<Instrument> v = find(query, dc);
+        if (v.size() > 0) {
+            return (Instrument) v.get(0);
+        }
+        return null;
     }
-    return h;
-  }
-  
-  public static void insert(List<Integer> instruments, int idper, int ptype, DataConnection dc) throws SQLException {
-    if (instruments == null) {
-      return;
+
+    public static int findUsed(int id, DataConnection dc) throws SQLException {
+        String query = "SELECT count(instrument) FROM " + PERSON_INSTRUMENT_TABLE + " WHERE instrument = " + id;
+        ResultSet rs = dc.executeQuery(query);
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
     }
-    for(int i = 0 ; i < instruments.size(); i++) {
-      String query = "INSERT INTO " + PERSON_INSTRUMENT_TABLE + " VALUES(DEFAULT," + i + "," + idper + "," + instruments.get(i) + "," + ptype + ")";
-      dc.executeUpdate(query);
+
+    public static List<Instrument> find(String where, DataConnection dc) throws SQLException {
+        List<Instrument> v = new ArrayList<>();
+        String query = "SELECT * FROM " + TABLE + " " + where;
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                Instrument i = new Instrument();
+                i.setId(rs.getInt(1));
+                i.setName(rs.getString(2).trim());
+                v.add(i);
+            }
+        }
+        return v;
     }
-  }
-  
-  /**
-   * Removes the association between a person and an instrument in the joint table.
-   * @param idper person's id
-   * @param ptype person type
-   * @param dc dataConnection
-   * @throws SQLException 
-   */
-  public static void delete(int idper, int ptype, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + PERSON_INSTRUMENT_TABLE + " WHERE idper = " + idper + " AND ptype = " + ptype;
-    dc.executeUpdate(query);
-  }
-  
+
+    public static List<Integer> find(int idper, int ptype, DataConnection dc) throws SQLException {
+        List<Integer> li = new ArrayList<Integer>();
+        String query = "SELECT instrument FROM " + PERSON_INSTRUMENT_TABLE + " WHERE idper = " + idper + " AND ptype = " + ptype;
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                li.add(rs.getInt(1));
+            }
+        }
+        return li.isEmpty() ? null : li;
+    }
+
+    public static Hashtable<Integer, List<Integer>> load(DataConnection dc) throws SQLException {
+
+        Hashtable<Integer, List<Integer>> h = new Hashtable<Integer, List<Integer>>();
+        String query = "SELECT idper,array_agg(instrument) FROM " + PERSON_INSTRUMENT_TABLE + " WHERE ptype = " + Instrument.TEACHER + " GROUP BY idper";
+        try (ResultSet rs = dc.executeQuery(query)) {
+
+            while (rs.next()) {
+                Array a = rs.getArray(2);
+                Integer[] ins = (Integer[]) a.getArray();
+                h.put(rs.getInt(1), Arrays.asList(ins));
+            }
+        }
+        return h;
+    }
+
+    public static void insert(List<Integer> instruments, int idper, int ptype, DataConnection dc) throws SQLException {
+        if (instruments == null) {
+            return;
+        }
+        for (int i = 0; i < instruments.size(); i++) {
+            String query = "INSERT INTO " + PERSON_INSTRUMENT_TABLE + " VALUES(DEFAULT," + i + "," + idper + "," + instruments.get(i) + "," + ptype + ")";
+            dc.executeUpdate(query);
+        }
+    }
+
+    /**
+     * Removes the association between a person and an instrument in the joint
+     * table.
+     *
+     * @param idper person's id
+     * @param ptype person type
+     * @param dc dataConnection
+     * @throws SQLException
+     */
+    public static void delete(int idper, int ptype, DataConnection dc) throws SQLException {
+        String query = "DELETE FROM " + PERSON_INSTRUMENT_TABLE + " WHERE idper = " + idper + " AND ptype = " + ptype;
+        dc.executeUpdate(query);
+    }
+
 }

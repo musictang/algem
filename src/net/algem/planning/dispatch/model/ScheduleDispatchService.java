@@ -27,7 +27,7 @@ public class ScheduleDispatchService {
 
         for (Schedule schedule : schedules) {
             for (Person person : persons) {
-                Vector<ScheduleRange> ranges = ScheduleRangeIO.find("pg WHERE pg.idplanning = " + schedule.getId()
+                List<ScheduleRange> ranges = ScheduleRangeIO.find("pg WHERE pg.idplanning = " + schedule.getId()
                                                                      + " AND pg.adherent = " + person.getId(), dc);
                 if (ranges != null && ranges.size() > 0) {
                     dispatchMap.get(person.getId()).add(schedule.getId());

@@ -22,7 +22,6 @@ package net.algem.room;
 
 import java.awt.BorderLayout;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
@@ -70,9 +69,9 @@ public class EstabRoomListView
   }
 
   void load(int id) {
-    Vector<Room> v = ((RoomIO) DataCache.getDao(Model.Room)).find("WHERE etablissement = " + id);
+    List<Room> v = ((RoomIO) DataCache.getDao(Model.Room)).find("WHERE etablissement = " + id);
     for (int i = 0; i < v.size(); i++) {
-      tableModel.addItem(v.elementAt(i));
+      tableModel.addItem(v.get(i));
     }
   }
   

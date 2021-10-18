@@ -20,7 +20,7 @@
  */
 package net.algem.course;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.ui.GemChoice;
 
 /**
@@ -34,10 +34,10 @@ public class ModuleTypeChoice
         extends GemChoice
 {
 
-  public ModuleTypeChoice(Vector modules) {
+  public ModuleTypeChoice(List modules) {
 
     for (int n = 0; n < modules.size(); n++) {
-      ModuleType i = (ModuleType) modules.elementAt(n);
+      ModuleType i = (ModuleType) modules.get(n);
       addItem(i.getCode());
     }
   }

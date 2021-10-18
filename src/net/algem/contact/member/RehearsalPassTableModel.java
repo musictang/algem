@@ -48,7 +48,7 @@ public class RehearsalPassTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    RehearsalPass pass = tuples.elementAt(i);
+    RehearsalPass pass = tuples.get(i);
     return pass.getId();
   }
 
@@ -72,7 +72,7 @@ public class RehearsalPassTableModel
 
   @Override
   public Object getValueAt(int row, int col) {
-    RehearsalPass pass = tuples.elementAt(row);
+    RehearsalPass pass = tuples.get(row);
     switch (col) {
       case 0:
         return pass.getId();

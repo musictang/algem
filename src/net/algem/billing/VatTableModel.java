@@ -53,7 +53,7 @@ public class VatTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Vat t = tuples.elementAt(line);
+    Vat t = tuples.get(line);
     switch (col) {
       case 0:
         return t.getKey();

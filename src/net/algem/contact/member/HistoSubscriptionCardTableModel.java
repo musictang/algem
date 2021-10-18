@@ -81,7 +81,7 @@ public class HistoSubscriptionCardTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    PersonSubscriptionCard pc = tuples.elementAt(line);
+    PersonSubscriptionCard pc = tuples.get(line);
     switch (col) {
       case 0:
         return pc.getId();
@@ -106,7 +106,7 @@ public class HistoSubscriptionCardTableModel
     if (col != 3) {
       return;
     }
-    PersonSubscriptionCard c = tuples.elementAt(line);
+    PersonSubscriptionCard c = tuples.get(line);
     int oldRest = c.getRest();
     try {
       c.setRest(((Hour) value).toMinutes());

@@ -53,7 +53,7 @@ public class RentalOperationTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    RentalOperation p = tuples.elementAt(i);
+    RentalOperation p = tuples.get(i);
     return p.getId();
   }
 
@@ -78,7 +78,7 @@ public class RentalOperationTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    RentalOperation o = tuples.elementAt(ligne);
+    RentalOperation o = tuples.get(ligne);
     switch (colonne) {
       case 0:
         return o.getMemberName();

@@ -22,8 +22,8 @@ package net.algem.contact;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import net.algem.accounting.DDMandate;
 import net.algem.accounting.DDMandateException;
@@ -75,27 +75,27 @@ public class PersonFileIO
     memberIO = (MemberIO) DataCache.getDao(Model.Member);
   }
 
-  public Vector<String> update(PersonFile dossier) throws SQLException, DDMandateException {
-    Vector<String> logEvents = new Vector<String>();
+  public List<String> update(PersonFile dossier) throws SQLException, DDMandateException {
+    List<String> logEvents = new ArrayList<>();
     ContactIO contactIO = new ContactIO(dc);
 
     if (dossier.getId() <= 0) { // nouveau dossier
       contactIO.insert(dossier.getContact());
-      logEvents.addElement(CONTACT_CREATE_EVENT);
+      logEvents.add(CONTACT_CREATE_EVENT);
     } else {
       if (!dossier.getContact().equals(dossier.getOldContact())) {
         contactIO.update(dossier.getOldContact(), dossier.getContact());
-        logEvents.addElement(CONTACT_UPDATE_EVENT);
+        logEvents.add(CONTACT_UPDATE_EVENT);
       }
       if (dossier.getMember() != null) {
         if (dossier.getOldMember() == null) {
           dossier.getMember().setId(dossier.getId());
           memberIO.insert(dossier.getMember());
-          logEvents.addElement(MEMBER_CREATE_EVENT);
+          logEvents.add(MEMBER_CREATE_EVENT);
         } else {
           if (!dossier.getMember().equals(dossier.getOldMember())) {
             memberIO.update(dossier.getMember());
-            logEvents.addElement(MEMBER_UPDATE_EVENT);
+            logEvents.add(MEMBER_UPDATE_EVENT);
           }
         }
       }
@@ -105,7 +105,7 @@ public class PersonFileIO
     return logEvents;
   }
 
-  private void updateTeacher(PersonFile dossier, Vector<String> logEvents) throws SQLException {
+  private void updateTeacher(PersonFile dossier, List<String> logEvents) throws SQLException {
     if (dossier.getTeacher() == null) {
       return;
     }
@@ -118,7 +118,7 @@ public class PersonFileIO
           t.setId(dossier.getId());
           teacherIO.insert(t);
           dossier.loadTeacher(t);
-          logEvents.addElement(TEACHER_CREATE_EVENT);
+          logEvents.add(TEACHER_CREATE_EVENT);
         }
       } else {
         MessagePopup.information(null, MessageUtil.getMessage("teacher.create.authorization.warning"));
@@ -127,13 +127,13 @@ public class PersonFileIO
       if (!t.equals(dossier.getOldTeacher())) {
         teacherIO.update(t);
         dossier.loadTeacher(t);
-        logEvents.addElement(TEACHER_UPDATE_EVENT);
+        logEvents.add(TEACHER_UPDATE_EVENT);
       }
     }
 
   }
 
-  private void updateRib(PersonFile dossier, Vector<String> logEvents) throws SQLException, DDMandateException {
+  private void updateRib(PersonFile dossier, List<String> logEvents) throws SQLException, DDMandateException {
     if (dossier.getRib() == null) {
       return;
     }
@@ -142,7 +142,7 @@ public class PersonFileIO
       //dossier.getRib().setId(dossier.getId());
       if (0 != rib.getBranchId()) {
         RibIO.insert(rib, dc);
-        logEvents.addElement("bic.create.event " + dossier.getId());
+        logEvents.add("bic.create.event " + dossier.getId());
       }
     } else {
       //Suppression du rib si la chaîne code compte est vide
@@ -150,10 +150,10 @@ public class PersonFileIO
       //Suppression du rib si aucun des champs de la vue n'est rempli
       if (rib.isEmpty()) {
         RibIO.delete(dossier.getOldRib(), dc);
-        logEvents.addElement("bic.delete.event");
+        logEvents.add("bic.delete.event");
       } else if (!rib.equals(dossier.getOldRib())) {
         RibIO.update(rib, dc);
-        logEvents.addElement("bic.update.event");
+        logEvents.add("bic.update.event");
       }
       int payer = dossier.getMember() == null ? 0 : dossier.getMember().getPayer();
       if (payer > 0) {
@@ -175,9 +175,9 @@ public class PersonFileIO
   public PersonFile findId(int n, boolean complete) {
 
     String query = "WHERE p.id = " + n;
-    Vector<PersonFile> v = find(query, complete);
+    List<PersonFile> v = find(query, complete);
     if (v.size() > 0) {
-      return v.elementAt(0);
+      return v.get(0);
     }
     return null;
   }
@@ -196,12 +196,12 @@ public class PersonFileIO
    * @param complete with contact infos (email, tel, address) and dossier infos(member,teacher, bic,...)
    * @return a list of PersonFile
    */
-  public Vector<PersonFile> find(String where, boolean complete) {
+  public List<PersonFile> find(String where, boolean complete) {
 
-    Vector<PersonFile> vpf = new Vector<PersonFile>();
-    Vector<Contact> vc = ContactIO.find(where, complete, dc);
+    List<PersonFile> vpf = new ArrayList<>();
+    List<Contact> vc = ContactIO.find(where, complete, dc);
     for (int i = 0; i < vc.size(); i++) {
-      Contact c = vc.elementAt(i);
+      Contact c = vc.get(i);
       PersonFile dossier = new PersonFile(c);
       if (complete) {
         try {
@@ -210,33 +210,32 @@ public class PersonFileIO
           GemLogger.logException("Complete dossier", ex);
         }
       }
-      vpf.addElement(dossier);
+      vpf.add(dossier);
     }
     return vpf;
   }
 
   public PersonFile findMember(int _id, boolean _complete) {
-    Vector<PersonFile> v = findMembers("WHERE id = " + _id);
+    List<PersonFile> v = findMembers("WHERE id = " + _id);
 
     if (v.isEmpty()) {
       return null;
     }
 
-    Contact c = v.elementAt(0).getContact();
+    Contact c = v.get(0).getContact();
     if (_complete) {
       ContactIO.complete(c, dc);
     }
 
-    return v.elementAt(0);
+    return v.get(0);
   }
 
-  public Vector<PersonFile> findMembers(String where) {
-    Vector<PersonFile> v = new Vector<PersonFile>();
+  public List<PersonFile> findMembers(String where) {
+    List<PersonFile> v = new ArrayList<>();
     String query = "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
       + " FROM " + PersonIO.VIEW + " p JOIN " +  MemberIO.TABLE + " m ON p.id = m.idper";
     query += (where == null ? "" : " " + where) + " ORDER BY p.prenom,p.nom";
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         Person p = PersonIO.getFromRS(rs);
         Member m = memberIO.getFromRS(rs, PersonIO.COLUMNS_OFFSET);
@@ -244,9 +243,8 @@ public class PersonFileIO
         PersonFile dossier = new PersonFile(new Contact(p));
         dossier.setMember(m);
 
-        v.addElement(dossier);
+        v.add(dossier);
       }
-      rs.close();
     } catch (SQLException e) {
       GemLogger.logException(query, e);
     }
@@ -254,26 +252,25 @@ public class PersonFileIO
   }
 
   public PersonFile findPayer(int _id) {
-    Vector<PersonFile> v = findPayers("WHERE id=" + _id);
+    List<PersonFile> v = findPayers("WHERE id=" + _id);
     if (v.isEmpty()) {
       return null;
     }
 
-    Contact c = v.elementAt(0).getContact();
+    Contact c = v.get(0).getContact();
     ContactIO.complete(c, dc);
 
-    return v.elementAt(0);
+    return v.get(0);
   }
 
-  public Vector<PersonFile> findPayers(String where) {
-    Vector<PersonFile> v = new Vector<>();
+  public List<PersonFile> findPayers(String where) {
+    List<PersonFile> v = new ArrayList<>();
 //    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + " p";
 String query = PersonIO.PRE_QUERY;
     query += (where != null) ? (" " + where + " AND") :  " WHERE";
     query += " p.id IN (SELECT payeur FROM " + MemberIO.TABLE + ")";
     query += " ORDER BY p.nom,p.prenom";
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         Person p = PersonIO.getFromRS(rs);
 
@@ -283,28 +280,25 @@ String query = PersonIO.PRE_QUERY;
           d.setRib(r);
         }
 
-        v.addElement(d);
+        v.add(d);
       }
-      rs.close();
     } catch (SQLException e) {
       GemLogger.logException(query, e);
     }
     return v;
   }
 
-  public Vector<PersonFile> findRegistered(String query) {
-    Vector<PersonFile> v = new Vector<PersonFile>();
-    try {
-      ResultSet rs = dc.executeQuery(query);
+  public List<PersonFile> findRegistered(String query) {
+    List<PersonFile> v = new ArrayList<>();
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         Person p = PersonIO.getFromRS(rs);
         Member m = memberIO.getFromRS(rs, PersonIO.COLUMNS_OFFSET);
         PersonFile d = new PersonFile(new Contact(p));
         d.setMember(m);
 
-        v.addElement(d);
+        v.add(d);
       }
-      rs.close();
     } catch (SQLException e) {
       GemLogger.logException(query, e);
     }

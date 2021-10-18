@@ -43,7 +43,7 @@ public class PersonTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Person p = tuples.elementAt(i);
+    Person p = tuples.get(i);
     return p.getId();
   }
 
@@ -68,7 +68,7 @@ public class PersonTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Person p = tuples.elementAt(line);
+    Person p = tuples.get(line);
     switch (col) {
       case 0:
         return Integer.valueOf(p.getId());

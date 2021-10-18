@@ -22,7 +22,8 @@ package net.algem.opt;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -70,20 +71,19 @@ public class MajorationIO
 		dc.executeUpdate(query);
 	}
 
-	public static Vector<Majoration> find(String where, DataConnection dc) {
-		Vector<Majoration> v = new Vector<Majoration>();
+	public static List<Majoration> find(String where, DataConnection dc) {
+		List<Majoration> v = new ArrayList<>();
 		String query = "SELECT * FROM " + TABLE + " " + where;
-		try {
-			ResultSet rs = dc.executeQuery(query);
+		try (ResultSet rs = dc.executeQuery(query)) {
 			while (rs.next()) {
 				Majoration m = new Majoration();
 				m.setId(rs.getInt(1));
 				m.setMode(rs.getString(2).trim());
 				m.setPCent(rs.getInt(3));
 
-				v.addElement(m);
+				v.add(m);
 			}
-			rs.close();
+                
 		} catch (SQLException e) {
 			GemLogger.logException(query, e);
 		}

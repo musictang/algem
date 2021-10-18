@@ -22,7 +22,7 @@ package net.algem.room;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
-import java.util.Vector;
+import java.util.List;
 import net.algem.contact.Contact;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
@@ -86,11 +86,11 @@ public class RoomSearchCtrl
     }
     query += " ORDER BY nom";
 
-    Vector<Room> v = ((RoomIO) DataCache.getDao(Model.Room)).find(query);
+    List<Room> v = ((RoomIO) DataCache.getDao(Model.Room)).find(query);
     if (v == null || v.isEmpty()) {
       setStatus(EMPTY_LIST);
     } else if (v.size() == 1) {
-      loadRoomFile(v.elementAt(0));
+      loadRoomFile(v.get(0));
     } else {
       ((CardLayout) wCard.getLayout()).show(wCard, "liste");
       list.loadResult(v);

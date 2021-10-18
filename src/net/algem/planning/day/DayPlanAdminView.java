@@ -24,7 +24,7 @@ package net.algem.planning.day;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
 import net.algem.contact.Person;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
@@ -52,15 +52,15 @@ public class DayPlanAdminView
   }
 
   @Override
-  public void load(Date d, Vector<ScheduleObject> schedules, Vector<ScheduleRangeObject> ranges) {
+  public void load(Date d, List<ScheduleObject> schedules, List<ScheduleRangeObject> ranges) {
     dayPlanView.clear();
     dayPlanView.setDate(d);
     dayPlanView.setType(Schedule.ADMINISTRATIVE);
     date.set(d);
     dayLabel.setText(date.getDayOfWeek());
     for (Person p : staff) {
-      Vector<ScheduleObject> v1 = getSchedule(schedules, p.getId());
-      Vector<ScheduleRangeObject> v2 = getSchedule(ranges, p.getId());
+      List<ScheduleObject> v1 = getSchedule(schedules, p.getId());
+      List<ScheduleRangeObject> v2 = getSchedule(ranges, p.getId());
 
       if ((v1.size() + v2.size()) > 0) {
         DayPlan pj = new DayPlan();
@@ -76,15 +76,15 @@ public class DayPlanAdminView
 
   }
 
-  public <T extends ScheduleObject> Vector<T> getSchedule(Vector<T> t, int personId) {
-    Vector<T> v = new Vector<T>();
+  public <T extends ScheduleObject> List<T> getSchedule(List<T> t, int personId) {
+    List<T> v = new ArrayList<>();
     for (int i = 0; i < t.size(); i++) {
-      ScheduleObject plan = t.elementAt(i);
+      ScheduleObject plan = t.get(i);
       if (plan instanceof ScheduleRangeObject) {
         ScheduleRangeObject range = (ScheduleRangeObject) plan;
         // include course range if any
         if ((range.getMember() != null && range.getMember().getId() == personId)) {
-          v.addElement(t.elementAt(i));
+          v.add(t.get(i));
           try {
             range.setFollowUp(ScheduleIO.findFollowUp(range.getNote(), DataCache.getDataConnection()));
           } catch (SQLException ex) {
@@ -92,12 +92,12 @@ public class DayPlanAdminView
           }
         }
         else if (range.getPerson() != null && range.getPerson().getId() == personId) {
-          v.addElement(t.elementAt(i));
+          v.add(t.get(i));
         }
       } else {
         Person p = plan.getPerson();
         if (p != null && p.getId() == personId) {
-          v.addElement(t.elementAt(i));
+          v.add(t.get(i));
         }
       }
     }

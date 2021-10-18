@@ -43,7 +43,7 @@ public class UserTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    User m = tuples.elementAt(i);
+    User m = tuples.get(i);
     return m.getId();
   }
 
@@ -67,7 +67,7 @@ public class UserTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    User m = tuples.elementAt(line);
+    User m = tuples.get(line);
     switch (col) {
       case 0:
         return Integer.valueOf(m.getId());

@@ -22,9 +22,8 @@ package net.algem.util.ui;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ImageIcon;
 import net.algem.util.ImageUtil;
 
@@ -38,11 +37,11 @@ import net.algem.util.ImageUtil;
 public class GemBar extends GemBorderPanel
 {
 
-  Vector<GemButton> buttons;
+  List<GemButton> buttons;
 
   public GemBar() {
     setLayout(new FlowLayout(FlowLayout.LEFT));
-    buttons = new Vector<GemButton>();
+    buttons = new ArrayList<>();
   }
 
   public GemButton addIcon(String file, String label) {
@@ -65,7 +64,7 @@ public class GemBar extends GemBorderPanel
     if (tip != null) {
       bt.setToolTipText(tip);
     }
-    buttons.addElement(bt);
+    buttons.add(bt);
     add(bt);
     return bt;
   }
@@ -80,8 +79,7 @@ public class GemBar extends GemBorderPanel
    */
   public void removeIcon(String label) {
 //    System.out.println("removing icon " + label);
-    for (Iterator it = buttons.iterator(); it.hasNext();) {
-      GemButton bt = (GemButton) it.next();
+    for (GemButton bt : buttons) {
       if (bt.getActionCommand().equals(label)) {
         buttons.remove(bt);
         remove(bt);
@@ -96,8 +94,7 @@ public class GemBar extends GemBorderPanel
    * @param action
    */
   public void enableButton(String action) {
-    for (Iterator it = buttons.iterator(); it.hasNext();) {
-      GemButton bt = (GemButton) it.next();
+    for (GemButton bt : buttons) {
       if (bt.getActionCommand().equals(action)) {
         bt.setEnabled(true);
         break;
@@ -108,15 +105,13 @@ public class GemBar extends GemBorderPanel
   public void addButton(String letter, String label) {
     GemButton bt = new GemButton(letter);
     bt.setActionCommand(label);
-    buttons.addElement(bt);
+    buttons.add(bt);
     add(bt);
   }
 
   public void addButtonListener(ActionListener l)
   {
-    Enumeration e = buttons.elements();
-    while (e.hasMoreElements()) {
-      GemButton bt = (GemButton) e.nextElement();
+    for (GemButton bt : buttons) {
       bt.addActionListener(l);
     }
   }

@@ -26,6 +26,7 @@ import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
@@ -205,9 +206,9 @@ public class ContactFileEditor
     linkTelAddress = b;
   }
 
-  public void setLinkTelAddress(Vector a, Vector t, JCheckBox cb) {
+  public void setLinkTelAddress(List a, List t, JCheckBox cb) {
     if (a != null && a.size() > 0) {
-      addressView.set((Address) a.elementAt(0));
+      addressView.set((Address) a.get(0));
     }
     addressView.setEditable(false);
     addressView.getArchive().setEnabled(false);
@@ -225,7 +226,7 @@ public class ContactFileEditor
     }
   }
 
-  public Vector getAddressAll() {
+  public List getAddressAll() {
     if (linkTelAddress == false) {
       return addressView.getAll();
     } else {
@@ -241,30 +242,30 @@ public class ContactFileEditor
     }
   }
 
-  public void setTele(Vector<Telephone> t) {
+  public void setTele(List<Telephone> t) {
     teleView.setTels(t);
   }
 
-    public Vector<Telephone> getTele() {
+    public List<Telephone> getTele() {
     if (linkTelAddress == false) {
       return teleView.getTels();
     }
     return null;
   }
 
-  public void setEmail(Vector<Email> ve) {
+  public void setEmail(List<Email> ve) {
     emailView.setEmails(ve);
   }
 
-  public Vector<Email> getEmail() {
+  public List<Email> getEmail() {
     return emailView.getEmails();
   }
 
   public void setSites(List<WebSite> sites) {
-    websiteView.setSites(new Vector<WebSite>(sites));
+    websiteView.setSites(new ArrayList<WebSite>(sites));
   }
 
-  public Vector<WebSite> getSites() {
+  public List<WebSite> getSites() {
     return websiteView.getSites();
   }
 

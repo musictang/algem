@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import net.algem.contact.Address;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactImport;
@@ -225,7 +224,7 @@ public class ImportCsvHandler {
       if (idx > -1) {
         tel1 = (String) rowData.get(idx);
         if (tel1 != null && tel1.length() > 0) {
-          Vector<Telephone> tels = new Vector<Telephone>();
+          List<Telephone> tels = new ArrayList<>();
           Telephone t1 = new Telephone();
           t1.setNumber(tel1);
           t1.setTypeTel(TEL1_TYPE);
@@ -252,7 +251,7 @@ public class ImportCsvHandler {
               t2.setIdx(c.getTele().size());
               c.getTele().add(t2);
             } else {
-              Vector<Telephone> tels = new Vector<Telephone>();
+              List<Telephone> tels = new ArrayList<>();
               t2.setIdx(0);
               tels.add(t2);
               c.setTele(tels);
@@ -263,7 +262,7 @@ public class ImportCsvHandler {
               t2.setIdx(p.getTele().size());
               p.getTele().add(t2);
             } else {
-              Vector<Telephone> tels = new Vector<Telephone>();
+              List<Telephone> tels = new ArrayList<>();
               t2.setIdx(0);
               tels.add(t2);
               p.setTele(tels);
@@ -286,7 +285,7 @@ public class ImportCsvHandler {
               t3.setIdx(c.getTele().size());
               c.getTele().add(t3);
             } else {
-              Vector<Telephone> tels = new Vector<Telephone>();
+              List<Telephone> tels = new ArrayList<>();
               t3.setIdx(0);
               tels.add(t3);
               c.setTele(tels);
@@ -297,7 +296,7 @@ public class ImportCsvHandler {
               t3.setIdx(p.getTele().size());
               p.getTele().add(t3);
             } else {
-              Vector<Telephone> tels = new Vector<Telephone>();
+              List<Telephone> tels = new ArrayList<>();
               t3.setIdx(0);
               tels.add(t3);
               p.setTele(tels);
@@ -313,7 +312,7 @@ public class ImportCsvHandler {
     if (idx > -1) {
       String email1 = (String) rowData.get(idx);
       if (email1 != null && email1.length() > 0) {
-        Vector<Email> emails = new Vector<Email>();
+        List<Email> emails = new ArrayList<>();
         String[] listemails = email1.split(",");
         for (String m : listemails) {
             Email m1 = new Email();
@@ -331,7 +330,7 @@ public class ImportCsvHandler {
       if (p != null) {
         String email2 = (String) rowData.get(idx);
         if (email2 != null && email2.length() > 0) {
-          Vector<Email> emails = new Vector<Email>();
+          List<Email> emails = new ArrayList<>();
                   String[] listemails = email2.split(",");
         for (String m : listemails) {
             Email m2 = new Email();

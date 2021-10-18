@@ -27,25 +27,12 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -54,8 +41,6 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
-import net.algem.config.ConfigKey;
-import net.algem.config.ConfigUtil;
 import net.algem.config.PageTemplateIO;
 import net.algem.contact.Email;
 import net.algem.contact.Person;
@@ -68,9 +53,7 @@ import net.algem.planning.wishes.EnrolmentWishCtrl;
 import net.algem.planning.wishes.EnrolmentWishTableModel;
 import net.algem.planning.wishes.EnrolmentWishService;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
-import net.algem.util.MailUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTab;
@@ -233,9 +216,9 @@ public class MemberEnrolmentWishEditor
         } else {
             mailConfirmDate.setText("Non envoyé");
         }
-        Vector<String[]> v = wishService.getCurrentEnrolmentForStudent(personFile.getId());
+        List<String[]> v = wishService.getCurrentEnrolmentForStudent(personFile.getId());
         for (int i = 0; i < v.size(); i++) {
-            currentModel.addItem(v.elementAt(i));
+            currentModel.addItem(v.get(i));
         }
 
         loaded = true;
@@ -257,10 +240,10 @@ public class MemberEnrolmentWishEditor
                 protected Object doInBackground() throws Exception {
                     try {
                         mailDate = LocalDateTime.now();
-                        Vector<Email> emails = personFile.getContact().getEmail();
+                        List<Email> emails = personFile.getContact().getEmail();
                         
                         String f = createMailInfoPdf(personFile.getContact());
-                        EnrolmentWishCtrl.sendInfoMail(f, emails.elementAt(0).getEmail(), dataCache.getSchoolNextYearLabel());
+                        EnrolmentWishCtrl.sendInfoMail(f, emails.get(0).getEmail(), dataCache.getSchoolNextYearLabel());
                         
                         wishService.setMailInfoDate(personFile.getId(), mailDate);
                         sended = true;
@@ -294,10 +277,10 @@ public class MemberEnrolmentWishEditor
                 protected Object doInBackground() throws Exception {
                     try {
                         mailDate = LocalDateTime.now();
-                        Vector<Email> emails = personFile.getContact().getEmail();
+                        List<Email> emails = personFile.getContact().getEmail();
                         
                         String f = createMailConfirmPdf(personFile.getContact());
-                        EnrolmentWishCtrl.sendConfirmMail(f, emails.elementAt(0).getEmail());
+                        EnrolmentWishCtrl.sendConfirmMail(f, emails.get(0).getEmail());
 
                         wishService.setMailConfirmDate(personFile.getId(), mailDate);
                         sended = true;

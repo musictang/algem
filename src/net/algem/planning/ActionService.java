@@ -23,7 +23,6 @@ package net.algem.planning;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
 import net.algem.config.*;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
@@ -52,7 +51,7 @@ public class ActionService
 
   public String verifyLevel(GemParam n) throws SQLException {
     verify(n);
-    Vector<GemParam> nv = levelIO.find("WHERE id != " + n.getId() + " AND code = '" + n.getCode() + "'");
+    List<GemParam> nv = levelIO.find("WHERE id != " + n.getId() + " AND code = '" + n.getCode() + "'");
     if (nv != null && nv.size() > 0) {
       return MessageUtil.getMessage("existing.code.warning");
     }
@@ -61,7 +60,7 @@ public class ActionService
   
   public String verifyStatus(GemParam n) throws SQLException {
     verify(n);
-    Vector<GemParam> nv = statusIO.find("WHERE id != " + n.getId() + " AND code = '" + n.getCode() + "'");
+    List<GemParam> nv = statusIO.find("WHERE id != " + n.getId() + " AND code = '" + n.getCode() + "'");
     if (nv != null && nv.size() > 0) {
       return MessageUtil.getMessage("existing.code.warning");
     }
@@ -78,8 +77,8 @@ public class ActionService
     return null;
   }
 
-  public Vector<GemParam> getLevelAll() throws SQLException {
-    return new Vector<GemParam>(dataCache.getList(Model.Level).getData());
+  public List<GemParam> getLevelAll() throws SQLException {
+    return dataCache.getList(Model.Level).getData();
   }
   
   public void insertLevel(GemParam n) throws SQLException {
@@ -94,8 +93,8 @@ public class ActionService
     levelIO.delete(n);
   }
   
-  public Vector<GemParam> getStatusAll() throws SQLException {
-    return new Vector<GemParam>(dataCache.getList(Model.Status).getData());
+  public List<GemParam> getStatusAll() throws SQLException {
+    return dataCache.getList(Model.Status).getData();
   }
   
   public void insertStatus(GemParam n) throws SQLException {

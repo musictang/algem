@@ -122,7 +122,7 @@ public class StopAndDefineDlg
 
     @Override
     public Object getValueAt(int line, int col) {
-      CourseSchedule c = tuples.elementAt(line);
+      CourseSchedule c = tuples.get(line);
       switch (col) {
         case 0:
           return PlanningService.WEEK_DAYS[c.getDate().getDayOfWeek()];

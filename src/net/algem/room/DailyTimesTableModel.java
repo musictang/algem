@@ -69,7 +69,7 @@ public class DailyTimesTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    DailyTimes dt = tuples.elementAt(line);
+    DailyTimes dt = tuples.get(line);
     if (dt == null) {
       return null;
     }
@@ -91,7 +91,7 @@ public class DailyTimesTableModel
 
   @Override
   public void setValueAt(Object value, int row, int col) {
-    DailyTimes dt = tuples.elementAt(row);
+    DailyTimes dt = tuples.get(row);
     Hour h = (Hour) value;
     if (col == 1) {
       dt.setOpening(h);

@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Vector;
 import net.algem.contact.Contact;
 import net.algem.contact.Email;
 import net.algem.contact.PersonFile;
@@ -55,76 +54,75 @@ import net.algem.util.module.GemDesktop;
  * @version 2.11.0
  * @since 1.0b 05/03/2002
  */
-public class ExportMemberRTF
-{
+public class ExportMemberRTF {
 
-  static String[] dayNames = PlanningService.WEEK_DAYS;
-  private DataCache dataCache;
-  private PrintWriter out;
-  private PersonFile member;
-  private int memberId;
-  private String path;
-  private Vector<CourseOrder> courseOrderList = new Vector<CourseOrder>();
-  private EnrolmentService enrolmentService;
-  private MemberService memberService;
-  private PlanningService planningService;
+    static String[] dayNames = PlanningService.WEEK_DAYS;
+    private DataCache dataCache;
+    private PrintWriter out;
+    private PersonFile member;
+    private int memberId;
+    private String path;
+    private List<CourseOrder> courseOrderList = new ArrayList<>();
+    private EnrolmentService enrolmentService;
+    private MemberService memberService;
+    private PlanningService planningService;
 
-  public ExportMemberRTF(GemDesktop desktop, String _path, PersonFile m)
-          throws FileNotFoundException {
-    this(desktop, _path, m.getId());
-    member = m;
-  }
-
-  public ExportMemberRTF(GemDesktop desktop, String _path, int m) throws FileNotFoundException {
-    dataCache = desktop.getDataCache();
-    enrolmentService = new EnrolmentService(dataCache);
-    memberService = new MemberService(DataCache.getDataConnection());
-    planningService = new PlanningService(DataCache.getDataConnection());
-    memberId = m;
-    path = _path + "/adh" + memberId + ".rtf";
-
-    out = new PrintWriter(new FileOutputStream(path));
-
-    out.println("{\\rtf1\\utf8\\deflang1024 \\deff0{\\fonttbl{\\f0\\froman Times Roman;}{\\f1\\fnil Times;}{\\f2\\fswiss Helvetica;}}{\\colortbl;\\red0\\green0\\blue0;\\red255\\green255\\blue255;}{\\stylesheet{\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 ");
-    out.println("\\snext0 Normal;}{\\s1\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 \\sbasedon0\\snext1 Cellule;}{\\s2\\sa144\\sl240\\slmult1\\tqc\\tx5044\\tqr\\tx9636\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 \\sbasedon0\\snext2 EnTetePiedDePage;}{\\s3");
-    out.println("\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 \\sbasedon0\\snext3 Paragraphe;}{\\s4\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\b\\f1\\fs28\\cf1 \\sbasedon5\\snext4 Sous-titre;}{\\s5\\qc\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0");
-    out.println("\\brdrr0\\brdrb0\\brdrbtw0 \\b\\f1\\fs36\\cf1 \\sbasedon0\\snext5 Titre;}}");
-    out.println("{\\info{\\title ax11047g.aw}{\\author eric}{\\doccomm Created by Mustang v4.3 RTF Export}}");
-    out.println("\\paperw11904\\paperh16836\\margl1133\\margr1133\\margt1416\\margb849\\widowctrl\\ftnbj\\sectd\\marglsxn1133\\margrsxn1133\\margtsxn1416\\margbsxn849\\pgwsxn11904\\pghsxn16836\\pghsxn16836\\sbknone\\headery708\\footery849\\endnhere{\\footer \\pard\\plain \\s2\\sa144\\slmult1");
-    DateFr today = new DateFr(new java.util.Date());
-    out.println("\\tqc\\tx4534\\tqr\\tx8503 \\f1\\fs24\\cf1 adherent 13251\\tab page {\\field{\\fldinst PAGE}{\\fldrslt}}/{\\field{\\fldinst NUMPAGES}{\\fldrslt 1}}\\tab " + today);
-
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public void edit() {
-    edit(new DateFr("01-01-1900"), new DateFr("31-12-2999"));
-  }
-
-  public void edit(DateFr start, DateFr end) {
-
-    Vector<Email> emails = null;
-
-    if (member == null) {
-      member = memberService.find(memberId);
-      if (member == null) {
-        return;
-      }
+    public ExportMemberRTF(GemDesktop desktop, String _path, PersonFile m)
+            throws FileNotFoundException {
+        this(desktop, _path, m.getId());
+        member = m;
     }
 
-    Contact contact = member.getContact();
-    out.println("\\par }\\pard\\plain \\s3\\qc\\sa144\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0\\shading6000\\cfpat1\\cbpat2 \\f1\\fs24\\cf1 {\\b\\f2\\fs36 "
-            + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Member.file.tip")) + " n\\'b0 " + memberId + "}");
+    public ExportMemberRTF(GemDesktop desktop, String _path, int m) throws FileNotFoundException {
+        dataCache = desktop.getDataCache();
+        enrolmentService = new EnrolmentService(dataCache);
+        memberService = new MemberService(DataCache.getDataConnection());
+        planningService = new PlanningService(DataCache.getDataConnection());
+        memberId = m;
+        path = _path + "/adh" + memberId + ".rtf";
 
-    out.println("\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1 {\\b\\fs28 " + FileUtil.rtfReplaceChars(contact.getFirstName()) + " " + FileUtil.rtfReplaceChars(contact.getName()) + "}");
-    // Ne pas faire figurer l'adresse
-		/*
+        out = new PrintWriter(new FileOutputStream(path));
+
+        out.println("{\\rtf1\\utf8\\deflang1024 \\deff0{\\fonttbl{\\f0\\froman Times Roman;}{\\f1\\fnil Times;}{\\f2\\fswiss Helvetica;}}{\\colortbl;\\red0\\green0\\blue0;\\red255\\green255\\blue255;}{\\stylesheet{\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 ");
+        out.println("\\snext0 Normal;}{\\s1\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 \\sbasedon0\\snext1 Cellule;}{\\s2\\sa144\\sl240\\slmult1\\tqc\\tx5044\\tqr\\tx9636\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 \\sbasedon0\\snext2 EnTetePiedDePage;}{\\s3");
+        out.println("\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 \\sbasedon0\\snext3 Paragraphe;}{\\s4\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\b\\f1\\fs28\\cf1 \\sbasedon5\\snext4 Sous-titre;}{\\s5\\qc\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0");
+        out.println("\\brdrr0\\brdrb0\\brdrbtw0 \\b\\f1\\fs36\\cf1 \\sbasedon0\\snext5 Titre;}}");
+        out.println("{\\info{\\title ax11047g.aw}{\\author eric}{\\doccomm Created by Mustang v4.3 RTF Export}}");
+        out.println("\\paperw11904\\paperh16836\\margl1133\\margr1133\\margt1416\\margb849\\widowctrl\\ftnbj\\sectd\\marglsxn1133\\margrsxn1133\\margtsxn1416\\margbsxn849\\pgwsxn11904\\pghsxn16836\\pghsxn16836\\sbknone\\headery708\\footery849\\endnhere{\\footer \\pard\\plain \\s2\\sa144\\slmult1");
+        DateFr today = new DateFr(new java.util.Date());
+        out.println("\\tqc\\tx4534\\tqr\\tx8503 \\f1\\fs24\\cf1 adherent 13251\\tab page {\\field{\\fldinst PAGE}{\\fldrslt}}/{\\field{\\fldinst NUMPAGES}{\\fldrslt 1}}\\tab " + today);
+
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void edit() {
+        edit(new DateFr("01-01-1900"), new DateFr("31-12-2999"));
+    }
+
+    public void edit(DateFr start, DateFr end) {
+
+        List<Email> emails = null;
+
+        if (member == null) {
+            member = memberService.find(memberId);
+            if (member == null) {
+                return;
+            }
+        }
+
+        Contact contact = member.getContact();
+        out.println("\\par }\\pard\\plain \\s3\\qc\\sa144\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0\\shading6000\\cfpat1\\cbpat2 \\f1\\fs24\\cf1 {\\b\\f2\\fs36 "
+                + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Member.file.tip")) + " n\\'b0 " + memberId + "}");
+
+        out.println("\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1 {\\b\\fs28 " + FileUtil.rtfReplaceChars(contact.getFirstName()) + " " + FileUtil.rtfReplaceChars(contact.getName()) + "}");
+        // Ne pas faire figurer l'adresse
+        /*
     adr = contact.getAddress();
     if (adr == null && adh.getMember().getPayer() != adh.getIdOrder()) {
-    Vector v = AdresseIO.findId(dataCache, adh.getMember().getPayer());
+    List v = AdresseIO.findId(dataCache, adh.getMember().getPayer());
     if (v != null && v.size() > 0)
     adr = (Adresse)v.elementAt(0);
     }
@@ -132,8 +130,8 @@ public class ExportMemberRTF
     out.println("\\par "+adr.getAdr1()+","+adr.getAdr2()+","+adr.getCdp()+" "+adr.getVille());
     }*/
 
-    // Ne pas faire figurer le téléphone
-		/*tel = contact.getTele();
+        // Ne pas faire figurer le téléphone
+        /*tel = contact.getTele();
     if (tel == null && adh.getMember().getPayer() != adh.getIdOrder())
     tel = TeleIO.findId(dataCache, adh.getMember().getPayer());
 
@@ -145,141 +143,141 @@ public class ExportMemberRTF
     }
     out.println();
     }*/
-    emails = contact.getEmail();
-    if (emails != null) {
-      for (Email e : emails) {
-        out.print("\\par " + BundleUtil.getLabel("Mail.label") + " : " + e.getEmail());
-        out.println();
-      }
-    }
-
-    out.println();
-    Member m = member.getMember();
-    out.println("\\par " + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Date.of.birth.label")) + " : " + m.getBirth()
-            + " - " + BundleUtil.getLabel("Practical.experience.label").toLowerCase() + " " + m.getPractice()
-            + " - " + BundleUtil.getLabel("Level.label").toLowerCase() + " " + m.getLevel());
-    out.println("\\par " + BundleUtil.getLabel("Instruments.label") + " : ");
-    if (m.getInstruments() != null) {
-      StringBuilder sbi = new StringBuilder();
-      for (Integer i : m.getInstruments()) {
-        sbi.append(FileUtil.rtfReplaceChars(dataCache.getInstrumentName(i))).append(',');
-      }
-      sbi.deleteCharAt(sbi.length() -1);
-      out.println(sbi.toString());
-    }
-    out.println("\\par ");
-
-
-    /* PLANNING */
-    //out.println("\\par \\pard\\plain \\s3\\qc\\sa144\\slmult1 \\f1\\fs24\\cf1 {\\b\\f2\\fs28 P\\'e9riode du "+debut+" au "+fin+"}");
-    out.println("\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1");
-
-    List<Enrolment> ins = null;
-    try {
-      ins = memberService.getEnrolments(member.getId(), start, end);
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-    }
-    if (ins != null && ins.size() > 0) {
-      editEnrolment(ins);
-    }
-
-    out.println("\\par \\pard\\plain \\s3\\sa144\\slmult1 \\f1\\fs24\\cf1 ");
-    out.println("\\par \\pard\\plain \\s3\\qc\\sa144\\slmult1 \\f1\\fs24\\cf1 {\\b\\f2\\fs28 Suivi p\\'e9dagogique}");
-
-    List<Course> courseList = getCourseOrderList(courseOrderList);
-    if (!courseList.isEmpty()) {
-      out.println(getFollowUp(member, courseList));
-    } else {
-      out.print("\n\\par }");
-    }
-    out.close();
-  }
-
-  void editEnrolment(List<Enrolment> ins) {
-
-    for (int j = 0; j < ins.size(); j++) {
-      Enrolment i = ins.get(j);
-      out.println("\\par " + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Enrolment.label"))
-              + "  " + i.getId() + " " + BundleUtil.getLabel("Date.From.label").toLowerCase()
-              + " " + i.getOrder().getCreation()
-      );
-      Enumeration<ModuleOrder> enu = i.getModule().elements();
-      while (enu.hasMoreElements()) {
-        try {
-          ModuleOrder cm = enu.nextElement();
-          out.println("\\par \\tab " + BundleUtil.getLabel("Module.label") + " " + cm.getTitle());
-          Vector<CourseOrder> v = enrolmentService.getCourseOrder(i.getId(), cm.getId());
-          for (CourseOrder cc : v) {
-            cc.setDay(enrolmentService.getCourseDayMember(cc.getAction(), cc.getDateStart(), i.getMember()));
-            courseOrderList.addElement(cc);
-            out.println("\\par \\tab\\tab " + BundleUtil.getLabel("Course.label")
-                    + "  " + (cc.getTitle() == null ? FileUtil.rtfReplaceChars(BundleUtil.getLabel("To.define.label")) : cc.getTitle())
-                    + " " + dayNames[cc.getDay()]
-                    + " " + cc.getStart() + "-" + cc.getEnd()
-            );
-          }
-        } catch (SQLException ex) {
-          GemLogger.log(getClass().getName()+"#editeInscription "+ex.getMessage());
-        }
-      }
-    }
-  }
-
-  private List<Course> getCourseOrderList(Vector<CourseOrder> listeCC) {
-    List<Course> tri = new ArrayList<Course>();
-    for (CourseOrder cc : listeCC) {
-      try {
-        Course c = planningService.getCourseFromAction(cc.getAction());
-        if (!tri.contains(c) && c != null && !c.isUndefined()) {
-          tri.add(c);
-        }
-      } catch(SQLException e) {
-        GemLogger.logException(e);
-      }
-    }
-    return tri;
-  }
-
-  private String getFollowUp(PersonFile member, List<Course> sortList) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < sortList.size(); i++) {
-      try {
-        Course c = sortList.get(i);
-        sb.append("\n\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1 Cours ").append(c.getTitle());
-        //out.println("\\par \\pard\\plain \\s3\\sa144\\slmult1 \\f1\\fs24\\cf1 ");
-        Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
-        if (c.isCollective()) {
-          v = memberService.findFollowUp(member.getId(), c.getId(), true);
-        } else {
-          v = memberService.findFollowUp(member.getId(), c.getId(), false);
-        }
-
-        for (int j = 0; j < v.size(); j++) {
-          ScheduleRangeObject p = v.elementAt(j);
-
-          String s = p.getFollowUp() == null ? null : p.getFollowUp().getContent();
-          if (s != null) {
-            String s2 = p.getNote2();
-            if (s2 != null) s += " / " + s2;
-            s = s.replaceAll(System.lineSeparator(), " - ").trim();
-
-            s = FileUtil.rtfReplaceChars(s);
-            if (s.length() > 0) {
-              sb.append("\n\\par \\tab ").append(p.getDate()).append(" : ").append(s);
+        emails = contact.getEmail();
+        if (emails != null) {
+            for (Email e : emails) {
+                out.print("\\par " + BundleUtil.getLabel("Mail.label") + " : " + e.getEmail());
+                out.println();
             }
-          }
         }
-      } catch (SQLException sqe) {
-        GemLogger.logException(sqe);
-      }
-      sb.append("\n\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1 ");
+
+        out.println();
+        Member m = member.getMember();
+        out.println("\\par " + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Date.of.birth.label")) + " : " + m.getBirth()
+                + " - " + BundleUtil.getLabel("Practical.experience.label").toLowerCase() + " " + m.getPractice()
+                + " - " + BundleUtil.getLabel("Level.label").toLowerCase() + " " + m.getLevel());
+        out.println("\\par " + BundleUtil.getLabel("Instruments.label") + " : ");
+        if (m.getInstruments() != null) {
+            StringBuilder sbi = new StringBuilder();
+            for (Integer i : m.getInstruments()) {
+                sbi.append(FileUtil.rtfReplaceChars(dataCache.getInstrumentName(i))).append(',');
+            }
+            sbi.deleteCharAt(sbi.length() - 1);
+            out.println(sbi.toString());
+        }
+        out.println("\\par ");
+
+
+        /* PLANNING */
+        //out.println("\\par \\pard\\plain \\s3\\qc\\sa144\\slmult1 \\f1\\fs24\\cf1 {\\b\\f2\\fs28 P\\'e9riode du "+debut+" au "+fin+"}");
+        out.println("\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1");
+
+        List<Enrolment> ins = null;
+        try {
+            ins = memberService.getEnrolments(member.getId(), start, end);
+        } catch (SQLException ex) {
+            GemLogger.logException(ex);
+        }
+        if (ins != null && ins.size() > 0) {
+            editEnrolment(ins);
+        }
+
+        out.println("\\par \\pard\\plain \\s3\\sa144\\slmult1 \\f1\\fs24\\cf1 ");
+        out.println("\\par \\pard\\plain \\s3\\qc\\sa144\\slmult1 \\f1\\fs24\\cf1 {\\b\\f2\\fs28 Suivi p\\'e9dagogique}");
+
+        List<Course> courseList = getCourseOrderList(courseOrderList);
+        if (!courseList.isEmpty()) {
+            out.println(getFollowUp(member, courseList));
+        } else {
+            out.print("\n\\par }");
+        }
+        out.close();
     }
 
-    sb.append("\n\\par ");
-    sb.append("\n\\par }");
+    void editEnrolment(List<Enrolment> ins) {
 
-    return sb.toString();
-  }
+        for (int j = 0; j < ins.size(); j++) {
+            Enrolment i = ins.get(j);
+            out.println("\\par " + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Enrolment.label"))
+                    + "  " + i.getId() + " " + BundleUtil.getLabel("Date.From.label").toLowerCase()
+                    + " " + i.getOrder().getCreation()
+            );
+            try {
+                for (ModuleOrder cm : i.getModule()) {
+                    out.println("\\par \\tab " + BundleUtil.getLabel("Module.label") + " " + cm.getTitle());
+                    List<CourseOrder> v = enrolmentService.getCourseOrder(i.getId(), cm.getId());
+                    for (CourseOrder cc : v) {
+                        cc.setDay(enrolmentService.getCourseDayMember(cc.getAction(), cc.getDateStart(), i.getMember()));
+                        courseOrderList.add(cc);
+                        out.println("\\par \\tab\\tab " + BundleUtil.getLabel("Course.label")
+                                + "  " + (cc.getTitle() == null ? FileUtil.rtfReplaceChars(BundleUtil.getLabel("To.define.label")) : cc.getTitle())
+                                + " " + dayNames[cc.getDay()]
+                                + " " + cc.getStart() + "-" + cc.getEnd()
+                        );
+                    }
+                }
+            } catch (SQLException ex) {
+                GemLogger.log(getClass().getName() + "#editeInscription " + ex.getMessage());
+            }
+
+        }
+    }
+
+    private List<Course> getCourseOrderList(List<CourseOrder> listeCC) {
+        List<Course> tri = new ArrayList<Course>();
+        for (CourseOrder cc : listeCC) {
+            try {
+                Course c = planningService.getCourseFromAction(cc.getAction());
+                if (!tri.contains(c) && c != null && !c.isUndefined()) {
+                    tri.add(c);
+                }
+            } catch (SQLException e) {
+                GemLogger.logException(e);
+            }
+        }
+        return tri;
+    }
+
+    private String getFollowUp(PersonFile member, List<Course> sortList) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < sortList.size(); i++) {
+            try {
+                Course c = sortList.get(i);
+                sb.append("\n\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1 Cours ").append(c.getTitle());
+                //out.println("\\par \\pard\\plain \\s3\\sa144\\slmult1 \\f1\\fs24\\cf1 ");
+                List<ScheduleRangeObject> v = new ArrayList<>();
+                if (c.isCollective()) {
+                    v = memberService.findFollowUp(member.getId(), c.getId(), true);
+                } else {
+                    v = memberService.findFollowUp(member.getId(), c.getId(), false);
+                }
+
+                for (int j = 0; j < v.size(); j++) {
+                    ScheduleRangeObject p = v.get(j);
+
+                    String s = p.getFollowUp() == null ? null : p.getFollowUp().getContent();
+                    if (s != null) {
+                        String s2 = p.getNote2();
+                        if (s2 != null) {
+                            s += " / " + s2;
+                        }
+                        s = s.replaceAll(System.lineSeparator(), " - ").trim();
+
+                        s = FileUtil.rtfReplaceChars(s);
+                        if (s.length() > 0) {
+                            sb.append("\n\\par \\tab ").append(p.getDate()).append(" : ").append(s);
+                        }
+                    }
+                }
+            } catch (SQLException sqe) {
+                GemLogger.logException(sqe);
+            }
+            sb.append("\n\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1 ");
+        }
+
+        sb.append("\n\\par ");
+        sb.append("\n\\par }");
+
+        return sb.toString();
+    }
 }
-

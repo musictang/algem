@@ -22,7 +22,8 @@ package net.algem.course;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -102,8 +103,8 @@ public class ModuleTypeIO
    * @throws SQLException
    * @deprecated 
    */
-  public static Vector<ModuleType> find(String where, DataConnection dc) throws SQLException {
-    Vector<ModuleType> v = new Vector<ModuleType>();
+  public static List<ModuleType> find(String where, DataConnection dc) throws SQLException {
+    List<ModuleType> v = new ArrayList<>();
     String query = "SELECT * FROM " + TABLE + " " + where;
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
@@ -112,7 +113,7 @@ public class ModuleTypeIO
       m.setCode(rs.getString(2).trim());
       m.setLabel(rs.getString(3));
 
-      v.addElement(m);
+      v.add(m);
     }
     rs.close();
     return v;

@@ -27,7 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -66,7 +66,7 @@ public class PersonSubscriptionCardView
   private AccountChoice account;
   private PersonSubscriptionCard personCard;
 
-  public PersonSubscriptionCardView(Vector<RehearsalPass> vc, GemList<Account> la) throws SQLException {
+  public PersonSubscriptionCardView(List<RehearsalPass> vc, GemList<Account> la) throws SQLException {
     date = new DateRangePanel(DateRangePanel.SIMPLE_DATE, null);
     //date.setEditable(false);
     date.setDate(new Date());

@@ -90,7 +90,7 @@ public class ConflictTableModel
 
   @Override
   public Object getValueAt(int row, int col) {
-    ScheduleTestConflict p = tuples.elementAt(row);
+    ScheduleTestConflict p = tuples.get(row);
     switch (col) {
       case 0:
         return p.getDate();
@@ -129,7 +129,7 @@ public class ConflictTableModel
 
   @Override
   public void setValueAt(Object value, int row, int col) {
-    ScheduleTestConflict c = tuples.elementAt(row);
+    ScheduleTestConflict c = tuples.get(row);
     switch (col) {
       case 0:
         DateFr newDate = (DateFr) value;

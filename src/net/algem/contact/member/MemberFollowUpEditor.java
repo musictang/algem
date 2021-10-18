@@ -33,7 +33,6 @@ import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.JobName;
@@ -199,7 +198,7 @@ public class MemberFollowUpEditor
   public void load() {
     desktop.setWaitCursor();
     clear();
-    Vector<ScheduleRangeObject> v = null;
+    List<ScheduleRangeObject> v = null;
     try {
       v = memberService.findFollowUp(personFile.getId(), new DateRange(dates.getStartFr(), dates.getEndFr()));
     } catch (SQLException ex) {
@@ -208,7 +207,7 @@ public class MemberFollowUpEditor
     int min = 0;
     if (v != null) {
       for (int i = 0; i < v.size(); i++) {
-        ScheduleRangeObject r = v.elementAt(i);
+        ScheduleRangeObject r = v.get(i);
         Hour hd = r.getStart();
         Hour hf = r.getEnd();
         min += hd.getLength(hf);

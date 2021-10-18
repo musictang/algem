@@ -23,7 +23,7 @@ package net.algem.room;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.BundleUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTab;
@@ -54,7 +54,7 @@ public class RoomEquipEditor
 
   }
 
-  public Vector<Equipment> getData() {
+  public List<Equipment> getData() {
     return table.getData();
     }
     
@@ -62,7 +62,7 @@ public class RoomEquipEditor
     table.clear();
   }
 
-  public void load(Vector<Equipment> ve) {
+  public void load(List<Equipment> ve) {
     for (Equipment e : ve) {
       table.addRow(e);
     }

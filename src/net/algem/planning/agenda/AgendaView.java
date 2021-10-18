@@ -56,7 +56,7 @@ public class AgendaView
   }
 
   @Override
-  public java.util.Vector getScheduleRanges() {
+  public java.util.List getScheduleRanges() {
     return null;
   }
 

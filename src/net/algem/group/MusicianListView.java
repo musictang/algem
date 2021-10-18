@@ -27,7 +27,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
@@ -199,7 +198,7 @@ public class MusicianListView
     //no.setText(String.valueOf(i));
   }
 
-  public Vector<Musician> get() {
+  public List<Musician> get() {
     return musicians.getData();
   }
 

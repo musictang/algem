@@ -21,6 +21,7 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import java.util.Enumeration;
 import net.algem.group.GroupIO;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
@@ -51,7 +52,7 @@ public class MusicStyleCtrl
 
   @Override
   public void load() {
-    load(ParamTableIO.find(MusicStyleIO.TABLE, COLUMN_NAME, dc).elements());
+    load((Enumeration<? extends Param>) ParamTableIO.find(MusicStyleIO.TABLE, COLUMN_NAME, dc));
   }
 
   @Override

@@ -20,7 +20,7 @@
  */
 package net.algem.room;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 
 /**
@@ -32,7 +32,7 @@ import net.algem.util.model.GemList;
  */
 public class RoomRateList extends GemList {
 
-  public RoomRateList(Vector<RoomRate> list) {
+  public RoomRateList(List<RoomRate> list) {
     super(list);
   }
 
@@ -44,8 +44,8 @@ public class RoomRateList extends GemList {
     return ((RoomRate) list.get(index)).getLabel();
   }
 
-  public Vector<RoomRate> getList() {
-    return new Vector<RoomRate>(getData());
+  public List<RoomRate> getList() {
+    return list;
   }
 
   /**

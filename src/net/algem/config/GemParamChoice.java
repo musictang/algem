@@ -21,7 +21,7 @@
 
 package net.algem.config;
 
-import java.util.Vector;
+import java.util.List;
 import javax.swing.ComboBoxModel;
 import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
@@ -40,7 +40,7 @@ public class GemParamChoice
   public GemParamChoice() {
   }
 
-  public <T extends Object> GemParamChoice(Vector<T> v) {
+  public <T extends Object> GemParamChoice(List<T> v) {
     super(v);
   }
 

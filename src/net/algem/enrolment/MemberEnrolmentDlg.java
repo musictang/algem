@@ -25,9 +25,9 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import net.algem.Algem;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.AccountingServiceImpl;
@@ -82,7 +82,7 @@ public class MemberEnrolmentDlg
     /**
      * Module order list.
      */
-    private Vector<ModuleOrder> module_orders;
+    private List<ModuleOrder> module_orders;
 
     private ModuleDlg moduleDlg;
     private CourseEnrolmentDlg courseEnrolmentDlg;
@@ -106,7 +106,7 @@ public class MemberEnrolmentDlg
         view.setMember(dossier.getContact());
         view.addActionListener(this);
 
-        module_orders = new Vector<ModuleOrder>();
+        module_orders = new ArrayList<>();
 
         setLayout(new BorderLayout());
         add(view, BorderLayout.CENTER);
@@ -128,7 +128,7 @@ public class MemberEnrolmentDlg
         try {
             // Vérification des modules
             for (int i = 0; i < module_orders.size(); i++) {
-                ModuleOrder m = module_orders.elementAt(i);
+                ModuleOrder m = module_orders.get(i);
                 Module mod = service.getModule(m.getModule());
                 if (m.getModule() == 0 || mod == null) {// si module inexistant
                     MessagePopup.warning(this, MessageUtil.getMessage("invalid.module.choice"));
@@ -167,20 +167,20 @@ public class MemberEnrolmentDlg
             service.create(order);
 
             //Détermination de l'école pour l'enregistrement des échéances
-            int school = getSchool(module_orders.elementAt(0));
+            int school = getSchool(module_orders.get(0));
 
             ModuleOrder m = null;
 
             //premier parcours de boucle pour déterminer le prix total.
             for (int i = 0; i < module_orders.size(); i++) {
-                m = module_orders.elementAt(i);
+                m = module_orders.get(i);
 //        totalBase += m.getPrice();// prix calculé en fonction de la périodicité
                 totalBase += m.getPaymentAmount();// prix calculé en fonction de la périodicité
             }
 
             // enregistrement des modules
             for (int i = 0; i < module_orders.size(); i++) {
-                m = module_orders.elementAt(i);
+                m = module_orders.get(i);
                 m.setIdOrder(order.getId());//récupération du numéro de commande
                 saveModule(m);
                 currentModule++;
@@ -193,20 +193,22 @@ public class MemberEnrolmentDlg
                     orderUtil.setTotalOrderLine(totalBase);
                     String billing = ConfigUtil.getConf(ConfigKey.CHARGE_ENROLMENT_LINES.getKey());
                     boolean withBilling = billing.toLowerCase().startsWith("t");
-                    int n = orderUtil.saveOrderLines(module_orders.elementAt(0), school, withBilling);
+                    int n = orderUtil.saveOrderLines(module_orders.get(0), school, withBilling);
                     for (ModuleOrder mo : module_orders) {
                         orderUtil.updateModuleOrder(n, mo);
                     }
                     AccountingServiceImpl accountingService = new AccountingServiceImpl(dc);
                     List<OrderLine> stdLines = accountingService.findStandardOrderLines();
                     String startDateCheck = ConfigUtil.getConf(ConfigKey.PRE_ENROLMENT_START_DATE.getKey());
-                    List<OrderLine> completedStdLines = orderUtil.getCompletedStandardOrderLines(module_orders.elementAt(0), dossier.getId(), stdLines, accountingService, startDateCheck, withBilling);
+                    List<OrderLine> completedStdLines = orderUtil.getCompletedStandardOrderLines(module_orders.get(0), dossier.getId(), stdLines, accountingService, startDateCheck, withBilling);
                     if (completedStdLines.size() > 0) {
                         for (OrderLine ol : completedStdLines) {
                             AccountUtil.createEntry(ol, false, dc);
                         }
                     }
-                } catch (NullAccountException ne) {
+                } catch (NullAccountException ne) { 
+                    MessagePopup.warning(view, ne.getMessage());
+                } catch (SQLException ne) {
                     MessagePopup.warning(view, ne.getMessage());
                 }
             }
@@ -240,7 +242,7 @@ public class MemberEnrolmentDlg
 
     private void resetIdModule() {
         for (int i = 0, size = module_orders.size(); i < size; i++) {
-            ModuleOrder mo = module_orders.elementAt(i);
+            ModuleOrder mo = module_orders.get(i);
             mo.setId(i);
         }
     }
@@ -294,7 +296,7 @@ public class MemberEnrolmentDlg
      */
     public void clear() {
         view.clear();
-        module_orders = new Vector<ModuleOrder>();
+        module_orders = new ArrayList<>();
     }
 
     public void load(PersonFile d) {
@@ -386,7 +388,7 @@ public class MemberEnrolmentDlg
         mo.setId(module_orders.size());// id temporaire
         view.addModule(mo);
 
-        module_orders.addElement(mo);
+        module_orders.add(mo);
     }
 
     private void modifyModule() {
@@ -397,7 +399,7 @@ public class MemberEnrolmentDlg
 
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-        ModuleOrder mo = (ModuleOrder) module_orders.elementAt(n);
+        ModuleOrder mo = (ModuleOrder) module_orders.get(n);
         int oldModule = mo.getModule();
         if (moduleDlg == null) {
             try {
@@ -466,8 +468,8 @@ public class MemberEnrolmentDlg
             return;
         }
 
-        ModuleOrder mo = module_orders.elementAt(n);
-        module_orders.removeElementAt(n);
+        ModuleOrder mo = module_orders.get(n);
+        module_orders.remove(n);
         view.removeModule(n);
         for (CourseOrder co : mo.getCourseOrders()) {
             view.remove(co);
@@ -530,11 +532,11 @@ public class MemberEnrolmentDlg
                     //System.out.println("MemberEnrolmentDlg.modifyCourse w=" + w);
                     try {
                         Course c = (Course) DataCache.findId(w.getCourse(), Model.Course);
-                        Vector<Schedule> ctrls = service.getCourseWeek2(c, co.getDateStart(), 3, EnrolmentWishIO.dow2isodow(w.getDay()), w.getTeacher());
+                        List<Schedule> ctrls = service.getCourseWeek2(c, co.getDateStart(), 3, EnrolmentWishIO.dow2isodow(w.getDay()), w.getTeacher());
                         for (Schedule s : ctrls) {
                             int day = s.getDate().getDayOfWeek();
                             if (day == w.getDay()) {
-                                Vector<ScheduleRange> plages = service.getBusyTimeSlot2(s.getIdAction(), w.getCourse(), s.getDate());
+                                List<ScheduleRange> plages = service.getBusyTimeSlot2(s.getIdAction(), w.getCourse(), s.getDate());
                                 for (ScheduleRange range : plages) {
                                     if (range.getMemberId() == dossier.getId()) {
                                         wishOk = false;
@@ -563,11 +565,11 @@ public class MemberEnrolmentDlg
                     //if (wishService.isdejainscrit ou plage prise)
                     if (wishOk && MessagePopup.confirm(view, "utiliser le voeux " + libelle)) {
                         fromWish = true;
-                        Vector<Schedule> v = service.getCourseDay2(w.getCourse(), EnrolmentWishIO.dow2isodow(w.getDay()), co.getCode(), co.getDateStart(), 3, w.getTeacher()); //FIXME codage dur estab pour polynotes
+                        List<Schedule> v = service.getCourseDay2(w.getCourse(), EnrolmentWishIO.dow2isodow(w.getDay()), co.getCode(), co.getDateStart(), 3, w.getTeacher()); //FIXME codage dur estab pour polynotes
                         if (v.size() == 0) {
                             MessagePopup.error(view, "le cours n'est pas planifié");
                         } else {
-                            Schedule p = v.elementAt(0);
+                            Schedule p = v.get(0);
                             co.setModule(co.getModuleOrder());
                             co.setAction(p.getIdAction());
                             co.setTitle(getModuleTitle(co) + w.getCourseLabel());

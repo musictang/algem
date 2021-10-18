@@ -20,6 +20,7 @@
  */
 package net.algem.rental;
 
+import java.util.List;
 import java.util.Vector;
 import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
@@ -46,7 +47,7 @@ public class RentableActiveChoiceModel
         selected = this.list.getElementAt(indices.get(0));
   }
 
-  public RentableActiveChoiceModel(Vector<RentableObject> list, boolean active) {
+  public RentableActiveChoiceModel(List<RentableObject> list, boolean active) {
     this(new GemList<RentableObject>(list), active);
   }
 

@@ -71,7 +71,7 @@ public class TrainingContractTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    TrainingContract t = tuples.elementAt(line);
+    TrainingContract t = tuples.get(line);
     switch (col) {
       case 0:
         return t.getId();

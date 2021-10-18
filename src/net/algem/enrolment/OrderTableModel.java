@@ -76,7 +76,7 @@ public class OrderTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    MemberOrder cmd = tuples.elementAt(line);
+    MemberOrder cmd = tuples.get(line);
     switch (col) {
       case 0:
         return cmd.getId();

@@ -23,7 +23,8 @@ package net.algem.util.ui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
 
@@ -40,8 +41,8 @@ public abstract class FileTabCard
 {
 
   protected GemPanel buttons;
-  protected Vector<GemPanel> panels;
-  protected Vector<String> titles;
+  protected List<GemPanel> panels;
+  protected List<String> titles;
   protected int step;
   protected GemLabel title;
   protected GemPanel wCard;
@@ -54,8 +55,8 @@ public abstract class FileTabCard
   public FileTabCard(GemDesktop _desktop) {
     super(_desktop);
 
-    panels = new Vector<GemPanel>();
-    titles = new Vector<String>();
+    panels = new ArrayList<>();
+    titles = new ArrayList<>();
 
     wCard = new GemPanel();
     wCard.setLayout(new CardLayout());
@@ -103,8 +104,8 @@ public abstract class FileTabCard
 
   public void addCard(String t, GemPanel p) {
     wCard.add("etape" + panels.size(), p);
-    panels.addElement(p);
-    titles.addElement(t);
+    panels.add(p);
+    titles.add(t);
   }
 
   public void select(int no) {
@@ -114,7 +115,7 @@ public abstract class FileTabCard
 
     ((CardLayout) wCard.getLayout()).show(wCard, "etape" + no);
 
-    String t = (String) titles.elementAt(no);
+    String t = (String) titles.get(no);
     title.setText(t);
 
     step = no;

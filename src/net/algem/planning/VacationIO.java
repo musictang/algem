@@ -22,9 +22,9 @@ package net.algem.planning;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -90,15 +90,15 @@ public class VacationIO
   public static Vacation findDay(Date day, int id, DataConnection dc) {
     DateFr d = new DateFr(day);
     String query = "WHERE jour = '" + d + "' AND vid = " + id;
-    Vector<Vacation> v = find(query, dc);
+    List<Vacation> v = find(query, dc);
     if (v.size() > 0) {
-      return v.elementAt(0);
+      return v.get(0);
     }
     return null;
   }
 
-  public static Vector<Vacation> find(String where, DataConnection dc) {
-    Vector<Vacation> v = new Vector<Vacation>();
+  public static List<Vacation> find(String where, DataConnection dc) {
+    List<Vacation> v = new ArrayList<>();
     String query = "SELECT * FROM " + TABLE + " " + where + " ORDER BY jour, vid";
     try {
       ResultSet rs = dc.executeQuery(query);
@@ -109,7 +109,7 @@ public class VacationIO
         j.setVid(rs.getInt(3));
         j.setLabel(rs.getString(4).trim());
 
-        v.addElement(j);
+        v.add(j);
       }
       rs.close();
     } catch (SQLException e) {

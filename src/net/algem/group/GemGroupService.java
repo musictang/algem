@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import net.algem.accounting.Account;
 import net.algem.accounting.AccountIO;
 import net.algem.accounting.AccountPrefIO;
@@ -66,10 +65,10 @@ public class GemGroupService
   @Override
   public void create(Group g) throws SQLException {
     groupIO.insert(g);
-    Vector<WebSite> sites = g.getSites();
+    List<WebSite> sites = g.getSites();
     if (sites != null) {
       for (int i = 0; i < sites.size(); i++) {
-        WebSite s = sites.elementAt(i);
+        WebSite s = sites.get(i);
         s.setIdper(g.getId());
         s.setPtype(Person.GROUP);
         WebSiteIO.insert(s, i, dc);
@@ -88,7 +87,7 @@ public class GemGroupService
     update(old.getSites(), g);
   }
 
-  private void update(Vector<WebSite> oldsites, Group g) throws SQLException {
+  private void update(List<WebSite> oldsites, Group g) throws SQLException {
     new ContactIO(dc).updateSites(oldsites, g.getSites(), g.getId(), Person.GROUP);
   }
 
@@ -124,7 +123,7 @@ public class GemGroupService
     String where = " WHERE idper = " + g.getId() + " AND ptype = " + Schedule.GROUP;
 
     try {
-      Vector<ScheduleObject> vp = ScheduleIO.findObject(where, dc);
+      List<ScheduleObject> vp = ScheduleIO.findObject(where, dc);
       if (vp != null && vp.size() > 0) {
         throw new GroupException(String.valueOf(vp.size()));
       }
@@ -202,15 +201,15 @@ public class GemGroupService
     return groupIO.find(idper);
   }
 
-  Vector<WebSite> getSites(int id) throws SQLException {
+  List<WebSite> getSites(int id) throws SQLException {
     return WebSiteIO.find(id, Person.GROUP, dc);
   }
 
-  Vector<Param> getCategoriesSite() {
+  List<Param> getCategoriesSite() {
     return ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), dc);
   }
 
-  Vector<Schedule> getRehearsalHisto(int g, DateFr start, DateFr end) {
+  List<Schedule> getRehearsalHisto(int g, DateFr start, DateFr end) {
     String query = " WHERE p.ptype = " + Schedule.GROUP + " AND p.idper = " + g;
     if (start != null && end != null) {
       query += " AND p.jour BETWEEN '" + start + "' AND '" + end + "'";
@@ -225,7 +224,7 @@ public class GemGroupService
    * @param g group instance
    * @return a list of order lines
    */
-  Vector<OrderLine> getSchedulePayment(Group g) {
+  List<OrderLine> getSchedulePayment(Group g) {
     int membershipAccount = 0;
     StringBuilder where = new StringBuilder("WHERE (groupe > 0 AND groupe = ");
     where.append(g.getId()).append(')');
@@ -256,10 +255,10 @@ public class GemGroupService
    * @param g group instance
    * @return a list of order lines
    */
-  Vector<OrderLine> getMemberSchedulePayment(Group g) {
+  List<OrderLine> getMemberSchedulePayment(Group g) {
     List<Musician> lm = g.getMusicians();
     if (lm == null) {
-      return new Vector<OrderLine>();
+      return new ArrayList<OrderLine>();
     }
     StringBuilder where = new StringBuilder("WHERE adherent IN (");
     for (Musician m : lm) {
@@ -425,8 +424,8 @@ public class GemGroupService
    * @param endDate end date
    * @return a list of dates
    */
-  Vector<DateFr> generateDates(int day, DateFr startDate, DateFr endDate) {
-    Vector<DateFr> v = new Vector<DateFr>();
+  List<DateFr> generateDates(int day, DateFr startDate, DateFr endDate) {
+    List<DateFr> v = new ArrayList<>();
 
     Calendar start = Calendar.getInstance(Locale.FRANCE);
     start.setTime(startDate.getDate());
@@ -435,7 +434,7 @@ public class GemGroupService
 
     while (!start.after(end)) {
       if (start.get(Calendar.DAY_OF_WEEK) == day) {
-        v.addElement(new DateFr(start.getTime()));
+        v.add(new DateFr(start.getTime()));
       }
       start.add(Calendar.DATE, 1);
     }

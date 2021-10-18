@@ -22,7 +22,8 @@ package net.algem.config;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -34,61 +35,60 @@ import net.algem.util.model.TableIO;
  * @version 2.6.a
  */
 public class CategoryOccupIO
-        extends TableIO
-{
+        extends TableIO {
 
-  public static final String TABLE = "categorie_prof";
-  public static final String SEQUENCE = "idcategorieprof";
+    public static final String TABLE = "categorie_prof";
+    public static final String SEQUENCE = "idcategorieprof";
 
-  public static void insert(CategoryOccup c, DataConnection dc) throws SQLException {
-    
-    int num = nextId(SEQUENCE, dc);
+    public static void insert(CategoryOccup c, DataConnection dc) throws SQLException {
 
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + "'" + num
-            + "','" + c.getLabel()
-            + "')";
+        int num = nextId(SEQUENCE, dc);
 
-    dc.executeUpdate(query);
-    c.setId(num);
-  }
+        String query = "INSERT INTO " + TABLE + " VALUES("
+                + "'" + num
+                + "','" + c.getLabel()
+                + "')";
 
-  public static void update(CategoryOccup c, DataConnection dc) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET nom='" + c.getLabel() + "'";
-    query += " WHERE id=" + c.getId();
-
-    dc.executeUpdate(query);
-  }
-
-  public static void delete(CategoryOccup c, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id=" + c.getId();
-
-    dc.executeUpdate(query);
-  }
-
-  public static CategoryOccup findId(String n, DataConnection dc) throws SQLException {
-    String query = "WHERE id=" + n;
-    Vector<CategoryOccup> v = find(query, dc);
-    if (v.size() > 0) {
-      return v.elementAt(0);
+        dc.executeUpdate(query);
+        c.setId(num);
     }
-    return null;
-  }
 
-  public static Vector<CategoryOccup> find(String where, DataConnection dc) throws SQLException {
-    Vector<CategoryOccup> v = new Vector<CategoryOccup>();
-    String query = "SELECT * FROM " + TABLE + " " + where;
+    public static void update(CategoryOccup c, DataConnection dc) throws SQLException {
+        String query = "UPDATE " + TABLE + " SET nom='" + c.getLabel() + "'";
+        query += " WHERE id=" + c.getId();
 
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      CategoryOccup c = new CategoryOccup();
-      c.setId(rs.getInt(1));
-      c.setLabel(rs.getString(2).trim());
-
-      v.addElement(c);
+        dc.executeUpdate(query);
     }
-    rs.close();
 
-    return v;
-  }
+    public static void delete(CategoryOccup c, DataConnection dc) throws SQLException {
+        String query = "DELETE FROM " + TABLE + " WHERE id=" + c.getId();
+
+        dc.executeUpdate(query);
+    }
+
+    public static CategoryOccup findId(String n, DataConnection dc) throws SQLException {
+        String query = "WHERE id=" + n;
+        List<CategoryOccup> v = find(query, dc);
+        if (v.size() > 0) {
+            return v.get(0);
+        }
+        return null;
+    }
+
+    public static List<CategoryOccup> find(String where, DataConnection dc) throws SQLException {
+        List<CategoryOccup> v = new ArrayList<>();
+        String query = "SELECT * FROM " + TABLE + " " + where;
+
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                CategoryOccup c = new CategoryOccup();
+                c.setId(rs.getInt(1));
+                c.setLabel(rs.getString(2).trim());
+
+                v.add(c);
+            }
+        }
+
+        return v;
+    }
 }

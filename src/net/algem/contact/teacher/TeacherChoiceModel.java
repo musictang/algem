@@ -20,7 +20,7 @@
  */
 package net.algem.contact.teacher;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoiceModel;
 
@@ -38,7 +38,7 @@ public class TeacherChoiceModel
     super(list);
   }
 
-  public TeacherChoiceModel(Vector<Teacher> list) {
+  public TeacherChoiceModel(List<Teacher> list) {
     this(new GemList<Teacher>(list));
   }
 

@@ -23,8 +23,8 @@ package net.algem.course;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.planning.ActionIO;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -39,124 +39,124 @@ import net.algem.util.model.TableIO;
  * @version 2.15.12
  */
 public class CourseIO
-  extends TableIO
-  implements Cacheable {
+        extends TableIO
+        implements Cacheable {
 
-  public static final String TABLE = "cours";
-  public static final String ALIAS = "c";
-  public static final String COLUMNS = "c.id, c.titre, c.libelle, c.nplaces, c.niveau, c.collectif, c.code, c.ecole, c.actif";
-  public static final String SEQUENCE = "idcours";
+    public static final String TABLE = "cours";
+    public static final String ALIAS = "c";
+    public static final String COLUMNS = "c.id, c.titre, c.libelle, c.nplaces, c.niveau, c.collectif, c.code, c.ecole, c.actif";
+    public static final String SEQUENCE = "idcours";
 
-  private static final String FIND_BY_ID_QUERY = "SELECT DISTINCT " + COLUMNS + " FROM " + TABLE + " " + ALIAS + " WHERE c.id = ?";
-  private DataConnection dc;
+    private static final String FIND_BY_ID_QUERY = "SELECT DISTINCT " + COLUMNS + " FROM " + TABLE + " " + ALIAS + " WHERE c.id = ?";
+    private DataConnection dc;
 
-  public CourseIO(DataConnection _dc) {
-    dc = _dc;
-  }
-
-  public void insert(Course c) throws SQLException {
-
-    int n = nextId(SEQUENCE, dc);
-    String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?)";
-
-    try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setInt(1, n);
-      ps.setString(2, c.getTitle().toUpperCase());
-      ps.setString(3, c.getLabel());
-      ps.setShort(4, (short) 0);
-      ps.setShort(5, c.getLevel());
-      ps.setBoolean(6, c.isCollective());
-      ps.setInt(7, c.getCode());
-      ps.setInt(8, c.getSchool());
-      ps.setBoolean(9, c.isActive());
-
-      GemLogger.info(ps.toString());
-      ps.executeUpdate();
+    public CourseIO(DataConnection _dc) {
+        dc = _dc;
     }
 
-    c.setId(n);
-  }
+    public void insert(Course c) throws SQLException {
 
-  public void update(Course c) throws SQLException {
-    String query = "UPDATE " + TABLE
-      + " SET titre=?,libelle=?,niveau=?,collectif=?,code=?,ecole=?,actif=?"
-      + " WHERE id = ?";
-    
-    try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setString(1, c.getTitle().toUpperCase());
-      ps.setString(2, c.getLabel());
-      ps.setShort(3, c.getLevel());
-      ps.setBoolean(4, c.isCollective());
-      ps.setInt(5, c.getCode());
-      ps.setInt(6, c.getSchool());
-      ps.setBoolean(7, c.isActive());
-      ps.setInt(8, c.getId());
+        int n = nextId(SEQUENCE, dc);
+        String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?)";
 
-      GemLogger.info(ps.toString());
-      ps.executeUpdate();
-    }
+        try (PreparedStatement ps = dc.prepareStatement(query)) {
+            ps.setInt(1, n);
+            ps.setString(2, c.getTitle().toUpperCase());
+            ps.setString(3, c.getLabel());
+            ps.setShort(4, (short) 0);
+            ps.setShort(5, c.getLevel());
+            ps.setBoolean(6, c.isCollective());
+            ps.setInt(7, c.getCode());
+            ps.setInt(8, c.getSchool());
+            ps.setBoolean(9, c.isActive());
 
-  }
-
-  public void delete(Course c) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + c.getId();
-    dc.executeUpdate(query);
-  }
-
-  public Course findId(int n) throws SQLException {
-    try (PreparedStatement ps = dc.prepareStatement(FIND_BY_ID_QUERY)) {
-      ps.setInt(1, n);
-      try (ResultSet rs = ps.executeQuery()){
-        while (rs.next()) {
-          return getCourseFromRS(rs);
+            GemLogger.info(ps.toString());
+            ps.executeUpdate();
         }
-      }
+
+        c.setId(n);
     }
 
-    return null;
-  }
+    public void update(Course c) throws SQLException {
+        String query = "UPDATE " + TABLE
+                + " SET titre=?,libelle=?,niveau=?,collectif=?,code=?,ecole=?,actif=?"
+                + " WHERE id = ?";
 
-  public Course findIdByAction(int idAction) throws SQLException {
-    return findId(ActionIO.getCourse(idAction, dc));
-  }
+        try (PreparedStatement ps = dc.prepareStatement(query)) {
+            ps.setString(1, c.getTitle().toUpperCase());
+            ps.setString(2, c.getLabel());
+            ps.setShort(3, c.getLevel());
+            ps.setBoolean(4, c.isCollective());
+            ps.setInt(5, c.getCode());
+            ps.setInt(6, c.getSchool());
+            ps.setBoolean(7, c.isActive());
+            ps.setInt(8, c.getId());
 
-  public Vector<Course> find(String where) throws SQLException {
-    Vector<Course> v = new Vector<Course>();
+            GemLogger.info(ps.toString());
+            ps.executeUpdate();
+        }
 
-    String query = "SELECT DISTINCT " + COLUMNS + " FROM " + TABLE + " " + ALIAS + " " + where;
-    try (ResultSet rs = dc.executeQuery(query)) {
-      while (rs.next()) {
-        v.addElement(getCourseFromRS(rs));
-      }
     }
 
-    return v;
-  }
+    public void delete(Course c) throws SQLException {
+        String query = "DELETE FROM " + TABLE + " WHERE id = " + c.getId();
+        dc.executeUpdate(query);
+    }
 
-  private Course getCourseFromRS(ResultSet rs) throws SQLException {
-    Course c = new Course();
-    c.setId(rs.getInt(1));
-    c.setTitle(rs.getString(2).trim());
-    c.setLabel(rs.getString(3).trim());
-    //c.setNSessions(rs.getShort(4));
+    public Course findId(int n) {
+        try (PreparedStatement ps = dc.prepareStatement(FIND_BY_ID_QUERY)) {
+            ps.setInt(1, n);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return getCourseFromRS(rs);
+                }
+            }
+        } catch (SQLException e) {
+            GemLogger.logException("Course.findId=" + n, e);
+        }
+
+        return null;
+    }
+
+    public Course findIdByAction(int idAction) throws SQLException {
+        return findId(ActionIO.getCourse(idAction, dc));
+    }
+
+    public List<Course> find(String where) {
+        List<Course> v = new ArrayList<>();
+
+        String query = "SELECT DISTINCT " + COLUMNS + " FROM " + TABLE + " " + ALIAS + " " + where;
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                v.add(getCourseFromRS(rs));
+            }
+        } catch (SQLException e) {
+            GemLogger.logException(query, e);
+        }
+
+        return v;
+    }
+
+    private Course getCourseFromRS(ResultSet rs) throws SQLException {
+        Course c = new Course();
+        c.setId(rs.getInt(1));
+        c.setTitle(rs.getString(2).trim());
+        c.setLabel(rs.getString(3).trim());
+        //c.setNSessions(rs.getShort(4));
 //    c.setNPlaces(rs.getShort(4));
-    c.setLevel(rs.getShort(5));
-    c.setCollective(rs.getBoolean(6));
-    c.setCode(rs.getInt(7));
-    c.setSchool(rs.getShort(8));
-    c.setActive(rs.getBoolean(9));
+        c.setLevel(rs.getShort(5));
+        c.setCollective(rs.getBoolean(6));
+        c.setCode(rs.getInt(7));
+        c.setSchool(rs.getShort(8));
+        c.setActive(rs.getBoolean(9));
 
-    return c;
-  }
+        return c;
+    }
 
-  @Override
-  public List<Course> load() throws SQLException {
-    String where = "WHERE c.code <> " + CourseCodeType.ATP.getId() + " ORDER BY c.titre";
-    return find(where);
-  }
-
-  public List<Course> load(String where) throws SQLException {
-    return find(where);
-  }
+    @Override
+    public List<Course> load() {
+        String where = "WHERE c.code <> " + CourseCodeType.ATP.getId() + " ORDER BY c.titre";
+        return find(where);
+    }
 
 }

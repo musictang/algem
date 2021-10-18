@@ -45,7 +45,7 @@ public class ModuleTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Module m = tuples.elementAt(i);
+    Module m = tuples.get(i);
     return m.getId();
   }
 
@@ -71,7 +71,7 @@ public class ModuleTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Module m = tuples.elementAt(line);
+    Module m = tuples.get(line);
     switch (col) {
       case 0:
         return m.getId();

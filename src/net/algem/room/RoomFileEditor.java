@@ -23,9 +23,9 @@ package net.algem.room;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.*;
 import net.algem.accounting.OrderLineEditor;
@@ -67,7 +67,7 @@ public class RoomFileEditor
   private JMenuItem miTimes;
   private RoomFileView roomView;
   private RoomService service;
-  private List<Equipment> oldEquip = new Vector<Equipment>();
+  private List<Equipment> oldEquip = new ArrayList<>();
   private int oldPayerId;
   private int oldContactId;
   private PersonFile payerFile;
@@ -423,7 +423,7 @@ public class RoomFileEditor
   }
 
   private void loadEquipment() {
-    Vector<Equipment> ve = service.getEquipment(room);
+    List<Equipment> ve = service.getEquipment(room);
     room.setEquipment(ve);
   }
 

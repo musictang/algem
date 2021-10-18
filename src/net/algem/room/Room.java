@@ -20,7 +20,7 @@
  */
 package net.algem.room;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.contact.Contact;
 import net.algem.contact.Person;
 import net.algem.util.model.GemModel;
@@ -60,7 +60,7 @@ public class Room
   /** Public access and available for rehearsals. */
   private boolean available;
 
-  private Vector<Equipment> equipment;
+  private List<Equipment> equipment;
   
   /** Payer. */
   private Person payer;
@@ -234,11 +234,11 @@ public class Room
     return name;
   }
 
-  public Vector<Equipment> getEquipment() {
+  public List<Equipment> getEquipment() {
     return equipment;
   }
 
-  public void setEquipment(Vector<Equipment> equipment) {
+  public void setEquipment(List<Equipment> equipment) {
     this.equipment = equipment;
   }
   

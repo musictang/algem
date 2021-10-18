@@ -21,7 +21,7 @@
 package net.algem.opt;
 
 import java.awt.CardLayout;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.DataCache;
 import net.algem.util.ui.SearchCtrl;
 
@@ -76,12 +76,12 @@ public class CDromCtrl
       query = "";
     }
 
-    Vector v = CDromIO.find(query, dc);
+    List v = CDromIO.find(query, dc);
     if (v.isEmpty()) {
       setStatus("Aucun enregistrement trouvé");
     } else if (v.size() == 1) {
       ((CardLayout) wCard.getLayout()).show(wCard, "masque");
-      mask.loadCard((CDrom) v.elementAt(0));
+      mask.loadCard((CDrom) v.get(0));
     } else {
       ((CardLayout) wCard.getLayout()).show(wCard, "liste");
       list.loadResult(v);

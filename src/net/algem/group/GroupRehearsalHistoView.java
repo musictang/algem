@@ -23,7 +23,7 @@ package net.algem.group;
 import java.awt.event.ActionEvent;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import net.algem.planning.AbstractHistoRehearsal;
 import net.algem.planning.Schedule;
 import net.algem.util.BundleUtil;
@@ -49,7 +49,7 @@ public class GroupRehearsalHistoView
   }
 
   @Override
-  public Vector<Schedule> getSchedule(boolean all) {
+  public List<Schedule> getSchedule(boolean all) {
     if (all) {
       return service.getRehearsalHisto(idper,null,null);
     }

@@ -47,7 +47,7 @@ public class CourseTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Course p = tuples.elementAt(i);
+    Course p = tuples.get(i);
     return p.getId();
   }
 
@@ -71,7 +71,7 @@ public class CourseTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Course c = tuples.elementAt(line);
+    Course c = tuples.get(line);
     switch (col) {
       case 0:
         return c.getId();

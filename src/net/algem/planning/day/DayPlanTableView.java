@@ -258,7 +258,7 @@ public abstract class DayPlanTableView
     return dayPlanView;
   }
 
-  public abstract void load(java.util.Date d, Vector<ScheduleObject> schedules, Vector<ScheduleRangeObject> ranges);
+  public abstract void load(java.util.Date d, List<ScheduleObject> schedules, List<ScheduleRangeObject> ranges);
 
   public List<DayPlan> getCurrentPlanning() {
     return dayPlanView.getCurrentPlanning();

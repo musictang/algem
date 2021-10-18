@@ -22,7 +22,8 @@ package net.algem.opt;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -83,7 +84,7 @@ public class TodoIO
 	}
 
 
-	public static Vector findId(int n, DataConnection dc)
+	public static List findId(int n, DataConnection dc)
 	{
 		String query;
 		query = "WHERE id=" + n;
@@ -91,9 +92,9 @@ public class TodoIO
 	}
 
 
-	public static Vector find(String where, DataConnection dc)
+	public static List find(String where, DataConnection dc)
 	{
-		Vector v = new Vector();
+		List v = new ArrayList<>();
 
 		String query = "SELECT * from afaire " + where;
 		query += " order by priorite,categorie";
@@ -111,7 +112,7 @@ public class TodoIO
 				a.setFaitLe(new DateFr(rs.getString(8)));
 				a.setNote(rs.getInt(9));
 
-				v.addElement(a);
+				v.add(a);
 			}
 			rs.close();
 		} catch (Exception e) {

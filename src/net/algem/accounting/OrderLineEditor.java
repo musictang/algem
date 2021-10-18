@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -423,7 +422,7 @@ public class OrderLineEditor
 
     if (evt instanceof InvoiceCreateEvent) {
       Invoice inv = ((InvoiceCreateEvent) evt).getInvoice();
-      Vector<OrderLine> data = tableModel.getData();
+      List<OrderLine> data = tableModel.getData();
       for (OrderLine c : inv.getOrderLines()) {
         if (c.getPayer() != inv.getPayer()) {
           continue;
@@ -432,8 +431,8 @@ public class OrderLineEditor
           tableModel.addElement(c); // on ajoute l'élément au modèle
         } else {
           for (int i = 0, n = data.size(); i < n; i++) {
-            if (data.elementAt(i).equals(c)) {
-              data.setElementAt(c, i); // on update l'élément sinon
+            if (data.get(i).equals(c)) {
+              data.set(1, c); // on update l'élément sinon
               break;
             }
           }
@@ -444,7 +443,7 @@ public class OrderLineEditor
     } else if (evt instanceof InvoiceUpdateEvent) {
       Invoice inv = ((InvoiceUpdateEvent) evt).getInvoice();
       // on récupère les données de l'échéancier
-      Vector<OrderLine> data = tableModel.getData();
+      List<OrderLine> data = tableModel.getData();
       // on enlève de l'échéancier les échéances dont le numéro de facture = facture à mettre à jour
       data.removeAll(BillingUtil.getInvoiceOrderLines(data, inv.getNumber()));
       // on ajoute à l'échéancier les échéances modifiées de la facture mise à jour

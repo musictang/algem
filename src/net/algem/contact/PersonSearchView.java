@@ -24,7 +24,7 @@ package net.algem.contact;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 import net.algem.Algem;
@@ -147,7 +147,7 @@ public class PersonSearchView
     return mask;
   }
   
-  public void setInstruments(Vector<Instrument> instruments) {
+  public void setInstruments(List<Instrument> instruments) {
       instrument.setList(instruments);
   }
 

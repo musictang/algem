@@ -25,8 +25,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.Algem;
 import net.algem.config.Instrument;
 import net.algem.config.InstrumentIO;
@@ -165,9 +165,9 @@ public class MemberIO
 
   public Member findId(int n) throws SQLException {
     String query = "WHERE idper = " + n;
-    Vector<Member> v = find(query);
+    List<Member> v = find(query);
     if (v.size() > 0) {
-      return v.elementAt(0);
+      return v.get(0);
     }
     return null;
   }
@@ -188,8 +188,8 @@ public class MemberIO
     return m;
   }
 
-  public Vector<Member> find(String where) throws SQLException {
-    Vector<Member> v = new Vector<Member>();
+  public List<Member> find(String where) throws SQLException {
+    List<Member> v = new ArrayList<>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE;
     if (where != null) {
       query += " " + where;
@@ -199,7 +199,7 @@ public class MemberIO
     while (rs.next()) {
       Member m = getFromRS(rs, 1);
       m.setInstruments(InstrumentIO.find(m.getId(), Instrument.MEMBER, dc));
-      v.addElement(m);
+      v.add(m);
     }
     rs.close();
     return v;

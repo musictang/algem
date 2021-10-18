@@ -86,7 +86,7 @@ public class CourseTeacherTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    CourseSchedule p = tuples.elementAt(line);
+    CourseSchedule p = tuples.get(line);
     FollowUp up = p.getFollowUp();
 
     switch (col) {

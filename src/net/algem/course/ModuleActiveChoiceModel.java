@@ -20,7 +20,7 @@
 
 package net.algem.course;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
 import net.algem.util.ui.GemChoiceFilterModel;
@@ -41,7 +41,7 @@ public class ModuleActiveChoiceModel extends GemChoiceFilterModel
     load(list);
   }
 
-  public ModuleActiveChoiceModel(Vector<Module> list, boolean active) {
+  public ModuleActiveChoiceModel(List<Module> list, boolean active) {
     this(new GemList<Module>(list), active);
   }
 

@@ -22,8 +22,9 @@
 package net.algem.planning.day;
 
 import java.beans.PropertyChangeEvent;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Vector;
 import net.algem.planning.ScheduleObject;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.room.DailyTimes;
@@ -58,7 +59,7 @@ public class DayPlanRoomView
   }
 
   @Override
-  public void load(java.util.Date d, Vector<ScheduleObject> vs, Vector<ScheduleRangeObject> vr) {
+  public void load(java.util.Date d, List<ScheduleObject> vs, List<ScheduleRangeObject> vr) {
 
     int cpt = 0;
 
@@ -69,8 +70,8 @@ public class DayPlanRoomView
 
     for (int i = 0; i < roomList.getSize(); i++) {
       Room s = (Room) roomList.getElementAt(i);
-      Vector<ScheduleObject> v1 = getPlan(vs, s.getId());
-      Vector<ScheduleRangeObject> v2 = getPlan(vr, s.getId());
+      List<ScheduleObject> v1 = getPlan(vs, s.getId());
+      List<ScheduleRangeObject> v2 = getPlan(vr, s.getId());
 
       if ((v1.size() + v2.size()) > 0) {
         DayPlan pj = new DayPlan();
@@ -87,8 +88,8 @@ public class DayPlanRoomView
         DayPlan pj = new DayPlan();
         pj.setId(s.getId());
         pj.setLabel(s.getName());
-        pj.setSchedule(new Vector<ScheduleObject>());
-        pj.setScheduleRange(new Vector<ScheduleRangeObject>());
+        pj.setSchedule(new ArrayList<ScheduleObject>());
+        pj.setScheduleRange(new ArrayList<ScheduleRangeObject>());
         dayPlanView.addCol(pj);
       }
     }
@@ -97,14 +98,14 @@ public class DayPlanRoomView
     setScrollBarToZero();
   }
 
-  public <T extends ScheduleObject> Vector<T> getPlan(Vector<T> t, int roomId) {
+  public <T extends ScheduleObject> List<T> getPlan(List<T> t, int roomId) {
 
-    Vector<T> v = new Vector<T>();
+    List<T> v = new ArrayList<>();
     if (t != null) {
       for (int i = 0; i < t.size(); i++) {
-        Room s = t.elementAt(i).getRoom();
+        Room s = t.get(i).getRoom();
         if (s.getId() == roomId && s.getEstab() == estab) {
-          v.addElement(t.elementAt(i));
+          v.add(t.get(i));
         }
       }
     }

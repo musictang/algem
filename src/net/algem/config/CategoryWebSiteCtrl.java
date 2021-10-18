@@ -21,6 +21,7 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import java.util.Enumeration;
 import net.algem.contact.WebSiteIO;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -51,7 +52,7 @@ public class CategoryWebSiteCtrl
 
   @Override
   public void load() {
-    load(ParamTableIO.find(TABLE, COLUMN_NAME, dc).elements());
+    load((Enumeration<? extends Param>) ParamTableIO.find(TABLE, COLUMN_NAME, dc));
   }
 
   @Override
@@ -62,7 +63,7 @@ public class CategoryWebSiteCtrl
   @Override
   public void insertion(Param _p) throws SQLException {
     ParamTableIO.insert(TABLE, SEQUENCE, _p, dc);
-    dataCache.getWebSiteCat().addElement(_p);
+    dataCache.getWebSiteCat().add(_p);
   }
 
   @Override

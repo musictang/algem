@@ -53,7 +53,7 @@ public class RoomTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Room s = tuples.elementAt(i);
+    Room s = tuples.get(i);
     return s.getId();
   }
 
@@ -82,7 +82,7 @@ public class RoomTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Room r = tuples.elementAt(line);
+    Room r = tuples.get(line);
     switch (col) {
       case 0:
         return Integer.valueOf(r.getId());
@@ -102,7 +102,7 @@ public class RoomTableModel
 
   @Override
   public void setValueAt(Object value, int line, int col) {
-    Room r = tuples.elementAt(line);
+    Room r = tuples.get(line);
     switch(col) {
       case 4:
         r.setActive((boolean) value);

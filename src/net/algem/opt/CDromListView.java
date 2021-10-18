@@ -21,7 +21,7 @@
 package net.algem.opt;
 
 import java.awt.BorderLayout;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
@@ -64,9 +64,9 @@ public class CDromListView
 	}
 
 	public void load(int id) {
-		Vector v = CdTitleIO.findId(id, DataCache.getDataConnection());
+		List v = CdTitleIO.findId(id, DataCache.getDataConnection());
 		for (int i = 0; i < v.size(); i++) {
-			CdTitle titre = (CdTitle) v.elementAt(i);
+			CdTitle titre = (CdTitle) v.get(i);
 			titres.addItem(titre);
 		}
 	}

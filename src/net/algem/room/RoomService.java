@@ -23,7 +23,8 @@ package net.algem.room;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.accounting.OrderLineIO;
 import net.algem.accounting.OrderLineTableModel;
 import net.algem.contact.*;
@@ -78,7 +79,7 @@ public class RoomService {
                 r.setPayer(new Person(r.getContact().getId()));
                 roomIO.insert(r);
                 if (r.getEquipment() == null) {
-                    r.setEquipment(new Vector<Equipment>());
+                    r.setEquipment(new ArrayList<Equipment>());
                 } else {
                     roomIO.updateEquipment(r);
                 }
@@ -118,8 +119,8 @@ public class RoomService {
             dc.setAutoCommit(false);
             roomIO.update(o, n);
 
-            /*Vector<Equipment> vo = o.getEquipment();
-      Vector<Equipment> vn = n.getEquipment();
+            /*List<Equipment> vo = o.getEquipment();
+      List<Equipment> vn = n.getEquipment();
 
       // Aucun changement
       if (vo.equals(vn)) {
@@ -187,9 +188,9 @@ public class RoomService {
      * @param r room instance
      * @return a list of equipments
      */
-    Vector<Equipment> getEquipment(Room r) {
+    List<Equipment> getEquipment(Room r) {
         if (r.getId() == 0) {
-            return new Vector<Equipment>();
+            return new ArrayList<Equipment>();
         }
         return roomIO.loadEquip(r.getId());
     }

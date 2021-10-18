@@ -61,7 +61,7 @@ public class GemParamTableModel<T extends GemParam>
 
   @Override
   public Object getValueAt(int line, int col) {
-    GemParam n = tuples.elementAt(line);
+    GemParam n = tuples.get(line);
     switch (col) {
       case 0:
         return n.getId();

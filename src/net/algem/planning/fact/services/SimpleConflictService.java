@@ -7,7 +7,7 @@ import net.algem.planning.ScheduleIO;
 import net.algem.util.DataConnection;
 import net.algem.util.Option;
 
-import java.util.Vector;
+import java.util.List;
 
 public class SimpleConflictService {
 
@@ -28,7 +28,7 @@ public class SimpleConflictService {
      * @return the conflicting schedule if there is a conflict.
      */
     public Option<Schedule> testConflict(Schedule s, int newProf, int newRoom, DateFr newDate, Hour startHour, Hour endHour) {
-        Vector<Schedule> schedules = ScheduleIO.find("WHERE jour = '" + newDate + "' AND lieux = " + newRoom + " AND id !=" + s.getId(), dc);
+        List<Schedule> schedules = ScheduleIO.find("WHERE jour = '" + newDate + "' AND lieux = " + newRoom + " AND id !=" + s.getId(), dc);
         for (Schedule schedule : schedules) {
             if (overlaps(startHour, endHour, schedule.getStart(), schedule.getEnd())) {
                 return Option.of(schedule);

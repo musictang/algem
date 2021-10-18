@@ -23,8 +23,9 @@ package net.algem.planning.agenda;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import net.algem.contact.teacher.TeacherChoice;
 import net.algem.planning.DateFr;
 import net.algem.planning.PlanningLib;
@@ -92,7 +93,7 @@ public class AgendaProfCtrl
 
     String query = "WHERE jour >= '" + deb + "' AND jour <= '" + fin + "' AND profid = " + teacher.getKey()
             + " ORDER BY jour,debut";
-    Vector<PlanningLib> v = new Vector<PlanningLib>();
+    List<PlanningLib> v = new ArrayList<PlanningLib>();
     try {
       v = PlanningLibIO.find(query, DataCache.getDataConnection());
     } catch (SQLException e) {
@@ -102,7 +103,7 @@ public class AgendaProfCtrl
       return;
     }
     for (int i = 0; i < v.size(); i++) {
-      PlanningLib pl = v.elementAt(i);
+      PlanningLib pl = v.get(i);
       AgendaJourView av = (AgendaJourView) hashdate.get(pl.getDay().toString());
       if (av != null) {
         av.set(pl);

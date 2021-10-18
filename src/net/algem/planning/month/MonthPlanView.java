@@ -25,7 +25,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.text.DateFormatSymbols;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import net.algem.config.ColorPlan;
 import net.algem.course.Course;
 import net.algem.planning.*;
@@ -53,8 +58,8 @@ public class MonthPlanView
   private Graphics bg;
   private int year;
   private int month;
-  private Vector<ScheduleObject> schedules;
-  private Vector<ScheduleRangeObject> ranges;
+  private List<ScheduleObject> schedules;
+  private List<ScheduleRangeObject> ranges;
   private GemField status;
 
   public MonthPlanView(GemField status) {
@@ -70,7 +75,7 @@ public class MonthPlanView
     addMouseMotionListener(this);
   }
 
-  public void load(Date d, Vector<ScheduleObject> pl, Vector<ScheduleRangeObject> pg) {
+  public void load(Date d, List<ScheduleObject> pl, List<ScheduleRangeObject> pg) {
     cal.setTime(d);
     year = cal.get(Calendar.YEAR);
     month = cal.get(Calendar.MONTH);
@@ -180,9 +185,9 @@ public class MonthPlanView
     }
   }
 
-  private void drawSchedules(Vector<ScheduleObject> plans) {
+  private void drawSchedules(List<ScheduleObject> plans) {
     for (int i = 0; i < plans.size(); i++) {
-      ScheduleObject p = (ScheduleObject) plans.elementAt(i);
+      ScheduleObject p = (ScheduleObject) plans.get(i);
       Color c = getScheduleColor(p);
       drawRange(p, c, step_x);
       if (p.getType() == Schedule.MEMBER || p.getType() == Schedule.GROUP) {
@@ -194,7 +199,7 @@ public class MonthPlanView
     }
   }
 
-  private void drawScheduleRanges(Vector<ScheduleRangeObject> all) {
+  private void drawScheduleRanges(List<ScheduleRangeObject> all) {
     if (all == null || all.isEmpty()) {
       return;
     }
@@ -279,9 +284,9 @@ public class MonthPlanView
     return LEFT_MARGIN + spacing + ((col - 1) * step_x) - (step_x / 2);
   }
 
-  private void textRange(Vector<ScheduleObject> plans) {
+  private void textRange(List<ScheduleObject> plans) {
     for (int i = 0; i < plans.size(); i++) {
-      ScheduleObject p = (ScheduleObject) plans.elementAt(i);
+      ScheduleObject p = (ScheduleObject) plans.get(i);
       if (!(p instanceof CourseSchedule)) {
         continue;
       }
@@ -385,10 +390,10 @@ public class MonthPlanView
       return;
     }
 
-    clickRange = new Vector<ScheduleRangeObject>();
+    clickRange = new ArrayList<>();
 
     for (int i = 0; ranges != null && i < ranges.size(); i++) {
-      ScheduleRangeObject pg = ranges.elementAt(i);
+      ScheduleRangeObject pg = ranges.get(i);
       if (pg.getScheduleId() == clickSchedule.getId()) {
 //      if (pg.getDate().bufferEquals(clickSchedule.getDate())
 //              && pg.getIdAction() == clickSchedule.getIdAction()
@@ -440,11 +445,11 @@ public class MonthPlanView
      */
   }
 
-  private ScheduleObject getSchedule(Vector<ScheduleObject> plans, int jj, Hour hc) {
+  private ScheduleObject getSchedule(List<ScheduleObject> plans, int jj, Hour hc) {
 
     if (plans != null) {
       for (int i = 0; i < plans.size(); i++) {
-        ScheduleObject p = plans.elementAt(i);
+        ScheduleObject p = plans.get(i);
         DateFr d = p.getDate();
         if (d.getDay() != jj) {
           continue;

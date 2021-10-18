@@ -64,16 +64,16 @@ public class TodoTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    Todo a = (Todo) tuples.elementAt(ligne);
+    Todo a = (Todo) tuples.get(ligne);
     switch (colonne) {
       case 0:
-        return new Integer(a.getPriorite());
+        return Integer.valueOf(a.getPriorite());
       case 1:
         return a.getTexte();
       case 2:
         return a.getEcheance().toString();
       case 3:
-        return new Integer(a.getNote());
+        return Integer.valueOf(a.getNote());
     }
     return null;
   }

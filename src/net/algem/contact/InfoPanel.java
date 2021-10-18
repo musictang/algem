@@ -24,7 +24,7 @@ package net.algem.contact;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JCheckBox;
 import net.algem.config.Param;
 import net.algem.config.ParamChoice;
@@ -74,7 +74,7 @@ public class InfoPanel extends GemPanel {
     gb.add(iArchive, 4,0,1,1, GridBagConstraints.HORIZONTAL, 0.0, 0.0);
   }
 
-  protected void init(Vector<Param> v, boolean withArchive) {
+  protected void init(List<Param> v, boolean withArchive) {
 
     iChoice = new ParamChoice(v);
     iField = new GemField();

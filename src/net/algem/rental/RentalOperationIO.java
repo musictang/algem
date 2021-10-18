@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import net.algem.Algem;
 import net.algem.contact.PersonIO;
 import net.algem.planning.DateFr;
@@ -130,12 +129,11 @@ public class RentalOperationIO
         return findAll(query, dc);
     }
 
-//    private static Vector<RentalOperation> findAll(String query, DataConnection dc) {
-//        Vector<RentalOperation> v = new Vector<RentalOperation>();
+//    private static List<RentalOperation> findAll(String query, DataConnection dc) {
+//        List<RentalOperation> v = new List<RentalOperation>();
     private static List<RentalOperation> findAll(String query, DataConnection dc) {
         List<RentalOperation> l = new ArrayList<RentalOperation>();
-        try {
-            ResultSet rs = dc.executeQuery(query);
+        try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
                 RentalOperation r = new RentalOperation();
                 
@@ -155,7 +153,6 @@ public class RentalOperationIO
                 //v.addElement(r);
                 l.add(r);
             }
-            rs.close();
         } catch (SQLException e) {
             GemLogger.logException(query, e);
         }

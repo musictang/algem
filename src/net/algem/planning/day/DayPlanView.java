@@ -58,7 +58,7 @@ public class DayPlanView
   private Graphics bg;
   private Date date;
   private Calendar cal;
-  private Vector<DayPlan> cols;
+  private List<DayPlan> cols;
   private boolean showRangeNames;
 
   /** Schedule type info used to differenciate label.
@@ -68,7 +68,7 @@ public class DayPlanView
   private ActionService actionService;
 
   public DayPlanView(Date d) {
-    cols = new Vector<DayPlan>();
+    cols = new ArrayList<>();
     this.date = d;
     cal = Calendar.getInstance(Locale.FRANCE);
     cal.setTime(d);
@@ -85,7 +85,7 @@ public class DayPlanView
   }
 
   public void addCol(DayPlan p) {
-    cols.addElement(p);
+    cols.add(p);
   }
 
   public void setDate(Date d) {
@@ -105,7 +105,7 @@ public class DayPlanView
     this.type = type;
   }
 
-  public void load(Date d, Vector<DayPlan> cols) {
+  public void load(Date d, List<DayPlan> cols) {
     cal.setTime(d);
     this.date = d;
     this.cols = cols;
@@ -114,7 +114,7 @@ public class DayPlanView
   }
 
   public void clear() {
-    cols = new Vector<DayPlan>();
+    cols = new ArrayList<DayPlan>();
     img = null;
   }
 
@@ -161,7 +161,7 @@ public class DayPlanView
     };
     int dow = cal.get(Calendar.DAY_OF_WEEK);
     for (int i = colOffset; i < colOffset + visibleCols && i < cols.size(); i++) {
-      DayPlan pj = cols.elementAt(i);
+      DayPlan pj = cols.get(i);
       DailyTimes dt = pj.getDailyTime(dow);
       if (dt != null) {
         drawClosed(i, dt, dummy);
@@ -172,15 +172,15 @@ public class DayPlanView
     }
 
     for (int i = colOffset; i < colOffset + visibleCols && i < cols.size(); i++) {
-      DayPlan pj = (DayPlan) cols.elementAt(i);
-      Vector<ScheduleObject> v = pj.getSchedule();
+      DayPlan pj = (DayPlan) cols.get(i);
+      List<ScheduleObject> v = pj.getSchedule();
       ScheduleObject prv = new CourseSchedule();
       prv.setActivity(new Course(""));
       prv.setIdPerson(0);
 
       for (int j = 0; j < v.size(); j++) {
-        ScheduleObject p = v.elementAt(j);
-        ScheduleObject prev = (j == 0) ? prv : v.elementAt(j - 1);
+        ScheduleObject p = v.get(j);
+        ScheduleObject prev = (j == 0) ? prv : v.get(j - 1);
         textRange(i, p, prev); // ajout des textes sur les plannings
       }
     }
@@ -210,7 +210,7 @@ public class DayPlanView
     int y = lineHeight;
     // Column headers
     for (int i = colOffset; i < colOffset + visibleCols && i < cols.size(); i++) {
-      DayPlan p = cols.elementAt(i);
+      DayPlan p = cols.get(i);
       String s = p.getLabel();
       int w = fm.stringWidth(s) + 4;
       // fits string in column
@@ -262,9 +262,9 @@ public class DayPlanView
    * @param i column number
    * @param v schedule list
    */
-  protected void drawSchedules(int i, Vector<ScheduleObject> v) {
+  protected void drawSchedules(int i, List<ScheduleObject> v) {
     for (int j = 0; j < v.size(); j++) {
-      ScheduleObject p = v.elementAt(j);
+      ScheduleObject p = v.get(j);
       Color c = getScheduleColor(p);
       drawRange(i, p, c, step_x); // dessin des plannings p comme ScheduleObject
       if (p.getType() == Schedule.MEMBER || p.getType() == Schedule.GROUP) {
@@ -280,9 +280,9 @@ public class DayPlanView
    * @param i col
    * @param v list of schedules
    */
-  private void drawScheduleFlag(int i, Vector<ScheduleObject> v) {
+  private void drawScheduleFlag(int i, List<ScheduleObject> v) {
     for (int j = 0; j < v.size(); j++) {
-      ScheduleObject p = v.elementAt(j);
+      ScheduleObject p = v.get(j);
       Note n = getNoteForAction(p.getIdAction());
       if (n != null) {
         drawActionNoteFlag(i, p.getStart().toMinutes(), Color.BLACK);
@@ -311,7 +311,7 @@ public class DayPlanView
    * @param i column index
    * @param vpl list of individual sessions
    */
-  private void drawScheduleRanges(int i, Vector<ScheduleRangeObject> vpl) {
+  private void drawScheduleRanges(int i, List<ScheduleRangeObject> vpl) {
     if (vpl == null || vpl.isEmpty()) {
       return;
     }
@@ -388,7 +388,7 @@ public class DayPlanView
     }
   }
 
-  /*protected void drawAgenda(int i, Vector<ScheduleRangeObject> vpl) {
+  /*protected void drawAgenda(int i, List<ScheduleRangeObject> vpl) {
     for (ScheduleRangeObject p : vpl) {
         drawRange(i, p, colorPrefs.getColor(ColorPlan.ADMINISTRATIVE).darker(), step_x);
     }
@@ -592,7 +592,7 @@ public class DayPlanView
     col += colOffset;
 //		int	col = ((x + (step_x)/2) / step_x) + 1;
     if (col >= 0 && col < cols.size()) {
-      return ((DayPlan) cols.elementAt(col)).getId();
+      return ((DayPlan) cols.get(col)).getId();
     } else {
       return 0;
     }
@@ -624,12 +624,12 @@ public class DayPlanView
       return;
     }
 
-    DayPlan pj = cols.elementAt(col + colOffset);
-    Vector<ScheduleObject> v = pj.getSchedule();
+    DayPlan pj = cols.get(col + colOffset);
+    List<ScheduleObject> v = pj.getSchedule();
     clickSchedule = null;
     Hour hc = new Hour(hh, mm);
     for (int i = 0; i < v.size(); i++) {
-      ScheduleObject p = v.elementAt(i);
+      ScheduleObject p = v.get(i);
       Hour hd = p.getStart();
       Hour hf = p.getEnd();
       if (hc.ge(hd) && hc.le(hf)) {
@@ -641,12 +641,12 @@ public class DayPlanView
       return;
     }
 
-    clickRange = new Vector<ScheduleRangeObject>();
-    Vector<ScheduleRangeObject> vpl = pj.getScheduleRange();
+    clickRange = new ArrayList<>();
+    List<ScheduleRangeObject> vpl = pj.getScheduleRange();
 
     // ajout des plages
     for (int i = 0; vpl != null && i < vpl.size(); i++) {
-      ScheduleRangeObject pg = vpl.elementAt(i);
+      ScheduleRangeObject pg = vpl.get(i);
       Course cc = ((CourseSchedule) pg).getCourse();
       if (cc != null) {
         if (cc.isCollective()) {

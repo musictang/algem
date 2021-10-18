@@ -20,7 +20,7 @@
  */
 package net.algem.course;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
 
@@ -52,7 +52,7 @@ public class CourseChoiceTypeActiveModel
     }
   }
 
-  public CourseChoiceTypeActiveModel(Vector<Course> liste, boolean collective, boolean active) {
+  public CourseChoiceTypeActiveModel(List<Course> liste, boolean collective, boolean active) {
     this(new GemList<Course>(liste), collective, active);
   }
 

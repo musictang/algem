@@ -69,7 +69,7 @@ public class AccountPrefTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    AccountPref p = (AccountPref) tuples.elementAt(line);
+    AccountPref p = (AccountPref) tuples.get(line);
     switch (col) {
       case 0:
         return p.getKey();
@@ -83,7 +83,7 @@ public class AccountPrefTableModel
 
   @Override
   public void setValueAt(Object value, int line, int column) {
-    AccountPref p = tuples.elementAt(line);
+    AccountPref p = tuples.get(line);
     switch(column) {
       case 1:
         p.setAccount((Account)value);

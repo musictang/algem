@@ -80,7 +80,7 @@ public class MemberCardService {
 
   List<Telephone> getTels(PersonFile p) throws SQLException {
     Member m = p.getMember();
-    Vector<Telephone> tels = p.getContact().getTele();
+    List<Telephone> tels = p.getContact().getTele();
     if (tels == null && m.getPayer() != m.getId()) {
       tels = TeleIO.findId(m.getPayer(), dc);
     }

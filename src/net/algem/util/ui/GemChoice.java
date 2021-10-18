@@ -20,7 +20,7 @@
  */
 package net.algem.util.ui;
 
-import java.util.Vector;
+import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import net.algem.util.model.GemList;
@@ -43,8 +43,8 @@ public abstract class GemChoice
     super(m);
   }
 
-  public <T extends Object> GemChoice(Vector<T> v) {
-    super(v);
+  public <T extends Object> GemChoice(List<T> v) {
+    super(new GemChoiceModel(new GemList(v)));
   }
 
   public <T extends GemModel> void set(GemList<T> l) {

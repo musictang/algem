@@ -21,7 +21,6 @@
 package net.algem.group;
 
 import java.util.List;
-import java.util.Vector;
 import net.algem.config.MusicStyle;
 import net.algem.contact.Contact;
 import net.algem.contact.Note;
@@ -67,14 +66,14 @@ public class Group
 
   private Note note;
 
-  private Vector<WebSite> sites;
+  private List<WebSite> sites;
   private MusicStyle style;
   private List<Musician> musicians;
 
   public Group() {
   }
 
-  public Group(Vector<WebSite> sites) {
+  public Group(List<WebSite> sites) {
     this.sites = sites;
   }
 
@@ -226,11 +225,11 @@ public class Group
     this.note = note;
   }
 
-  public Vector<WebSite> getSites() {
+  public List<WebSite> getSites() {
     return sites;
   }
 
-  public void setSites(Vector<WebSite> sites) {
+  public void setSites(List<WebSite> sites) {
     this.sites = sites;
   }
 

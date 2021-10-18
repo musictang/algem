@@ -28,7 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -91,7 +90,7 @@ public class MailUtil {
 
     String email = "";
 
-    Vector<Email> emails = pf.getContact().getEmail();
+    List<Email> emails = pf.getContact().getEmail();
     if (emails != null) {
       for (Email e : emails) {
         if (!e.isArchive()) {
@@ -120,7 +119,7 @@ public class MailUtil {
    * @return a mailto-string
    * @throws java.sql.SQLException
    */
-  public String mailToMembers(Vector<ScheduleRangeObject> ranges, Schedule schedule) throws SQLException {
+  public String mailToMembers(List<ScheduleRangeObject> ranges, Schedule schedule) throws SQLException {
 
     String message = "";
     StringBuilder bcc = new StringBuilder();

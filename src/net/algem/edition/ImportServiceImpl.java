@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import net.algem.config.Instrument;
@@ -220,7 +219,7 @@ public class ImportServiceImpl implements ImportService {
                 // preserve old other tels
                 if (o.getTele() != null && o.getTele().size() > c.getTele().size()) {//3 > 1
                     for (int i = c.getTele().size(); i < o.getTele().size(); i++) {
-                        c.getTele().add(o.getTele().elementAt(i));
+                        c.getTele().add(o.getTele().get(i));
                     }
                 }
             }
@@ -228,7 +227,7 @@ public class ImportServiceImpl implements ImportService {
                 // preserve old other emails
                 if (o.getEmail() != null && o.getEmail().size() > c.getEmail().size()) {//3 > 1
                     for (int i = c.getEmail().size(); i < o.getEmail().size(); i++) {
-                        c.getEmail().add(o.getEmail().elementAt(i));
+                        c.getEmail().add(o.getEmail().get(i));
                     }
                 }
             }
@@ -274,7 +273,7 @@ public class ImportServiceImpl implements ImportService {
             return 0;
         }
         String query = "where UPPER(p.nom)=UPPER('" + p.getParent().getName() + "') and p.prenom='" + p.getParent().getFirstName() + "'";
-        Vector<Contact> op = ContactIO.find(query, false, dc);
+        List<Contact> op = ContactIO.find(query, false, dc);
         if (op.size() > 0) {
             return op.get(0).getId();
         }

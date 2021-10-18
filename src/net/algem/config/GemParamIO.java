@@ -18,12 +18,12 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-
 package net.algem.config;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -33,63 +33,64 @@ import net.algem.util.model.TableIO;
  * @version 2.9.3
  * @since 2.5.a 05/07/12
  */
-public abstract class GemParamIO 
-  extends TableIO 
-{
+public abstract class GemParamIO
+        extends TableIO {
 
-  protected final static String COLUMNS = "id, code, libelle";
-  public final static int MAX_LABEL = 128;
-  
-  protected DataConnection dc;
+    protected final static String COLUMNS = "id, code, libelle";
+    public final static int MAX_LABEL = 128;
 
-  public void insert(GemParam n) throws SQLException {
-    int id = nextId(getSequence(), dc);
-    String query = "INSERT INTO " + getTable() + " VALUES(" + id + ",'" + n.getCode().trim() + "','" + escape(n.getLabel().trim()) + "')";
-    dc.executeUpdate(query);
-    n.setId(id);
-  }
+    protected DataConnection dc;
 
-  public void update(GemParam n) throws SQLException {
-    String query = "UPDATE " + getTable() + " SET code = '" + n.getCode().trim() + "', libelle='" + escape(n.getLabel().trim()) + "' WHERE id = " + n.getId();
-    dc.executeUpdate(query);
-  }
-
-  public void delete(GemParam n) throws SQLException {
-    String query = "DELETE FROM " + getTable() + " WHERE id = " + n.getId();
-    dc.executeUpdate(query);
-  }
-
-  public Vector<GemParam> find() throws SQLException {
-    return find(null);
-  }
-
-  public GemParam find(int id) throws SQLException {
-    String query = "SELECT " + COLUMNS + " FROM " + getTable() + " WHERE id = " + id;
-
-    ResultSet rs = dc.executeQuery(query);
-    if (rs.next()) {
-      return new GemParam(rs.getInt(1), rs.getString(2), rs.getString(3));
+    public void insert(GemParam n) throws SQLException {
+        int id = nextId(getSequence(), dc);
+        String query = "INSERT INTO " + getTable() + " VALUES(" + id + ",'" + n.getCode().trim() + "','" + escape(n.getLabel().trim()) + "')";
+        dc.executeUpdate(query);
+        n.setId(id);
     }
-    return null;
-  }
-  
-  public Vector<GemParam> find(String where) throws SQLException {
-    String query = "SELECT " + COLUMNS + " FROM " + getTable();
-    if (where != null) {
-      query += " " + where;
-    }
-    query += " ORDER BY id";
-    Vector<GemParam> vn = new Vector<GemParam>();
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      GemParam n = new GemParam(rs.getInt(1), rs.getString(2), rs.getString(3));
-      vn.addElement(n);
-    }
-    return vn;
-  }
 
-  protected abstract String getSequence();
-  
-  protected abstract String getTable();
+    public void update(GemParam n) throws SQLException {
+        String query = "UPDATE " + getTable() + " SET code = '" + n.getCode().trim() + "', libelle='" + escape(n.getLabel().trim()) + "' WHERE id = " + n.getId();
+        dc.executeUpdate(query);
+    }
+
+    public void delete(GemParam n) throws SQLException {
+        String query = "DELETE FROM " + getTable() + " WHERE id = " + n.getId();
+        dc.executeUpdate(query);
+    }
+
+    public List<GemParam> find() throws SQLException {
+        return find(null);
+    }
+
+    public GemParam find(int id) throws SQLException {
+        String query = "SELECT " + COLUMNS + " FROM " + getTable() + " WHERE id = " + id;
+
+        try (ResultSet rs = dc.executeQuery(query)) {
+            if (rs.next()) {
+                return new GemParam(rs.getInt(1), rs.getString(2), rs.getString(3));
+            }
+        }
+        return null;
+    }
+
+    public List<GemParam> find(String where) throws SQLException {
+        String query = "SELECT " + COLUMNS + " FROM " + getTable();
+        if (where != null) {
+            query += " " + where;
+        }
+        query += " ORDER BY id";
+        List<GemParam> vn = new ArrayList<>();
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                GemParam n = new GemParam(rs.getInt(1), rs.getString(2), rs.getString(3));
+                vn.add(n);
+            }
+        }
+        return vn;
+    }
+
+    protected abstract String getSequence();
+
+    protected abstract String getTable();
 
 }

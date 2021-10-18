@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import net.algem.accounting.AccountUtil;
 import net.algem.config.Instrument;
 import net.algem.config.InstrumentIO;
@@ -155,13 +154,13 @@ public class ModuleOrderIO
     }
   }
 
-  public static Vector<ModuleOrder> findByIdOrder(int n, DataConnection dc) throws SQLException {
+  public static List<ModuleOrder> findByIdOrder(int n, DataConnection dc) throws SQLException {
     String query = "WHERE cm.idcmd = " + n;
     return find(query, dc);
   }
 
-  public static Vector<ModuleOrder> find(String where, DataConnection dc) throws SQLException {
-    Vector<ModuleOrder> moduleOrders = new Vector<ModuleOrder>();
+  public static List<ModuleOrder> find(String where, DataConnection dc) throws SQLException {
+    List<ModuleOrder> moduleOrders = new ArrayList<>();
     String query = "SELECT cm.id, cm.idcmd, cm.module, cm.prix, cm.debut, cm.fin, cm.reglement, cm.necheance, cm.paiement, cm.arret, cm.tarification,cm.duree, m.titre"
       + " FROM " + TABLE + " cm JOIN " + ModuleIO.TABLE + " m ON cm.module = m.id"
       + " " + where;
@@ -169,7 +168,7 @@ public class ModuleOrderIO
 
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
-        moduleOrders.addElement(getFromRs(rs));
+        moduleOrders.add(getFromRs(rs));
       }
     }
 

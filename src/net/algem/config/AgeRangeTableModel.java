@@ -46,7 +46,7 @@ public class AgeRangeTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    AgeRange t = tuples.elementAt(i);
+    AgeRange t = tuples.get(i);
     return t.getId();
   }
 
@@ -76,7 +76,7 @@ public class AgeRangeTableModel
   @Override
   public Object getValueAt(int line, int col) {
 
-    AgeRange t = tuples.elementAt(line);
+    AgeRange t = tuples.get(line);
 
     switch (col) {
       case 0:

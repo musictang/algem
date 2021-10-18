@@ -75,7 +75,7 @@ public class RehearsalTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Schedule p = tuples.elementAt(line);
+    Schedule p = tuples.get(line);
     switch (col) {
       case 0:
         return p.getDate();

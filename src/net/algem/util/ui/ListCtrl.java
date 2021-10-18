@@ -25,7 +25,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
@@ -94,7 +93,7 @@ public abstract class ListCtrl
 
   public <E> void loadResult(List<E> list) {
     clear();
-    addBlock(new Vector<E>(list));
+    addBlock(list);
   }
 
   public int nbLines() {

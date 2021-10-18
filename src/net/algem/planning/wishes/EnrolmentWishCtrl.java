@@ -33,7 +33,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Vector;
 import java.util.List;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -102,7 +101,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
     private List<EnrolmentWishGroupCourseLine> groupCourses;
     private List<EnrolmentWish> teacherWishes = new ArrayList();
     private List<EnrolmentWish> groupCourseWishes = new ArrayList();
-    private Vector<? extends ScheduleObject> teacherCurrentPlanning = new Vector();
+    private List<? extends ScheduleObject> teacherCurrentPlanning = new ArrayList<>();
     private boolean teacherLoad;
     private boolean dayLoad;
     
@@ -385,10 +384,10 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
 
                             mailDate = LocalDateTime.now();
                             line = view.getSelectedRow();
-                            Vector<Email> emails = pf.getContact().getEmail();
+                            List<Email> emails = pf.getContact().getEmail();
 
                             String f = createMailConfirmPdf(cell.getStudent());
-                            sendConfirmMail(f, emails.elementAt(0).getEmail());
+                            sendConfirmMail(f, emails.get(0).getEmail());
 
                             wishService.setMailConfirmDate(cell, mailDate);
                             sended = true;
@@ -539,7 +538,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                 teacherCurrentPlanning = wishService.getScheduleForTeacher(view.getTeacherChoice(), jour.toString());
             }
             for (int j = 0; j < teacherCurrentPlanning.size(); j++) {
-                CourseSchedule p = (CourseSchedule) teacherCurrentPlanning.elementAt(j);
+                CourseSchedule p = (CourseSchedule) teacherCurrentPlanning.get(j);
                 EnrolmentWishParticularCourseLine line = particularCourses.get(particularCourseModel.getRowFromHour(new Hour(p.getStart().toString()), view.getTableIncrement()));
                 EnrolmentCurrent current = new EnrolmentCurrent(new Hour(p.getStart().getLength(p.getEnd())));
                 if (p.getCourse().isCollective()) {

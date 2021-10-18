@@ -20,7 +20,8 @@
  */
 package net.algem.contact;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Contact model.
@@ -38,10 +39,10 @@ public class Contact
   private static final long serialVersionUID = 4651926516240269103L;
 
   private boolean complete;
-  private Vector<Address> addresses;
-  private Vector<Telephone> telephones;
-  private Vector<Email> emails;
-  private Vector<WebSite> sites;
+  private List<Address> addresses;
+  private List<Telephone> telephones;
+  private List<Email> emails;
+  private List<WebSite> sites;
 
   public Contact() {
 
@@ -62,23 +63,23 @@ public class Contact
 
   public Address getAddress() {
     if (addresses != null && addresses.size() > 0) {
-      return (Address) addresses.elementAt(0);
+      return (Address) addresses.get(0);
     } else {
       return null;
     }
   }
 
-  public Vector<Address> getAddressAll() {
+  public List<Address> getAddressAll() {
     if (addresses != null && addresses.isEmpty()) {
       return null;
     }
     return addresses;
   }
 
-  public void setAddress(Vector<Address> v) {
+  public void setAddress(List<Address> v) {
     addresses = v;
     for (int i = 0; addresses != null && i < addresses.size(); i++) {
-      Address adr = (Address) addresses.elementAt(i);
+      Address adr = (Address) addresses.get(i);
       adr.setId(getId());
     }
   }
@@ -86,38 +87,38 @@ public class Contact
   public void setAddress(Address adr) {
     if (adr != null) {
       adr.setId(getId());
-      addresses = new Vector();
-      addresses.addElement(adr);
+      addresses = new ArrayList<>();
+      addresses.add(adr);
     } else {
       addresses = null;
     }
   }
 
-  public Vector<Telephone> getTele() {
+  public List<Telephone> getTele() {
     if (telephones != null && telephones.size() > 0) {
       return telephones;
     }
     return null;
   }
 
-  public void setTele(Vector<Telephone> v) {
+  public void setTele(List<Telephone> v) {
     telephones = v;
     for (int i = 0; telephones != null && i < telephones.size(); i++) {
-      Telephone tel = (Telephone) telephones.elementAt(i);
+      Telephone tel = (Telephone) telephones.get(i);
       tel.setIdper(getId());
     }
   }
 
   public void addTele(Telephone t) {
     if (telephones == null) {
-      telephones = new Vector();
+      telephones = new ArrayList<>();
     }
 
     t.setIdper(getId());
-    telephones.addElement(t);
+    telephones.add(t);
   }
 
-  public void setEmail(Vector<Email> ve) {
+  public void setEmail(List<Email> ve) {
     emails = ve;
     if (emails != null) {
       for (Email e : emails) {
@@ -126,7 +127,7 @@ public class Contact
     }
   }
 
-  public Vector<Email> getEmail() {
+  public List<Email> getEmail() {
     if (emails != null && emails.size() > 0) {
       return emails;
     } else {
@@ -134,11 +135,11 @@ public class Contact
     }
   }
 
-  public void setWebSites(Vector<WebSite> sites) {
+  public void setWebSites(List<WebSite> sites) {
     this.sites = sites;
   }
 
-  public Vector<WebSite> getSites() {
+  public List<WebSite> getSites() {
     if (sites != null && sites.size() > 0) {
       return sites;
     } else {
@@ -221,7 +222,7 @@ public class Contact
       return false;
     }
     for (int i = 0; i < telephones.size(); i++) {
-      if (!telephones.elementAt(i).equals(c.getTele().elementAt(i))) {
+      if (!telephones.get(i).equals(c.getTele().get(i))) {
         return false;
       }
     }
@@ -240,7 +241,7 @@ public class Contact
       return false;
     }
     for (int i = 0; i < emails.size(); i++) {
-      if (!emails.elementAt(i).equals(c.getEmail().elementAt(i))) {
+      if (!emails.get(i).equals(c.getEmail().get(i))) {
         return false;
       }
     }
@@ -259,7 +260,7 @@ public class Contact
           return false;
         }
         for (int i = 0; i < addresses.size(); i++) {
-          if (!addresses.elementAt(i).equals(c.getAddressAll().elementAt(i))) {
+          if (!addresses.get(i).equals(c.getAddressAll().get(i))) {
             return false;
           }
         }
@@ -272,7 +273,7 @@ public class Contact
     return true;
   }
 
-  public static boolean sitesEqual(Vector<WebSite> sites, Vector<WebSite> orig) {
+  public static boolean sitesEqual(List<WebSite> sites, List<WebSite> orig) {
     if (sites != null) {
       if (orig == null) {
         if (sites.size() > 0) {
@@ -285,7 +286,7 @@ public class Contact
           return false;
         }
         for (int i = 0; i < sites.size(); i++) {
-          if (!sites.elementAt(i).equiv(orig.elementAt(i))) {
+          if (!sites.get(i).equiv(orig.get(i))) {
             // un ou plusieurs sites ont été modifiés
             return false;
           }
@@ -305,23 +306,23 @@ public class Contact
     Contact c = (Contact) super.clone();
     c.setAddress((Address) getAddress().clone());
     if (getTele() != null && getTele().size() > 0) {
-      Vector<Telephone> v = new Vector<Telephone>();
+      List<Telephone> v = new ArrayList<>();
       for (int i = 0, size = getTele().size(); i < size; i++) {
-        v.add((Telephone) getTele().elementAt(i).clone());
+        v.add((Telephone) getTele().get(i).clone());
       }
       c.setTele(v);
     }
     if (getEmail() != null && getEmail().size() > 0) {
-      Vector<Email> ve = new Vector<Email>();
+      List<Email> ve = new ArrayList<>();
       for (int i = 0, size = getEmail().size(); i < size; i++) {
-        ve.add((Email) getEmail().elementAt(i).clone());
+        ve.add((Email) getEmail().get(i).clone());
       }
       c.setEmail(ve);
     }
     if (getSites() != null && getSites().size() > 0) {
-      Vector<WebSite> vs = new Vector<WebSite>();
+      List<WebSite> vs = new ArrayList<>();
       for (int i = 0, size = getSites().size(); i < size; i++) {
-        vs.add((WebSite) getSites().elementAt(i).clone());
+        vs.add((WebSite) getSites().get(i).clone());
       }
       c.setWebSites(vs);
     }

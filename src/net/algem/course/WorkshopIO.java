@@ -22,7 +22,8 @@ package net.algem.course;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.config.Instrument;
 import net.algem.config.InstrumentIO;
 import net.algem.contact.Person;
@@ -39,123 +40,123 @@ import net.algem.util.model.TableIO;
 
 /**
  * IO methods for class {@link net.algem.course.Workshop}.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.7.a
  */
 public class WorkshopIO
-        extends TableIO
-{
+        extends TableIO {
 
-  private DataConnection dc;
+    private DataConnection dc;
 
-  public WorkshopIO(DataConnection _dc) {
-    this.dc = _dc;
-  }
-
-  /**
-   *
-   * @param dc
-   * @param where
-   * @return une liste d'ateliers
-   * @throws SQLException
-   * @deprecated 
-   */
-  public static Vector<Workshop> find(String where, DataConnection dc) throws SQLException {
-    Vector<Workshop> v = new Vector<Workshop>();
-    String query = "SELECT * FROM atelier " + where;
-
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      Workshop a = new Workshop();
-      a.setId(rs.getInt(1));
-      a.setName(rs.getString(2).trim());
-      a.setTeacher(rs.getInt(3));
-
-      v.addElement(a);
+    public WorkshopIO(DataConnection _dc) {
+        this.dc = _dc;
     }
-    rs.close();
 
-    return v;
-  }
+    /**
+     *
+     * @param dc
+     * @param where
+     * @return une liste d'ateliers
+     * @throws SQLException
+     * @deprecated
+     */
+    public static List<Workshop> find(String where, DataConnection dc) throws SQLException {
+        List<Workshop> v = new ArrayList<>();
+        String query = "SELECT * FROM atelier " + where;
 
-  /**
-   * Recherche des élèves inscrits à un atelier {@code c}.
-   * @param c numéro d'atelier
-   * @param dc datacache
-   * @return une liste de personnes
-   */
-  public static Vector<Person> findMember(Course c, DataConnection dc) throws SQLException {
-    return findMember(c.getId(), dc);
-  }
+        ResultSet rs = dc.executeQuery(query);
+        while (rs.next()) {
+            Workshop a = new Workshop();
+            a.setId(rs.getInt(1));
+            a.setName(rs.getString(2).trim());
+            a.setTeacher(rs.getInt(3));
 
-  /**
-   * 
-   * @param id course id
-   * @param dc connection
-   * @return a list of persons
-   * @throws SQLException 
-   */
-  public static Vector<Person> findMember(int id, DataConnection dc) throws SQLException {
-    Vector<Person> v = new Vector<Person>();
+            v.add(a);
+        }
+        rs.close();
 
-    String query = "SELECT DISTINCT pi.idper, pi.instrument"
-            + " FROM " + ScheduleRangeIO.TABLE + " pl, "
-            + ScheduleIO.TABLE + " p, " 
-            + ActionIO.TABLE + " a, "
-            + InstrumentIO.PERSON_INSTRUMENT_TABLE + " pi"
-            + " WHERE pl.adherent = pi.idper"
-            + " AND pl.idplanning = p.id"
-            + " AND p.ptype = " + Schedule.WORKSHOP
-            + " AND p.action = a.id"
-            + " AND a.cours = " + id
-            + " AND pi.ptype = " + Instrument.MEMBER + " AND pi.idx = " + 0
-            + " UNION" // old data table
-            + " SELECT DISTINCT adherent, ti.id FROM atelier_ins at," + InstrumentIO.TABLE + " ti"
-            + " WHERE at.id = " + id + " AND at.instrument = ti.nom";
-
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      int idper = rs.getInt(1);
-      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(idper);
-      Musician m = new Musician(p);
-      m.setInstrument(rs.getInt(2));
-      v.addElement(m);
+        return v;
     }
-    rs.close();
 
-    return v;
-  }
+    /**
+     * Recherche des élèves inscrits à un atelier {@code c}.
+     *
+     * @param c numéro d'atelier
+     * @param dc datacache
+     * @return une liste de personnes
+     */
+    public static List<Person> findMember(Course c, DataConnection dc) throws SQLException {
+        return findMember(c.getId(), dc);
+    }
 
-  /**
-   *
-   * @param c
-   * @param dc
-   * @param p
-   * @throws SQLException
-   * @deprecated 
-   */
-  public static void insertAdherent(Course c, Musician p, DataConnection dc) throws SQLException {
-    String query = "INSERT INTO atelier_ins values("
-            + c.getId()
-            + "," + p.getId()
-            + ",'" + p.getInstrument()
-            + "')";
+    /**
+     *
+     * @param id course id
+     * @param dc connection
+     * @return a list of persons
+     * @throws SQLException
+     */
+    public static List<Person> findMember(int id, DataConnection dc) throws SQLException {
+        List<Person> v = new ArrayList<>();
 
-    dc.executeUpdate(query);
-  }
+        String query = "SELECT DISTINCT pi.idper, pi.instrument"
+                + " FROM " + ScheduleRangeIO.TABLE + " pl, "
+                + ScheduleIO.TABLE + " p, "
+                + ActionIO.TABLE + " a, "
+                + InstrumentIO.PERSON_INSTRUMENT_TABLE + " pi"
+                + " WHERE pl.adherent = pi.idper"
+                + " AND pl.idplanning = p.id"
+                + " AND p.ptype = " + Schedule.WORKSHOP
+                + " AND p.action = a.id"
+                + " AND a.cours = " + id
+                + " AND pi.ptype = " + Instrument.MEMBER + " AND pi.idx = " + 0
+                + " UNION" // old data table
+                + " SELECT DISTINCT adherent, ti.id FROM atelier_ins at," + InstrumentIO.TABLE + " ti"
+                + " WHERE at.id = " + id + " AND at.instrument = ti.nom";
 
-  /**
-   *
-   * @param _id
-   * @param dc
-   * @param idper
-   * @throws SQLException
-   * @deprecated 
-   */
-  public static void deleteAdherent(int _id, int idper, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM atelier_ins where id=" + _id + " and adherent=" + idper;
-    dc.executeUpdate(query);
-  }
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                int idper = rs.getInt(1);
+                Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(idper);
+                Musician m = new Musician(p);
+                m.setInstrument(rs.getInt(2));
+                v.add(m);
+            }
+        }
+
+        return v;
+    }
+
+    /**
+     *
+     * @param c
+     * @param dc
+     * @param p
+     * @throws SQLException
+     * @deprecated
+     */
+    public static void insertAdherent(Course c, Musician p, DataConnection dc) throws SQLException {
+        String query = "INSERT INTO atelier_ins values("
+                + c.getId()
+                + "," + p.getId()
+                + ",'" + p.getInstrument()
+                + "')";
+
+        dc.executeUpdate(query);
+    }
+
+    /**
+     *
+     * @param _id
+     * @param dc
+     * @param idper
+     * @throws SQLException
+     * @deprecated
+     */
+    public static void deleteAdherent(int _id, int idper, DataConnection dc) throws SQLException {
+        String query = "DELETE FROM atelier_ins where id=" + _id + " and adherent=" + idper;
+        dc.executeUpdate(query);
+    }
 }

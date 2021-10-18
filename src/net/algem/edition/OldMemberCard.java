@@ -25,9 +25,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.List;
 import javax.imageio.ImageIO;
 import net.algem.contact.*;
 import net.algem.contact.member.Member;
@@ -91,7 +90,7 @@ public class OldMemberCard
     int mpl = 270;
     int mgm = 485;
     Address adr = null;
-    Vector tel = null;
+    List tel = null;
     MemberCardService service = new MemberCardService(desktop);
 
     PrintJob prn = tk.getPrintJob(parent, "Carte adhérent", props);
@@ -135,9 +134,9 @@ public class OldMemberCard
     adr = adh.getAddress();
     try {
       if (adr == null && member.getPayer() != adh.getId()) {
-        Vector<Address> v = AddressIO.findId(member.getPayer(), DataCache.getDataConnection());
+        List<Address> v = AddressIO.findId(member.getPayer(), DataCache.getDataConnection());
         if (v != null && v.size() > 0) {
-          adr = (Address) v.elementAt(0);
+          adr = (Address) v.get(0);
         }
       }
       tel = adh.getTele();
@@ -169,17 +168,16 @@ public class OldMemberCard
     }
     if (v != null && v.size() > 0) {
       Enrolment ins = v.get(0);
-      Vector cmc = ins.getCourseOrder();// recherche des commande_cours
+      List<CourseOrder> cmc = ins.getCourseOrder();// recherche des commande_cours
       int cpt1, cpt2, cpt3, cpt4;
       cpt1 = cpt2 = cpt3 = cpt4 = 0;
 
       String[] journom = PlanningService.WEEK_DAYS;
-      Enumeration enu = cmc.elements();
-      while (enu.hasMoreElements()) {
-        CourseOrder cc = (CourseOrder) enu.nextElement();
+      for (CourseOrder cc : cmc) {
+
         // Récupération du jour correspondant à chaque cours
         Course c = null;
-        try {
+
           c = ((CourseIO) DataCache.getDao(Model.Course)).findId(cc.getAction());
 
           int[] infos = service.getInfos(cc.getId(), adh.getId());
@@ -203,9 +201,6 @@ public class OldMemberCard
 //            g.drawString(lib, 115, mpl + 120 + cpt4);
             cpt4 += 10;
           }
-        } catch (SQLException ex) {
-          System.err.println(getClass().getName() + "#edite :" + ex.getMessage());
-        }
       }
     }
 
@@ -231,12 +226,12 @@ public class OldMemberCard
     }
     //g.drawString("Tel",x,mgm+85);
     if (tel != null && tel.size() > 0) {
-      Telephone t = (Telephone) tel.elementAt(0);
+      Telephone t = (Telephone) tel.get(0);
       g.setFont(normalFont);
       g.drawString(t.getTypeTel() + " : " + t.getNumber(), xadhinfo, mgm + 70);
     }
     if (tel != null && tel.size() > 1) {
-      Telephone t = (Telephone) tel.elementAt(1);
+      Telephone t = (Telephone) tel.get(1);
       g.setFont(normalFont);
       g.drawString(t.getTypeTel() + " : " + t.getNumber(), xadhinfo, mgm + 80);
     }

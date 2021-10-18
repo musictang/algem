@@ -22,7 +22,8 @@ package net.algem.contact;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -113,11 +114,11 @@ public class EmailIO
 		String mail = null;
 		String query = "SELECT email FROM " + TABLE + " WHERE idper = " + id + " LIMIT 1";
 
-		ResultSet rs = dc.executeQuery(query);
+		try (ResultSet rs = dc.executeQuery(query)) {
 		if (rs.next()) {
 			mail = rs.getString(1).trim();
 		}
-		rs.close();
+                }
 
 		return mail;
 	}
@@ -128,20 +129,18 @@ public class EmailIO
 	 * @return a list of emails
      * @since 2.0jf
 	 */
-	public static Vector<Email> find(int idper, DataConnection dc) throws SQLException {
-		Vector<Email> v = new Vector<Email>();
+	public static List<Email> find(int idper, DataConnection dc) throws SQLException {
+		List<Email> v = new ArrayList<>();
 		String query = "SELECT * FROM " + TABLE + " WHERE idper = " + idper + " ORDER BY idx";
-		try {
-			ResultSet rs = dc.executeQuery(query);
+		try (ResultSet rs = dc.executeQuery(query)) {
 			while (rs.next()) {
 				Email e = new Email();
 				e.setIdper(rs.getInt(1));//idper
 				e.setEmail(rs.getString(2).trim());//email
 				e.setArchive(rs.getBoolean(3));//archive
 				e.setIdx(rs.getInt(4)); // index
-				v.addElement(e);
+				v.add(e);
 			}
-			rs.close();
 		} catch (SQLException e) {
 			GemLogger.logException("find Email", e);
 		}

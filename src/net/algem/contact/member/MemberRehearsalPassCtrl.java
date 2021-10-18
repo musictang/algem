@@ -71,7 +71,7 @@ public class MemberRehearsalPassCtrl
 
       @Override
       public void setValueAt(Object value, int row, int col) {
-        ScheduleTestConflict c = tuples.elementAt(row);
+        ScheduleTestConflict c = tuples.get(row);
         boolean checked = (boolean) value;
         c.setActive(c.isConflict() ? false : checked);
         fireTableRowsUpdated(row, row);

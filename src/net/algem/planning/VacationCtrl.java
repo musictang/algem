@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
@@ -130,9 +129,9 @@ public class VacationCtrl
   }
 
   public void load() {
-    Vector<Vacation> v = VacationIO.find("", DataCache.getDataConnection());
+    List<Vacation> v = VacationIO.find("", DataCache.getDataConnection());
     for (int i = 0; i < v.size(); i++) {
-      Vacation va = v.elementAt(i);
+      Vacation va = v.get(i);
       vacationModel.addItem(va);
     }
   }
@@ -188,13 +187,13 @@ public class VacationCtrl
   void suppression() throws SQLException {
     int[] rows = vacationTable.getSelectedRows();
 
-    Map<Integer, List<Vacation>> vmap = new HashMap<Integer, List<Vacation>>();
+    Map<Integer, List<Vacation>> vmap = new HashMap<>();
     for (int i = rows.length - 1; i >= 0; i--) {
       int n = vacationTable.convertRowIndexToModel(rows[i]);
       Vacation v = (Vacation) vacationModel.getItem(n);
       List<Vacation> actualList = vmap.get(v.getVid());
       if (actualList == null) {
-        actualList = new ArrayList<Vacation>();
+        actualList = new ArrayList<>();
       }
       actualList.add(v);
       vmap.put(v.getVid(), actualList);

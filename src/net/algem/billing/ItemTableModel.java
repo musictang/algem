@@ -47,13 +47,13 @@ public class ItemTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Item it = tuples.elementAt(i);
+    Item it = tuples.get(i);
 		return it.getId();
   }
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    Item it = tuples.elementAt(ligne);
+    Item it = tuples.get(ligne);
 		switch (colonne)
 		{
 			case 0:

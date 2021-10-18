@@ -24,8 +24,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import javax.swing.event.EventListenerList;
 import net.algem.planning.ScheduleObject;
 import net.algem.planning.ScheduleRangeObject;
@@ -43,8 +43,8 @@ public class DaySchedule
 {
 
   private Calendar cal;
-  private Vector<ScheduleObject> schedules;
-  private Vector<ScheduleRangeObject> ranges;
+  private List<ScheduleObject> schedules;
+  private List<ScheduleRangeObject> ranges;
   protected EventListenerList listenerList = new EventListenerList();
 
   public DaySchedule() {
@@ -56,7 +56,7 @@ public class DaySchedule
     return "PlanningJour: " + cal;
   }
 
-  public void setDay(Date d, Vector<ScheduleObject> vs, Vector<ScheduleRangeObject> vr) {
+  public void setDay(Date d, List<ScheduleObject> vs, List<ScheduleRangeObject> vr) {
     Date old = cal.getTime();
     cal.setTime(d);
 
@@ -70,11 +70,11 @@ public class DaySchedule
     return cal.getTime();
   }
 
-  public Vector<ScheduleObject> getSchedules() {
+  public List<ScheduleObject> getSchedules() {
     return schedules;
   }
 
-  public Vector<ScheduleRangeObject> getRanges() {
+  public List<ScheduleRangeObject> getRanges() {
     return ranges;
   }
 

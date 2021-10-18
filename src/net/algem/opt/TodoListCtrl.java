@@ -26,8 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
@@ -126,11 +125,10 @@ public class TodoListCtrl
     //retour.addActionListener(l);
   }
 
-  public void addBlock(Vector block) {
+  public void addBlock(List<Todo> block) {
     try {
-      Enumeration e = block.elements();
-      while (e.hasMoreElements()) {
-        addRow(e.nextElement());
+        for (Todo t : block) {
+        addRow(t);
       }
     } catch (Exception e) {
       //GemLogger.logException("listeCtrl:",e);
@@ -140,7 +138,7 @@ public class TodoListCtrl
 
   public void load(int idcat) {
     afaire.clear();
-    Vector liste = TodoIO.find("where idper=" + idper + " and categorie=" + idcat, DataCache.getDataConnection());
+    List liste = TodoIO.find("where idper=" + idper + " and categorie=" + idcat, DataCache.getDataConnection());
     addBlock(liste);
   }
 

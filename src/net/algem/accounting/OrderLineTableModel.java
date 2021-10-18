@@ -20,7 +20,8 @@
  */
 package net.algem.accounting;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import net.algem.planning.DateFr;
@@ -40,7 +41,7 @@ public class OrderLineTableModel
         implements TableElementModel
 {
 
-  private Vector<OrderLine> orderLines = new Vector<OrderLine>();
+  private List<OrderLine> orderLines = new ArrayList<>();
 
   public OrderLineTableModel() {
   }
@@ -49,33 +50,33 @@ public class OrderLineTableModel
    * Loads a list of orderlines.
    * @param lines
    */
-  public void load(Vector<OrderLine> lines) {
+  public void load(List<OrderLine> lines) {
     orderLines = lines;
     fireTableDataChanged();
   }
 
   public void clear() {
-    orderLines.removeAllElements();
+    orderLines.clear();
     fireTableDataChanged();
   }
 
   @Override
   public void addElement(Object p) {
-    orderLines.addElement((OrderLine) p);
+    orderLines.add((OrderLine) p);
     //modif 1.2b index -1
     fireTableRowsInserted(orderLines.size() - 1, orderLines.size() - 1);
   }
 
   public OrderLine getOrderLineAt(int line) {
-    return orderLines.elementAt(line);
+    return orderLines.get(line);
   }
 
   public void setOrderLineAt(OrderLine p, int line) {
-    orderLines.setElementAt(p, line);
+    orderLines.set(line, p);
     fireTableRowsUpdated(line, line);
   }
 
-  public Vector<OrderLine> getData() {
+  public List<OrderLine> getData() {
     return orderLines;
   }
 
@@ -86,7 +87,7 @@ public class OrderLineTableModel
 
   @Override
   public void setElementAt(Object o, int line) {
-    orderLines.setElementAt((OrderLine) o, line);
+    orderLines.set(line, (OrderLine) o);
     fireTableRowsUpdated(line, line);
   }
 
@@ -98,7 +99,7 @@ public class OrderLineTableModel
 
   @Override
   public Object getElementAt(int line) {
-    return orderLines.elementAt(line);
+    return orderLines.get(line);
   }
 
   @Override
@@ -186,7 +187,7 @@ public class OrderLineTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    OrderLine e = (OrderLine) orderLines.elementAt(line);
+    OrderLine e = (OrderLine) orderLines.get(line);
     switch (col) {
       case 0:
         return " " + e.getPayer();

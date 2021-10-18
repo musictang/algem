@@ -22,7 +22,7 @@ package net.algem.planning;
 
 import java.awt.Point;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.event.GemEvent;
 
 /**
@@ -37,7 +37,7 @@ public class ScheduleDetailEvent
 {
 
   private Schedule schedule;
-  private Vector<ScheduleRangeObject> ranges;
+  private List<ScheduleRangeObject> ranges;
   private Point position;
 
   public ScheduleDetailEvent(Object _source, Schedule sched) {
@@ -49,11 +49,11 @@ public class ScheduleDetailEvent
     return schedule;
   }
 
-  public Vector<ScheduleRangeObject> getRanges() {
+  public List<ScheduleRangeObject> getRanges() {
     return ranges;
   }
 
-  public void setRanges(Vector<ScheduleRangeObject> v) {
+  public void setRanges(List<ScheduleRangeObject> v) {
     ranges = v;
   }
 

@@ -88,7 +88,7 @@ public class ScheduleRangeTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    ScheduleRangeObject sro = tuples.elementAt(line);
+    ScheduleRangeObject sro = tuples.get(line);
     FollowUp up = sro.getFollowUp();
     switch (col) {
       case 0:

@@ -71,7 +71,7 @@ public class RentalHistoTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    RentalOperation r = tuples.elementAt(line);
+    RentalOperation r = tuples.get(line);
     switch (col) {
       case 0:
         return r.getRentableObjectName();

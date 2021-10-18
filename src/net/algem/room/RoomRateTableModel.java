@@ -48,7 +48,7 @@ public class RoomRateTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    RoomRate t = tuples.elementAt(i);
+    RoomRate t = tuples.get(i);
     return t.getId();
   }
 
@@ -80,7 +80,7 @@ public class RoomRateTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    RoomRate t = tuples.elementAt(line);
+    RoomRate t = tuples.get(line);
     switch (col) {
       case 0:
         return t.getId();

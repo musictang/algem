@@ -64,7 +64,7 @@ public class ExtendedModuleOrderTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    ModuleOrder m = tuples.elementAt(i);
+    ModuleOrder m = tuples.get(i);
     return m.getIdOrder();
   }
 
@@ -91,7 +91,7 @@ public class ExtendedModuleOrderTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    ExtendedModuleOrder m = tuples.elementAt(line);
+    ExtendedModuleOrder m = tuples.get(line);
     int rest = m.getTotalTime() - m.getCompleted();
     switch (col) {
       case 0:

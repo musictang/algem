@@ -22,12 +22,10 @@ package net.algem.course;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
 import net.algem.config.Preset;
 import net.algem.enrolment.ModuleOrder;
 import net.algem.enrolment.ModuleOrderIO;
 import net.algem.planning.DateFr;
-import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -63,7 +61,7 @@ public class ModuleService
   }
 
   public void delete(Module m) throws SQLException, ModuleException {
-    Vector<ModuleOrder> vm = ModuleOrderIO.find("WHERE m.id = " + m.getId(), dc);
+    List<ModuleOrder> vm = ModuleOrderIO.find("WHERE m.id = " + m.getId(), dc);
     if (vm != null && vm.size() > 0) {
       if (vm.size() < 10) {
         StringBuilder sb = new StringBuilder();
@@ -79,7 +77,7 @@ public class ModuleService
   }
 
   boolean isUsed(int moduleId, DateFr start) throws SQLException {
-    Vector<ModuleOrder> vm = ModuleOrderIO.find("WHERE m.id = " + moduleId + " AND cm.debut >= '" + start.toString() + "'", dc);
+    List<ModuleOrder> vm = ModuleOrderIO.find("WHERE m.id = " + moduleId + " AND cm.debut >= '" + start.toString() + "'", dc);
     return vm != null && vm.size() > 0;
   }
 

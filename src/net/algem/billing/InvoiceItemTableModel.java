@@ -50,13 +50,13 @@ implements TableRowTransferHandler.Reorderable
 
   @Override
   public int getIdFromIndex(int i) {
-    InvoiceItem ivItem = tuples.elementAt(i);
+    InvoiceItem ivItem = tuples.get(i);
     return ivItem.getItem().getId();
   }
 
   @Override
   public Object getValueAt(int line, int col) {
-    InvoiceItem ivItem = tuples.elementAt(line);
+    InvoiceItem ivItem = tuples.get(line);
     switch (col) {
       case 0:
         return ivItem.getItem().getDesignation();

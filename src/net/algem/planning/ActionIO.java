@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.logging.Level;
 import net.algem.config.AgeRange;
 import net.algem.config.GemParam;
@@ -250,14 +249,14 @@ public class ActionIO
     return a;
   }
 
-  public Vector<Action> find(String where) {
-    Vector<Action> va = new Vector<Action>();
+  public List<Action> find(String where) {
+    List<Action> va = new ArrayList<>();
     String query = "SELECT DISTINCT " + TABLE + ".* FROM " + TABLE;
     query += where;
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         Action a = getFromRS(rs);
-        va.addElement(a);
+        va.add(a);
       }
     } catch (SQLException ex) {
       GemLogger.log(Level.SEVERE, ex.getMessage());
@@ -327,12 +326,12 @@ public class ActionIO
   }
 
   public int haveStatus(int status) throws SQLException {
-    Vector<Action> va = find(" WHERE statut = " + status);
+    List<Action> va = find(" WHERE statut = " + status);
     return va.size();
   }
 
   public int haveLevel(int level) throws SQLException {
-    Vector<Action> va = find(" WHERE niveau = " + level);
+    List<Action> va = find(" WHERE niveau = " + level);
     return va.size();
   }
 

@@ -31,8 +31,8 @@ import java.awt.print.PrinterException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.JobName;
@@ -207,9 +207,9 @@ public class TeacherFollowUpEditor
     courseTableModel.clear();
     int min = 0;
     try {
-      Vector<ScheduleRangeObject> v = service.getSchedule(pFile.getId(), dateStart.toString(), dateEnd.toString());
+      List<ScheduleRangeObject> v = service.getSchedule(pFile.getId(), dateStart.toString(), dateEnd.toString());
       for (int i = 0; i < v.size(); i++) {
-        ScheduleRangeObject r = v.elementAt(i);
+        ScheduleRangeObject r = v.get(i);
         CourseSchedule pc = new CourseSchedule(r);
         Course c = r.getCourse();
         pc.setCourse(c);

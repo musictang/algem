@@ -22,9 +22,10 @@ package net.algem.planning.month;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.event.EventListenerList;
 import net.algem.planning.DateFr;
 import net.algem.planning.ScheduleObject;
@@ -42,8 +43,8 @@ public class MonthSchedule
 
   private Date start = new Date();
   private Date end = new Date();
-  private Vector<ScheduleObject> schedules = new Vector<ScheduleObject>();
-  private Vector<ScheduleRangeObject> ranges = new Vector<ScheduleRangeObject>();
+  private List<ScheduleObject> schedules = new ArrayList<>();
+  private List<ScheduleRangeObject> ranges = new ArrayList<>();
   protected EventListenerList listenerList = new EventListenerList();
 
   public MonthSchedule() {
@@ -54,28 +55,28 @@ public class MonthSchedule
     return "PlanningMois: " + start + "-" + end;
   }
 
-  public void setSchedule(Date _start, Date _end, Vector<ScheduleObject> vs) {
+  public void setSchedule(Date _start, Date _end, List<ScheduleObject> vs) {
     start = _start;
     end = _end;
 
-    Vector<ScheduleObject> old = schedules;
+    List<ScheduleObject> old = schedules;
     schedules = vs;
     firePropertyChangeEvent(new PropertyChangeEvent(this, "planning", old, schedules));
   }
 
-  public void setScheduleRange(Date _debut, Date _fin, Vector<ScheduleRangeObject> _plages) {
+  public void setScheduleRange(Date _debut, Date _fin, List<ScheduleRangeObject> _plages) {
 
-    Vector<ScheduleRangeObject> old = ranges;
+    List<ScheduleRangeObject> old = ranges;
     ranges = _plages;
 
     firePropertyChangeEvent(new PropertyChangeEvent(this, "plage", old, ranges));
   }
 
-  public Vector<ScheduleObject> getSchedule() {
+  public List<ScheduleObject> getSchedule() {
     return schedules;
   }
 
-  public Vector<ScheduleRangeObject> getScheduleRange() {
+  public List<ScheduleRangeObject> getScheduleRange() {
     return ranges;
   }
 
@@ -87,35 +88,35 @@ public class MonthSchedule
     return end;
   }
 
-  public Vector<ScheduleObject> getDaySchedule(Calendar date) {
+  public List<ScheduleObject> getDaySchedule(Calendar date) {
     //XXX 	recherche dans plannings
-    Vector<ScheduleObject> v = new Vector<ScheduleObject>();
+    List<ScheduleObject> v = new ArrayList<>();
 
     DateFr nd = new DateFr(date.getTime());
 
     for (int i = 0; i < schedules.size(); i++) {
-      ScheduleObject p = (ScheduleObject) schedules.elementAt(i);
+      ScheduleObject p = (ScheduleObject) schedules.get(i);
       DateFr fd = new DateFr(p.getDate());
       if (fd.equals(nd)) {
-        v.addElement(p);
+        v.add(p);
       }
     }
 
     return v;
   }
 
-  public Vector<ScheduleObject> getDayScheduleRange(Calendar date) {
+  public List<ScheduleObject> getDayScheduleRange(Calendar date) {
     //XXX 	recherche dans plages
-    Vector<ScheduleObject> v = new Vector<ScheduleObject>();
+    List<ScheduleObject> v = new ArrayList<>();
 
     DateFr nd = new DateFr(date.getTime());
 
     for (int i = 0; i < ranges.size(); i++) {
-      ScheduleObject p = (ScheduleObject) ranges.elementAt(i);
+      ScheduleObject p = (ScheduleObject) ranges.get(i);
 
       DateFr fd = new DateFr(p.getDate());
       if (fd.equals(nd)) {
-        v.addElement(p);
+        v.add(p);
       }
     }
 

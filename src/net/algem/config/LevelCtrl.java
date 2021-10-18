@@ -22,6 +22,7 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import java.util.Enumeration;
 import net.algem.planning.ActionIO;
 import net.algem.planning.ActionService;
 import net.algem.util.DataCache;
@@ -50,7 +51,7 @@ public class LevelCtrl
   public void load() {
     service = new ActionService(desktop.getDataCache());
     try {
-      load(service.getLevelAll().elements());
+      load((Enumeration<? extends Param>) service.getLevelAll());
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }

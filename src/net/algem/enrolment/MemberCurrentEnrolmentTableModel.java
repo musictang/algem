@@ -74,7 +74,7 @@ public class MemberCurrentEnrolmentTableModel
 
   @Override
   public Object getValueAt(int ligne, int column) {
-    String[] s = tuples.elementAt(ligne);
+    String[] s = tuples.get(ligne);
     switch (column) {
       case 0:
       case 1:

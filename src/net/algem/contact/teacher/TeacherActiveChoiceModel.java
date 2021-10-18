@@ -20,7 +20,7 @@
  */
 package net.algem.contact.teacher;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
 import net.algem.util.ui.GemChoiceFilterModel;
@@ -43,7 +43,7 @@ public class TeacherActiveChoiceModel
     load(list);
   }
 
-  public TeacherActiveChoiceModel(Vector<Teacher> list, boolean active) {
+  public TeacherActiveChoiceModel(List<Teacher> list, boolean active) {
     this(new GemList<Teacher>(list), active);
   }
 

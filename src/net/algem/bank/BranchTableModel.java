@@ -46,7 +46,7 @@ public class BranchTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    BankBranch bb = tuples.elementAt(i);
+    BankBranch bb = tuples.get(i);
     return bb.getId();
   }
 
@@ -74,7 +74,7 @@ public class BranchTableModel
 
   @Override
   public Object getValueAt(int line ,int col) {
-    BankBranch bb = tuples.elementAt(line);
+    BankBranch bb = tuples.get(line);
     switch (col) {
       case 0:
         return Integer.valueOf(bb.getId());

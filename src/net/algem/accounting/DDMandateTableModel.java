@@ -74,7 +74,7 @@ public class DDMandateTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    DDMandate dd = tuples.elementAt(line);
+    DDMandate dd = tuples.get(line);
     switch (col) {
       case 0:
         return dd.getIdper();

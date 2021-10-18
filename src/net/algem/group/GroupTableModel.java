@@ -45,7 +45,7 @@ public class GroupTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Group m = tuples.elementAt(i);
+    Group m = tuples.get(i);
     return m.getId();
   }
 
@@ -69,7 +69,7 @@ public class GroupTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Group g = tuples.elementAt(line);
+    Group g = tuples.get(line);
     switch (col) {
       case 0:
         return Integer.valueOf(g.getId());

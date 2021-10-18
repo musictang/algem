@@ -25,7 +25,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.text.AttributeSet;
@@ -49,7 +50,7 @@ public class GemField
   protected static int MAXHISTO = 20;
   protected String oldval = "";
   protected int idx = 0;
-  protected Vector<String> histo;
+  protected List<String> histo;
   protected int limit;
 
   /**
@@ -63,7 +64,7 @@ public class GemField
     super(length);
     setDragEnabled(true);
     if (_histo) {
-      histo = new Vector<String>(20);
+      histo = new ArrayList<>(20);
       addFocusListener(this);
     }
     addKeyListener(this);
@@ -158,9 +159,9 @@ public class GemField
 
     if (text != null && histo != null && !oldval.equals(text) && text.trim().length() > 0) {
       if (histo.size() > MAXHISTO) {
-        histo.removeElementAt(0);
+        histo.remove(0);
       }
-      histo.addElement(text);
+      histo.add(text);
       idx = histo.size();
       oldval = text;
     }
@@ -202,9 +203,9 @@ public class GemField
   public void focusLost(FocusEvent event) {
     if (!oldval.equals(getText())) {
       if (histo.size() > MAXHISTO) {
-        histo.removeElementAt(0);
+        histo.remove(0);
       }
-      histo.addElement(getText());
+      histo.add(getText());
       idx = histo.size() - 1; //last index
     }
   }
@@ -234,11 +235,11 @@ public class GemField
     if (keyevent.getKeyCode() == 38) {//up  
       if (idx > 0) {
         idx--;
-        super.setText((String) histo.elementAt(idx));
+        super.setText((String) histo.get(idx));
       }
     } else if (keyevent.getKeyCode() == 40) { //down
       if (idx < (histo.size())) {
-        super.setText((String) histo.elementAt(idx));
+        super.setText((String) histo.get(idx));
         idx++;
       }
     }

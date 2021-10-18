@@ -23,10 +23,10 @@ package net.algem.edition;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
 import net.algem.accounting.AccountingServiceImpl;
@@ -96,7 +96,7 @@ public class EmployeeTaskFactory {
     ResultSet rs = null;
     switch (cmd) {
       case "DefaultSorting":
-        Vector<PlanningLib> plan = new Vector<>();
+        List<PlanningLib> plan = new ArrayList<>();
         if (idper > 0) {
           plan = service.getPlanningLib(start.toString(), end.toString(), school, idper, catchup);
         } else {

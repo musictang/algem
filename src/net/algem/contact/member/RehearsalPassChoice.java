@@ -20,7 +20,7 @@
  */
 package net.algem.contact.member;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.ui.GemChoice;
 
 /**
@@ -32,7 +32,7 @@ public class RehearsalPassChoice
         extends GemChoice
 {
 
-  public RehearsalPassChoice(Vector<RehearsalPass> cartes) {
+  public RehearsalPassChoice(List<RehearsalPass> cartes) {
     super(cartes);
   }
 

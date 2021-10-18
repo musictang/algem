@@ -29,7 +29,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -184,13 +184,13 @@ public class SubstituteTeacherCtrl
 
   public void load() {
     try {
-      Vector<SubstituteTeacher> v = SubstituteTeacherIO.findAll(DataCache.getDataConnection());
+      List<SubstituteTeacher> v = SubstituteTeacherIO.findAll(DataCache.getDataConnection());
       for (int i = 0; i < v.size(); i++) {
-        substituteModel.addItem(v.elementAt(i));
+        substituteModel.addItem(v.get(i));
       }
       if (v != null && !v.isEmpty()) {
         //teacherChoice.setKey(v.elementAt(0).getTeacher().getId());
-        teacherChoice.setSelectedItem(v.elementAt(0).getTeacher());
+        teacherChoice.setSelectedItem(v.get(0).getTeacher());
       }
     } catch (SQLException ex) {
       GemLogger.logException(ex);

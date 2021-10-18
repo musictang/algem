@@ -20,7 +20,8 @@
  */
 package net.algem.util.ui;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -36,10 +37,10 @@ public abstract class JTableModel<T>
 {
 
   protected String[] header;
-  protected Vector<T> tuples = new Vector<T>();
+  protected List<T> tuples = new ArrayList<T>();
 
   public void clear() {
-    tuples = new Vector<T>();
+    tuples = new ArrayList<T>();
     fireTableDataChanged();
   }
 
@@ -56,18 +57,18 @@ public abstract class JTableModel<T>
   }
 
   public void modItem(int idx, T o) {
-    tuples.setElementAt(o, idx);
+    tuples.set(idx, o);
     fireTableRowsUpdated(idx, idx);
   }
 
   public void addItem(T o) {
     int idx = tuples.size();
-    tuples.addElement(o);
+    tuples.add(o);
     fireTableRowsInserted(idx, idx);
   }
 
   public T getItem(int idx) {
-    return tuples.elementAt(idx);
+    return tuples.get(idx);
   }
 
   public abstract int getIdFromIndex(int i);
@@ -77,7 +78,7 @@ public abstract class JTableModel<T>
     return header[column];
   }
 
-  public Vector<T> getData() {
+  public List<T> getData() {
     return tuples;
   }
 

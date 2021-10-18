@@ -27,7 +27,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
@@ -111,9 +111,9 @@ public class EnrolmentListCtrl
   }
 
   public void load() {
-    Vector<MemberOrder> v = service.getOrders();
+    List<MemberOrder> v = service.getOrders();
     for (int i = 0; i < v.size(); i++) {
-      orderTableModel.addItem(v.elementAt(i));
+      orderTableModel.addItem(v.get(i));
     }
   }
 

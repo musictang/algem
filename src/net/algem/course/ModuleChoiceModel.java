@@ -20,7 +20,7 @@
  */
 package net.algem.course;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoiceModel;
 
@@ -38,7 +38,7 @@ public class ModuleChoiceModel
     super(list);
   }
 
-  public ModuleChoiceModel(Vector<Module> list) {
+  public ModuleChoiceModel(List<Module> list) {
     this(new GemList<Module>(list));
   }
 

@@ -25,7 +25,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import net.algem.bank.BankSearchCtrl;
@@ -220,7 +220,7 @@ public class MenuConfig
     } else if (menus.get("Menu.card.label").equals(arg)) {
       RehearsalPassListCtrl ctrl = new RehearsalPassListCtrl(desktop, false);
       try {
-        Vector<RehearsalPass> v = RehearsalPassIO.findAll(" ORDER BY libelle", dc);
+        List<RehearsalPass> v = RehearsalPassIO.findAll(" ORDER BY libelle", dc);
         ctrl.loadResult(v);
         GemModule m = new DefaultGemModule("Menu.card", ctrl);
         desktop.addModule(m);

@@ -63,7 +63,7 @@ public class ParamTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Param p = tuples.elementAt(line);
+    Param p = tuples.get(line);
     switch (col) {
       case 0:
         return p.getKey();

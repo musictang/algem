@@ -21,8 +21,6 @@
 package net.algem.room;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Vector;
 import net.algem.contact.Address;
 import net.algem.contact.Email;
 import net.algem.contact.Person;
@@ -44,9 +42,9 @@ public class Establishment
   private static final long serialVersionUID = -7929093636684679404L;
 
   private Person p;
-  private Vector<Address> a;
-  private Vector<Telephone> t;
-  private Vector<Email> emails;
+  private List<Address> a;
+  private List<Telephone> t;
+  private List<Email> emails;
   private List<WebSite> sites;
   private boolean active;
 
@@ -103,32 +101,32 @@ public class Establishment
 
   public Address getAddress() {
     if (a != null && a.size() > 0) {
-      return a.elementAt(0);
+      return a.get(0);
     }
     return null;
   }
 
-  public Vector<Address> getAddressAll() {
+  public List<Address> getAddressAll() {
     return a;
   }
 
-  public void setAddress(Vector<Address> v) {
+  public void setAddress(List<Address> v) {
     a = v;
   }
 
-  public Vector<Telephone> getTele() {
+  public List<Telephone> getTele() {
     return t;
   }
 
-  public void setTele(Vector<Telephone> v) {
+  public void setTele(List<Telephone> v) {
     t = v;
   }
 
-  public Vector<Email> getEmail() {
+  public List<Email> getEmail() {
     return emails;
   }
 
-  public void setEmail(Vector<Email> _emails) {
+  public void setEmail(List<Email> _emails) {
     emails = _emails;
   }
 

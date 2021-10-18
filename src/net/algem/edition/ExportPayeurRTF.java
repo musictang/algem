@@ -25,7 +25,7 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.NumberFormat;
-import java.util.Vector;
+import java.util.List;
 import net.algem.accounting.GemAmount;
 import net.algem.accounting.OrderLine;
 import net.algem.accounting.OrderLineIO;
@@ -88,7 +88,7 @@ public class ExportPayeurRTF {
     public void edit(DateFr start, DateFr end) {
         //DateFr today = new DateFr(new java.util.Date());
         Address adr = null;
-        Vector<Telephone> tel = null;
+        List<Telephone> tel = null;
 
         payer = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findPayer(payerId);
         if (payer == null) {
@@ -108,7 +108,7 @@ public class ExportPayeurRTF {
         if (tel != null) {
             out.print("\\par ");
             for (int i = 0; i < tel.size(); i++) {
-                Telephone t = tel.elementAt(i);
+                Telephone t = tel.get(i);
                 String type = "";
                 try {
                     type = TeleIO.getTypeTel(t.getTypeTel(), dc);
@@ -128,9 +128,9 @@ public class ExportPayeurRTF {
         out.println("\\par \\pard\\plain \\s3\\sa144\\slmult1 \\f1\\fs24\\cf1 ");
         out.println("\\par \\pard\\plain \\s3\\qc\\sa144\\slmult1 \\f1\\fs24\\cf1 {\\b\\f2\\fs28 Fiches Adh\\'e9rents rattach\\'e9es}");
 
-        Vector<PersonFile> adhs = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE payeur=" + payerId);
+        List<PersonFile> adhs = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE payeur=" + payerId);
         for (int i = 0; i < adhs.size(); i++) {
-            PersonFile d = adhs.elementAt(i);
+            PersonFile d = adhs.get(i);
             out.println("\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1 Adherent " + d.getId() + " " + FileUtil.rtfReplaceChars(d.getContact().getFirstnameName()));
         }
         out.println("\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1");
@@ -139,10 +139,10 @@ public class ExportPayeurRTF {
         out.println("\\par \\pard\\plain \\s3\\qc\\sa144\\slmult1 \\f1\\fs24\\cf1 {\\b\\f2\\fs28 Ech\\'e9ancier}");// du "+debut+" au "+fin+"}");
         out.println("\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1");
 
-        Vector<OrderLine> echs = OrderLineIO.find("WHERE payeur=" + payer.getId() + " AND echeance >='" + start + "' AND echeance <='" + end + "'", dc);
+        List<OrderLine> echs = OrderLineIO.find("WHERE payeur=" + payer.getId() + " AND echeance >='" + start + "' AND echeance <='" + end + "'", dc);
 
         for (int i = 0; i < echs.size(); i++) {
-            OrderLine e = echs.elementAt(i);
+            OrderLine e = echs.get(i);
             out.println("\\par " + e.getDate() + " " + e.getMember());
             out.println(" " + e.getModeOfPayment() + " " + e.getDocument() + " " + FileUtil.rtfReplaceChars(String.valueOf(e.getAccount())));
             GemAmount m = new GemAmount(e.getAmount());

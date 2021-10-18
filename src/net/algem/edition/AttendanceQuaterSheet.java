@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.List;
 import net.algem.Algem;
 
 import net.algem.config.Instrument;
@@ -126,14 +126,14 @@ public class AttendanceQuaterSheet
     public void edit(DateRange _plage, int etabId) {
 
         dateRange = _plage;
-        Vector<Teacher> teachers = null;
+        List<Teacher> teachers = null;
         try {
             Establishment estab = EstablishmentIO.findId(etabId, DataCache.getDataConnection());
             teachers = service.findTeachers();
             if (teachers != null) {
                 for (int i = 0; i < teachers.size(); i++) {
                     //PersonFile p = teachers.elementAt(i);
-                    edit(teachers.elementAt(i), dateRange, estab);
+                    edit(teachers.get(i), dateRange, estab);
                 }
             }
             prn.end();
@@ -165,7 +165,7 @@ public class AttendanceQuaterSheet
         this.teacher = teacher;
 
         try {
-            Vector<? extends ScheduleObject> vpl = service.getCourseSchedule(
+            List<? extends ScheduleObject> vpl = service.getCourseSchedule(
                     teacher.getId(),
                     etab.getId(),
                     dateRange.getStart().toString(),
@@ -185,14 +185,14 @@ public class AttendanceQuaterSheet
             g.drawString(MessageUtil.getMessage("attendance.sheet.head2", etab.getName()), 300, 60);
 
             line = mgh;
-            java.util.List<Vector<ScheduleObject>> vplList = new ArrayList<Vector<ScheduleObject>>();
+            List<List<ScheduleObject>> vplList = new ArrayList<>();
 
             while (vpl.size() > 0) {
-                Vector<ScheduleObject> v = new Vector<ScheduleObject>();
+                List<ScheduleObject> v = new ArrayList<>();
                 for (int j = 0; j < vpl.size(); j++) {
-                    CourseSchedule p = (CourseSchedule) vpl.elementAt(0);
-                    if (p.equiv(vpl.elementAt(j))) {
-                        v.addElement(vpl.elementAt(j));
+                    CourseSchedule p = (CourseSchedule) vpl.get(0);
+                    if (p.equiv(vpl.get(j))) {
+                        v.add(vpl.get(j));
                     }
                 }
                 vpl.removeAll(v);
@@ -200,8 +200,8 @@ public class AttendanceQuaterSheet
             }
 
             for (int i = 0; i < vplList.size(); i++) {
-                Vector<ScheduleObject> v = vplList.get(i);
-                Schedule pl = v.elementAt(0);
+                List<ScheduleObject> v = vplList.get(i);
+                Schedule pl = v.get(0);
                 Course course = planningService.getCourseFromAction(pl.getIdAction());
                 Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(pl.getIdRoom());
                 courseHeader(course, room, v);
@@ -223,7 +223,7 @@ public class AttendanceQuaterSheet
 
     }
 
-    public void courseHeader(Course course, Room room, Vector<ScheduleObject> vpl) {
+    public void courseHeader(Course course, Room room, List<ScheduleObject> vpl) {
 
         //System.out.println("coursHeader course=" + course + " line=" + line);
         if (line + 50 > PAGE_HEIGHT) {
@@ -237,7 +237,7 @@ public class AttendanceQuaterSheet
         }
 
         g.setFont(normalFont);
-        Schedule plt = vpl.elementAt(0);
+        Schedule plt = vpl.get(0);
         /* LIBELLE DU COURS SUIVI de la salle et DE SON HORAIRE */
         String msg = "";
         if (course.isCollective()) {
@@ -260,7 +260,7 @@ public class AttendanceQuaterSheet
         int col = FIRST_COL;
         /* LIBELLE DES JOURS DE LA SEMAINE */
         for (int i = 0; i < vpl.size(); i++, col += DAY_WIDTH) {
-            Schedule pl = vpl.elementAt(i);
+            Schedule pl = vpl.get(i);
             cal.setTime(pl.getDate().getDate());
             g.drawString(dayLabels[cal.get(Calendar.DAY_OF_WEEK)] + pl.getDate().getDay(), col, line + 15);// 25 -> 15
         }
@@ -268,15 +268,15 @@ public class AttendanceQuaterSheet
         line += LINE_HEIGHT;
     }
 
-    public void detailCollective(Course course, Room room, DateRange _range, Vector<ScheduleObject> vpl) {
+    public void detailCollective(Course course, Room room, DateRange _range, List<ScheduleObject> vpl) {
         boolean np = false;
         int topl = line; // haut de colonne
         line += 10; // première ligne de texte
         g.setFont(smallFont);
-        Schedule plt = vpl.elementAt(0);
-        Vector<PersonFile> v = EnrolmentService.findMembersByPlanning(plt);
+        Schedule plt = vpl.get(0);
+        List<PersonFile> v = EnrolmentService.findMembersByPlanning(plt);
         for (int i = 0; i < v.size(); i++) {
-            PersonFile d = v.elementAt(i);
+            PersonFile d = v.get(i);
             int col = FIRST_COL;
             if (line + 5 > PAGE_HEIGHT) {
                 for (int j = 0; j < NB_COL; j++, col += DAY_WIDTH) {
@@ -331,16 +331,16 @@ public class AttendanceQuaterSheet
         }
     }
 
-    public void detailRange(Course course, Room room, Vector<ScheduleObject> vpl) throws SQLException {
+    public void detailRange(Course course, Room room, List<ScheduleObject> vpl) throws SQLException {
         boolean np = false; // new page
         int topl = line;
         g.setFont(smallFont);
 
-        Schedule plt = vpl.elementAt(0);
+        Schedule plt = vpl.get(0);
         String query2 = "pg WHERE pg.idplanning = " + plt.getId() + " ORDER BY pg.debut";
-        Vector<ScheduleRange> v = ScheduleRangeIO.find(query2, DataCache.getDataConnection());
+        List<ScheduleRange> v = ScheduleRangeIO.find(query2, DataCache.getDataConnection());
         for (int i = 0; i < v.size(); i++) {
-            ScheduleRange h = v.elementAt(i);
+            ScheduleRange h = v.get(i);
             Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(h.getMemberId());
             String s = h.getStart().toString() + "-" + h.getEnd().toString();
             if (p != null) {

@@ -36,6 +36,7 @@ import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
@@ -230,7 +231,7 @@ public class ModifPlanTeacherView
       ScheduleObject range = new CourseSchedule();
       range.setStart(hourRange.getStart());
       range.setEnd(hourRange.getEnd());
-      Vector<ScheduleTestConflict> v = service.checkRange(orig, range);
+      List<ScheduleTestConflict> v = service.checkRange(orig, range);
       if (v != null && v.size() > 0) {
         MessagePopup.warning(this, MessageUtil.getMessage("invalid.time.slot"));
         resetRange();

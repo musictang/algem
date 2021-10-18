@@ -63,7 +63,7 @@ public class JournalAccountTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    JournalAccount j = tuples.elementAt(ligne);
+    JournalAccount j = tuples.get(ligne);
     switch (colonne) {
       case 0:
         return j.getValue();

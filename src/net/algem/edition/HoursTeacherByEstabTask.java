@@ -23,8 +23,8 @@ package net.algem.edition;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import javax.swing.ProgressMonitor;
 import net.algem.accounting.AccountingServiceImpl;
 import net.algem.accounting.OrderLineIO;
@@ -54,7 +54,7 @@ class HoursTeacherByEstabTask
   {
 
     private PrintWriter out;
-    private Vector<PlanningLib> plan;
+    private List<PlanningLib> plan;
     private int k;
     private DataCache dataCache;
     private AccountingServiceImpl service;
@@ -67,7 +67,7 @@ class HoursTeacherByEstabTask
     private char leisurePrefix = types[0].charAt(0);
     private char proPrefix = types[1].charAt(0);
 
-    public HoursTeacherByEstabTask(HourEmployeeDlg dlg, ProgressMonitor pm, PrintWriter out, Vector<PlanningLib> plan, boolean detail) {
+    public HoursTeacherByEstabTask(HourEmployeeDlg dlg, ProgressMonitor pm, PrintWriter out, List<PlanningLib> plan, boolean detail) {
       super(dlg, pm, detail);
       this.out = out;
       this.plan = plan;
@@ -103,7 +103,7 @@ class HoursTeacherByEstabTask
       }
     }
 
-    private void write(final PrintWriter out, final Vector<PlanningLib> plan, final boolean detail) throws SQLException {
+    private void write(final PrintWriter out, final List<PlanningLib> plan, final boolean detail) throws SQLException {
       int oldTeacher = 0;
       DateFr oldDay = new DateFr("27-09-1900");
       int oldMonth = 0;
@@ -126,7 +126,7 @@ class HoursTeacherByEstabTask
       int nmin = 0;
 
       for (int i = 0, size = plan.size(); i < size; i++) { // parcours des plannings
-        PlanningLib p = plan.elementAt(i);
+        PlanningLib p = plan.get(i);
         if (p.getTeacherId() != oldTeacher) {//au changement de prof
           if (oldTeacher > 0) {
             out.println(" " + this.totalDayLabel + " : " + new Hour(totalDay).toString());
@@ -182,7 +182,7 @@ class HoursTeacherByEstabTask
         char type = leisurePrefix;
 
         // Pour chaque planning, recherche des plages
-        Vector<ScheduleRange> plage = service.getCourseScheduleRange(p.getID());
+        List<ScheduleRange> plage = service.getCourseScheduleRange(p.getID());
         if (c.isCollective()) {
           nmin = p.getStart().getLength(p.getEnd());
           totalDay += nmin;//XXX compter plage horaire si planning vide ??
@@ -191,7 +191,7 @@ class HoursTeacherByEstabTask
             if (plage.size() > 0) {
               boolean pro = false;
               for (int j = 0; j < plage.size(); j++) {
-                ScheduleRange pl = plage.elementAt(j);
+                ScheduleRange pl = plage.get(j);
                 if (OrderLineIO.isPro(pl.getMemberId(), dataCache)) {
                 // TODO get schedule action/module status instead ?
 //                if (exportService.isPro(p.getAction(), pl.getMemberId())) {
@@ -223,7 +223,7 @@ class HoursTeacherByEstabTask
           }
         } else { // si cours individuel
           for (int j = 0; j < plage.size(); j++) {
-            ScheduleRange pl = plage.elementAt(j);
+            ScheduleRange pl = plage.get(j);
             nmin = pl.getStart().getLength(pl.getEnd());
             totalDay += nmin;
             if (detail) {

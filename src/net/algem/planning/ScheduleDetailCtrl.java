@@ -31,7 +31,6 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.*;
 
@@ -182,9 +181,9 @@ public class ScheduleDetailCtrl
     } else if (schedule instanceof Schedule) {
       Schedule p = (Schedule) schedule;
       headPanel.add(new GemLabel("Saisie sur planning"));
-      Vector<GemMenuButton> vb = modifCtrl.getMenuPlanning();
+      List<GemMenuButton> vb = modifCtrl.getMenuPlanning();
       for (int i = 0; i < vb.size(); i++) {
-        menuPanel.add((GemMenuButton) vb.elementAt(i));
+        menuPanel.add((GemMenuButton) vb.get(i));
       }
     } else {
       headPanel.add(new GemLabel("Erreur Planning"));
@@ -254,7 +253,7 @@ public class ScheduleDetailCtrl
     menuPanel.add(btWrite);
   }
 
-  private void loadRanges(Vector<ScheduleRangeObject> v, boolean collective) {
+  private void loadRanges(List<ScheduleRangeObject> v, boolean collective) {
     if (v == null) {
       return;
     }
@@ -263,7 +262,7 @@ public class ScheduleDetailCtrl
     }
     StringBuffer buf = new StringBuffer();
     for (int i = 0; i < v.size(); i++) {
-      ScheduleRangeObject pl = v.elementAt(i);
+      ScheduleRangeObject pl = v.get(i);
       Person per = pl.getMember();
 
       if (!collective) {
@@ -319,9 +318,9 @@ public class ScheduleDetailCtrl
     GemMenuButton b = getScheduleRangeButton(p.getMember());
     listPanel.add(b);
 
-    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuMemberRehearsal();
+    List<GemMenuButton> modifButtons = modifCtrl.getMenuMemberRehearsal();
     for (int i = 0; i < modifButtons.size(); i++) {
-      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
+      menuPanel.add((GemMenuButton) modifButtons.get(i));
     }
   }
 
@@ -331,9 +330,9 @@ public class ScheduleDetailCtrl
 
     GemMenuButton b = getScheduleRangeButton(p.getMember());
     listPanel.add(b);
-    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuBooking();
+    List<GemMenuButton> modifButtons = modifCtrl.getMenuBooking();
     for (int i = 0; i < modifButtons.size(); i++) {
-      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
+      menuPanel.add((GemMenuButton) modifButtons.get(i));
     }
 
   }
@@ -352,9 +351,9 @@ public class ScheduleDetailCtrl
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuGroupRehearsal();
+    List<GemMenuButton> modifButtons = modifCtrl.getMenuGroupRehearsal();
     for (int i = 0; i < modifButtons.size(); i++) {
-      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
+      menuPanel.add((GemMenuButton) modifButtons.get(i));
     }
     menuPanel.add(btGroupWrite);//mailing button
   }
@@ -371,9 +370,9 @@ public class ScheduleDetailCtrl
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuBooking();
+    List<GemMenuButton> modifButtons = modifCtrl.getMenuBooking();
     for (int i = 0; i < modifButtons.size(); i++) {
-      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
+      menuPanel.add((GemMenuButton) modifButtons.get(i));
     }
     menuPanel.add(btGroupWrite);//mailing button
   }
@@ -390,9 +389,9 @@ public class ScheduleDetailCtrl
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuStudio(Schedule.STUDIO);
+    List<GemMenuButton> modifButtons = modifCtrl.getMenuStudio(Schedule.STUDIO);
     for (int i = 0; i < modifButtons.size(); i++) {
-      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
+      menuPanel.add((GemMenuButton) modifButtons.get(i));
     }
     menuPanel.add(btGroupWrite);//mailing button
   }
@@ -405,9 +404,9 @@ public class ScheduleDetailCtrl
     GemMenuButton b = new GemMenuButton(buf.toString(), this, "GroupLink", p.getGroup());
     headPanel.add(b);
     loadTechnicianList(de.getRanges());
-    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuStudio(Schedule.TECH);
+    List<GemMenuButton> modifButtons = modifCtrl.getMenuStudio(Schedule.TECH);
     for (int i = 0; i < modifButtons.size(); i++) {
-      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
+      menuPanel.add((GemMenuButton) modifButtons.get(i));
     }
     menuPanel.add(btWrite);//mailing button
   }
@@ -424,9 +423,9 @@ public class ScheduleDetailCtrl
     b = new GemMenuButton(buf.toString(), this, "TeacherLink", p.getTeacher());
     headPanel.add(b);
 
-    Vector<ScheduleRangeObject> v = de.getRanges();
+    List<ScheduleRangeObject> v = de.getRanges();
     for (int i = 0; v != null && i < v.size(); i++) {
-      ScheduleRangeObject pg = v.elementAt(i);
+      ScheduleRangeObject pg = v.get(i);
       Person per = pg.getMember();
       buf = new StringBuffer(nameFirst ? per.getNameFirstname() : per.getFirstnameName());
       Member m = null;
@@ -484,9 +483,9 @@ public class ScheduleDetailCtrl
       }
       sb.delete(0, sb.length());
     }
-    Vector<GemMenuButton> vb = modifCtrl.getMenuAdministrative(); // ajout des boutons de PlanModifCtrl
+    List<GemMenuButton> vb = modifCtrl.getMenuAdministrative(); // ajout des boutons de PlanModifCtrl
     for (int j = 0; j < vb.size(); j++) {
-      menuPanel.add((GemMenuButton) vb.elementAt(j));
+      menuPanel.add((GemMenuButton) vb.get(j));
     }
 
   }
@@ -523,7 +522,7 @@ public class ScheduleDetailCtrl
     }
   }
 
-  private void loadTechnicianList(Vector<ScheduleRangeObject> ranges) {
+  private void loadTechnicianList(List<ScheduleRangeObject> ranges) {
     if (ranges.size() > 0) {
       Collections.sort(ranges, psComparator);
     }
@@ -634,7 +633,7 @@ public class ScheduleDetailCtrl
         }
         }
       } else if ("Mailing".equals(arg)) {
-        Vector<ScheduleRangeObject> ranges = detailEvent.getRanges();//plages
+        List<ScheduleRangeObject> ranges = detailEvent.getRanges();//plages
         String message = MAIL_UTIL.mailToMembers(ranges, schedule);
         if (message.length() > 0) {
           String info = MessageUtil.getMessage("members.without.email");

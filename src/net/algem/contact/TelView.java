@@ -20,7 +20,8 @@
  */
 package net.algem.contact;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.config.Param;
 import net.algem.util.BundleUtil;
 
@@ -33,14 +34,14 @@ public class TelView
         extends InfoView
 {
 
-  private Vector<Param> vp;
+  private List<Param> vp;
 
-  public TelView(Vector<Param> vp) {
+  public TelView(List<Param> vp) {
     super(BundleUtil.getLabel("Telephones.label"), true);
     this.vp = vp;
   }
 
-  public void setTels(Vector<Telephone> tels) {
+  public void setTels(List<Telephone> tels) {
     clearAll();
     if (tels != null && tels.size() > 0) {
       for (Telephone t : tels) {
@@ -57,8 +58,8 @@ public class TelView
 
   }
 
-  public Vector<Telephone> getTels() {
-    Vector<Telephone> v = new Vector<Telephone>();
+  public List<Telephone> getTels() {
+    List<Telephone> v = new ArrayList<>();
     for (InfoPanel pt : rows) {
       Telephone t = ((TelPanel) pt).getTel();
       if (t != null && !t.getNumber().isEmpty()) {
@@ -80,7 +81,7 @@ public class TelView
 
   }
 
-  public void setLien(Vector<Telephone> tels) {
+  public void setLien(List<Telephone> tels) {
     clearAll();
     setTels(tels);
   }

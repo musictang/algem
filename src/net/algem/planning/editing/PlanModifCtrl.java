@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 
 import net.algem.Algem;
 import net.algem.config.ConfigKey;
@@ -149,8 +148,8 @@ public class PlanModifCtrl
    *
    * @return a list of buttons
    */
-  public Vector<GemMenuButton> getMenuMemberRehearsal() {
-    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+  public List<GemMenuButton> getMenuMemberRehearsal() {
+    List<GemMenuButton> v = new ArrayList<>();
 
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Rehearsal.time.modification.label"), this, "ChangeHour"));
@@ -167,8 +166,8 @@ public class PlanModifCtrl
    *
    * @return a list of buttons
    */
-  public Vector<GemMenuButton> getMenuGroupRehearsal() {
-    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+  public List<GemMenuButton> getMenuGroupRehearsal() {
+    List<GemMenuButton> v = new ArrayList<>();
 
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Rehearsal.time.modification.label"), this, "ChangeHour"));
@@ -185,8 +184,8 @@ public class PlanModifCtrl
    *
    * @return a list of buttons
    */
-  public Vector<GemMenuButton> getMenuWorkshop() {
-    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+  public List<GemMenuButton> getMenuWorkshop() {
+    List<GemMenuButton> v = new ArrayList<>();
 
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.teacher.modification.label"), this, "ChangeTeacher"));
@@ -202,8 +201,8 @@ public class PlanModifCtrl
    * @param type studio type
    * @return a list of buttons
    */
-  public Vector<GemMenuButton> getMenuStudio(int type) {
-    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+  public List<GemMenuButton> getMenuStudio(int type) {
+    List<GemMenuButton> v = new ArrayList<>();
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.time.modification.label"), this, "ChangeScheduleLength"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Session.type.modification.label"), this, "ChangeSessionType"));
@@ -217,8 +216,8 @@ public class PlanModifCtrl
     return v;
   }
 
-  public Vector<GemMenuButton> getMenuAdministrative() {
-    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+  public List<GemMenuButton> getMenuAdministrative() {
+    List<GemMenuButton> v = new ArrayList<>();
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.course.shifting.label"), this, "PutOffCourse"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.time.modification.label"), this, "ChangeScheduleLength"));
@@ -230,8 +229,8 @@ public class PlanModifCtrl
     return v;
   }
 
-  public Vector<GemMenuButton> getMenuBooking() {
-    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+  public List<GemMenuButton> getMenuBooking() {
+    List<GemMenuButton> v = new ArrayList<>();
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Confirm.label"), this, "ConfirmBooking"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Cancel.label"), this, "CancelBooking"));
@@ -244,8 +243,8 @@ public class PlanModifCtrl
    *
    * @return a list of buttons
    */
-  public Vector<GemMenuButton> getMenuPlanning() {
-    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+  public List<GemMenuButton> getMenuPlanning() {
+    List<GemMenuButton> v = new ArrayList<>();
     /* v.add(new GemMenuButton("Marquer salle indisponible", this, "InsertSalleNonDispo")); */
     return v;
   }
@@ -385,11 +384,11 @@ public class PlanModifCtrl
     Hour hEnd = dlg.getNewHourEnd();
 
     try {
-      Vector<ScheduleTestConflict> v = service.checkHour(plan, start, end, hStart, hEnd);
+      List<ScheduleTestConflict> v = service.checkHour(plan, start, end, hStart, hEnd);
       if (v.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits changement d'heure", service);
         for (int i = 0; i < v.size(); i++) {
-          cfd.addConflict((ScheduleTestConflict) v.elementAt(i));
+          cfd.addConflict((ScheduleTestConflict) v.get(i));
         }
         cfd.show();
         return;
@@ -583,11 +582,11 @@ public class PlanModifCtrl
 
     try {
       if (range.getIdPerson() > 0) {
-        Vector<ScheduleTestConflict> v = service.checkChangeTeacher(plan, range, start, end);
+        List<ScheduleTestConflict> v = service.checkChangeTeacher(plan, range, start, end);
         if (v.size() > 0) {
           ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.change.conflicts.label"), service);
           for (int i = 0; i < v.size(); i++) {
-            cfd.addConflict(v.elementAt(i));
+            cfd.addConflict(v.get(i));
           }
           cfd.show();
           return;
@@ -737,12 +736,12 @@ public class PlanModifCtrl
   private boolean testConflictCourse(ScheduleObject plan, ScheduleObject newPlan, Hour[] range)
     throws SQLException {
 
-    Vector<ScheduleTestConflict> v = service.checkRoomForSchedulePostpone(plan, newPlan);
+    List<ScheduleTestConflict> v = service.checkRoomForSchedulePostpone(plan, newPlan);
     // room conflict
     if (v.size() > 0) {
       ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"), service);
       for (int i = 0; i < v.size(); i++) {
-        cfd.addConflict(v.elementAt(i));
+        cfd.addConflict(v.get(i));
       }
       cfd.show();
       return false;
@@ -754,7 +753,7 @@ public class PlanModifCtrl
       if (v.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"), service);
         for (int i = 0; i < v.size(); i++) {
-          cfd.addConflict(v.elementAt(i));
+          cfd.addConflict(v.get(i));
         }
         cfd.show();
         return false;
@@ -820,11 +819,11 @@ public class PlanModifCtrl
       if (plan instanceof CourseSchedule) {
         Course c = (Course) plan.getActivity();
         if (!c.isCollective()) {
-          Vector<ScheduleTestConflict> v = service.testRange(plan, hStart, hEnd, lastDay);
+          List<ScheduleTestConflict> v = service.testRange(plan, hStart, hEnd, lastDay);
           if (v.size() > 0) {
             ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), MessageUtil.getMessage("time.slot.conflict.detail", v.size()), service);
             for (int i = 0; i < v.size(); i++) {
-              cfd.addConflict(v.elementAt(i));
+              cfd.addConflict(v.get(i));
             }
             cfd.show();
             return;
@@ -832,11 +831,11 @@ public class PlanModifCtrl
         }
       }
 
-      Vector<ScheduleTestConflict> v = service.checkRoomForScheduleLengthModif(plan, hStart, hEnd, lastDay);
+      List<ScheduleTestConflict> v = service.checkRoomForScheduleLengthModif(plan, hStart, hEnd, lastDay);
       if (v.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"), service);
         for (int i = 0; i < v.size(); i++) {
-          cfd.addConflict(v.elementAt(i));
+          cfd.addConflict(v.get(i));
         }
         cfd.show();
         return;
@@ -844,11 +843,11 @@ public class PlanModifCtrl
 
       //TODO check teacher occupation in studio schedules
       if (plan.getIdPerson() > 0 && (plan.getType() != Schedule.TECH && plan.getType() != Schedule.STUDIO)) {
-        Vector<ScheduleTestConflict> conflicts = service.checkTeacherForScheduleLengthModif(plan, lastDay, hStart, hEnd);
+        List<ScheduleTestConflict> conflicts = service.checkTeacherForScheduleLengthModif(plan, lastDay, hStart, hEnd);
         if (conflicts != null && conflicts.size() > 0) {
           ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"), service);
           for (int i = 0; i < conflicts.size(); i++) {
-            cfd.addConflict(conflicts.elementAt(i));
+            cfd.addConflict(conflicts.get(i));
           }
           cfd.show();
           return;

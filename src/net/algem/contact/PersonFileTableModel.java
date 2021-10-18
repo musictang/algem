@@ -44,12 +44,12 @@ public class PersonFileTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    PersonFile p = tuples.elementAt(i);
+    PersonFile p = tuples.get(i);
     return p.getId();
   }
 
   public PersonFile getPersonFile(int i) {
-    return tuples.elementAt(i);
+    return tuples.get(i);
   }
 
   @Override
@@ -73,7 +73,7 @@ public class PersonFileTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    PersonFile p = tuples.elementAt(line);
+    PersonFile p = tuples.get(line);
     switch (col) {
       case 0:
         return Integer.valueOf(p.getId());

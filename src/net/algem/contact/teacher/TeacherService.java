@@ -28,7 +28,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.planning.*;
@@ -68,7 +67,7 @@ public class TeacherService
    * @return a list of schedule ranges
    * @throws java.sql.SQLException
    */
-  public Vector<ScheduleRangeObject> getSchedule(int teacher, String start, String end) throws SQLException {
+  public List<ScheduleRangeObject> getSchedule(int teacher, String start, String end) throws SQLException {
     String query = " SELECT DISTINCT ON(p.jour,pg.debut)" + ScheduleRangeIO.COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype"
             + " FROM " + ScheduleRangeIO.TABLE + " pg, " + ScheduleIO.TABLE + " p"
             + " WHERE p.jour BETWEEN '" + start + "' AND '" + end 
@@ -93,7 +92,7 @@ public class TeacherService
    * @return a list of schedules
    * @throws java.sql.SQLException
    */
-  public Vector<ScheduleObject> getCourseSchedule(int teacher, int estab, String start, String end) throws SQLException {
+  public List<ScheduleObject> getCourseSchedule(int teacher, int estab, String start, String end) throws SQLException {
     String query = ", salle s, action a "
             + " WHERE p.ptype IN( " + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
             + " AND p.idper = " + teacher
@@ -107,7 +106,7 @@ public class TeacherService
     return ScheduleIO.findObject(query, dc);
   }
 
-  public Vector<Teacher> findTeachers() throws SQLException {
+  public List<Teacher> findTeachers() throws SQLException {
     return teacherIO.find("");
   }
   
@@ -118,7 +117,7 @@ public class TeacherService
    * @param s schedule object
    * @return a list of teachers
    */
-  public Vector<SubstituteTeacher> getSubstitutes(ScheduleObject s) {
+  public List<SubstituteTeacher> getSubstitutes(ScheduleObject s) {
 
     int day = getDayOfWeek(s.getDate().getDate());
     try {

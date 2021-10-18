@@ -29,8 +29,8 @@ import java.awt.event.ActionListener;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import net.algem.course.Course;
@@ -139,9 +139,9 @@ public class HourStatDlg
         try (PrintWriter out = new PrintWriter(new FileWriter(file))) {
             out.println(MessageUtil.getMessage("export.hours.header", new Object[]{start, end}) + lf);
 
-            Vector<ScheduleObject> plan = service.getSchedule(start, end);
+            List<ScheduleObject> plan = service.getSchedule(start, end);
             for (int i = 0; i < plan.size(); i++) {
-                Schedule p = plan.elementAt(i);
+                Schedule p = plan.get(i);
 
                 if (p.getType() == Schedule.COURSE) {
                     Course c = ((CourseIO) DataCache.getDao(Model.Course)).findIdByAction(p.getIdAction());
@@ -170,9 +170,9 @@ public class HourStatDlg
                 }
             }
 
-            Vector<ScheduleRangeObject> plages = service.getScheduleRange(start, end);
+            List<ScheduleRangeObject> plages = service.getScheduleRange(start, end);
             for (int i = 0; i < plages.size(); i++) {
-                ScheduleRangeObject p = plages.elementAt(i);
+                ScheduleRangeObject p = plages.get(i);
                 int duree = p.getStart().getLength(p.getEnd());
                 Room s = p.getRoom();
 //        Establishment ee = dataCache.getEstabFromId(s.getEstab());

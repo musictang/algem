@@ -24,8 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -62,10 +61,11 @@ public class MajoCtrl
   }
 
   public void load() {
-    Vector v = MajorationIO.find("", dc);
-    Enumeration enu = v.elements();
-    while (enu.hasMoreElements()) {
-      table.addRow((Majoration) enu.nextElement());
+    List<Majoration> v = MajorationIO.find("", dc);
+
+    for (Majoration m : v) {
+      table.addRow(m);
+        
     }
   }
 

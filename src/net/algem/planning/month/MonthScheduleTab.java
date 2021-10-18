@@ -25,7 +25,7 @@ import java.awt.EventQueue;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import net.algem.contact.Contact;
 import net.algem.contact.PersonFile;
 import net.algem.planning.DateFr;
@@ -100,9 +100,9 @@ public class MonthScheduleTab
               + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
               + " ORDER BY p.jour,p.debut";
 
-      Vector<ScheduleObject> vp1 = planningService.getSchedule(query);
+      List<ScheduleObject> vp1 = planningService.getSchedule(query);
 
-      Vector<ScheduleObject> vp2 = null;
+      List<ScheduleObject> vp2 = null;
 
       query = " ,plage pg WHERE pg.adherent = " + pFile.getId()
               + " AND p.id = pg.idplanning"
@@ -114,13 +114,13 @@ public class MonthScheduleTab
       query = " AND pg.adherent = " + pFile.getId()
                 + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
                 + " ORDER BY p.jour, pg.debut";
-      Vector<ScheduleRangeObject> vpg1 = planningService.getScheduleRange(query);
+      List<ScheduleRangeObject> vpg1 = planningService.getScheduleRange(query);
       
       // test correlation plannings/plages (on réduit la durée du planning à la durée effective de la plage)
       if (vp2 != null) {
         for (int i = 0; i < vpg1.size(); i++) {
-            vp2.elementAt(i).setStart(vpg1.elementAt(i).getStart());
-            vp2.elementAt(i).setEnd(vpg1.elementAt(i).getEnd());
+            vp2.get(i).setStart(vpg1.get(i).getStart());
+            vp2.get(i).setEnd(vpg1.get(i).getEnd());
         }
         vp1.addAll(vp2);
       }
@@ -129,7 +129,7 @@ public class MonthScheduleTab
       query = " AND p.idper = " + pFile.getId()
                 + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
                 + " ORDER BY p.jour, pg.debut";
-      Vector<ScheduleRangeObject> vpg2 = planningService.getScheduleRange(query);
+      List<ScheduleRangeObject> vpg2 = planningService.getScheduleRange(query);
       if (vpg2 != null) {
         vpg1.addAll(vpg2);
       }

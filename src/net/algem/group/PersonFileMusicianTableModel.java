@@ -49,12 +49,12 @@ public class PersonFileMusicianTableModel
 
 	@Override
   public int getIdFromIndex(int i) {
-    Musician m = tuples.elementAt(i);
+    Musician m = tuples.get(i);
     return m.getGroup().getId();
   }
 
   public Musician getMusician(int i) {
-    return tuples.elementAt(i);
+    return tuples.get(i);
   }
 
   @Override
@@ -78,7 +78,7 @@ public class PersonFileMusicianTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Musician m = tuples.elementAt(line);
+    Musician m = tuples.get(line);
     switch (col) {
       case 0:
         return m.getGroup().getId();

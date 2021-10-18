@@ -20,7 +20,7 @@
  */
 package net.algem.planning.day;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.planning.ScheduleObject;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.room.DailyTimes;
@@ -38,14 +38,14 @@ public class DayPlan
 
   private int id;
   private String label;
-  private Vector<ScheduleObject> schedules;
-  private Vector<ScheduleRangeObject> ranges;
+  private List<ScheduleObject> schedules;
+  private List<ScheduleRangeObject> ranges;
   private DailyTimes [] dailyTimes;
 
   public DayPlan() {
   }
 
-  public DayPlan(int id, String label, Vector<ScheduleObject> schedules, Vector<ScheduleRangeObject> ranges) {
+  public DayPlan(int id, String label, List<ScheduleObject> schedules, List<ScheduleRangeObject> ranges) {
     this.id = id;
     this.label = label;
     this.schedules = schedules;
@@ -68,19 +68,19 @@ public class DayPlan
     return label;
   }
 
-  public void setSchedule(Vector<ScheduleObject> v) {
+  public void setSchedule(List<ScheduleObject> v) {
     schedules = v;
   }
 
-  public Vector<ScheduleObject> getSchedule() {
+  public List<ScheduleObject> getSchedule() {
     return schedules;
   }
 
-  public void setScheduleRange(Vector<ScheduleRangeObject> v) {
+  public void setScheduleRange(List<ScheduleRangeObject> v) {
     ranges = v;
   }
 
-  public Vector<ScheduleRangeObject> getScheduleRange() {
+  public List<ScheduleRangeObject> getScheduleRange() {
     return ranges;
   }
 

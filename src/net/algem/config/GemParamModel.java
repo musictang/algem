@@ -21,6 +21,7 @@
 
 package net.algem.config;
 
+import java.util.List;
 import java.util.Vector;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoiceModel;
@@ -38,8 +39,8 @@ public class GemParamModel
    super(list);
   }
 
-  public GemParamModel(Vector<GemParam> list) {
-    this(new GemList<GemParam>(list));
+  public GemParamModel(List<GemParam> list) {
+    this(new GemList(list));
   }
 
   public GemParam getParam(int id) {

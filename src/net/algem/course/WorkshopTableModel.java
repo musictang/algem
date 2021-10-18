@@ -40,7 +40,7 @@ public class WorkshopTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Course m = tuples.elementAt(i);
+    Course m = tuples.get(i);
     return m.getId();
   }
 
@@ -63,7 +63,7 @@ public class WorkshopTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    Course m = tuples.elementAt(ligne);
+    Course m = tuples.get(ligne);
     switch (colonne) {
       case 0:
         return Integer.valueOf(m.getId());

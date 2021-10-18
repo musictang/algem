@@ -19,7 +19,7 @@
  */
 package net.algem.config;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 
 /**
@@ -34,7 +34,7 @@ public class AgeRangeList
         extends GemList {
 
 
-  public AgeRangeList(Vector<AgeRange> liste) {
+  public AgeRangeList(List<AgeRange> liste) {
     super(liste);
   }
 

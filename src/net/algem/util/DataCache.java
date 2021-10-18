@@ -167,10 +167,10 @@ public class DataCache {
     private static GemList<GemParam> MARITAL_STATUS_LIST;
     private static GemList<RentableObject> RENTABLE_LIST;
 
-    private static Vector<Instrument> instruments;//TODO manage list
-    private Vector<CategoryOccup> occupCat;
-    private Vector<Param> vacancyCat;
-    private Vector<Param> webSiteCat;
+    private static List<Instrument> instruments;//TODO manage list
+    private List<CategoryOccup> occupCat;
+    private List<Param> vacancyCat;
+    private List<Param> webSiteCat;
 
     private boolean cacheInit = false;
     public static boolean nameFirst = false;
@@ -865,7 +865,7 @@ public class DataCache {
 
             ROOM_RATE_LIST = new GemList<RoomRate>(ROOM_RATE_IO.load());
             loadRoomContactCache();
-            Vector<Param> schools = ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.COLUMN_KEY, DATA_CONNECTION);
+            List<Param> schools = ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.COLUMN_KEY, DATA_CONNECTION);
             SCHOOL_LIST = new GemList<Param>(schools);
             ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" AND e.actif = TRUE AND e.idper = " + user.getId() + " ORDER BY p.nom", DATA_CONNECTION));
 
@@ -876,7 +876,7 @@ public class DataCache {
             COURSE_LIST = new GemList<Course>(COURSE_IO.load());
 
             showMessage(frame, BundleUtil.getLabel("Workshop.reading.label"));
-            WORKSHOP_LIST = new GemList<Course>(COURSE_IO.load("WHERE c.code = '" + CourseCodeType.ATP.getId() + "' AND titre !~* 'DEFIN' ORDER BY c.titre"));
+            WORKSHOP_LIST = new GemList<Course>(COURSE_IO.find("WHERE c.code = '" + CourseCodeType.ATP.getId() + "' AND titre !~* 'DEFIN' ORDER BY c.titre"));
 
             showMessage(frame, BundleUtil.getLabel("Instruments.label"));
             instruments = InstrumentIO.find("ORDER BY nom", DATA_CONNECTION);
@@ -996,7 +996,7 @@ public class DataCache {
     private void loadAccountingCache() throws SQLException {
         ACCOUNT_LIST = new GemList<Account>(AccountIO.load(DATA_CONNECTION));
 
-        Vector<Param> vca = ParamTableIO.find(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, null, DATA_CONNECTION);
+        List<Param> vca = ParamTableIO.find(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, null, DATA_CONNECTION);
         for (Param p : vca) {
             COST_ACCOUNT_CACHE.put(p.getKey(), p);
         }
@@ -1139,7 +1139,7 @@ public class DataCache {
                     loadMonthStmt.setDate(1, new java.sql.Date(start.getTime()));
                     loadMonthStmt.setDate(2, new java.sql.Date(end.getTime()));
                     loadMonthStmt.setInt(3, user.getId());
-                    Vector<ScheduleObject> vpl = ScheduleIO.getLoadRS(loadMonthStmt, DATA_CONNECTION);
+                    List<ScheduleObject> vpl = ScheduleIO.getLoadRS(loadMonthStmt, DATA_CONNECTION);
 
                     //dump("planningmois.ser",vpl);
                     if (Thread.interrupted()) {
@@ -1149,7 +1149,7 @@ public class DataCache {
 
                     loadMonthRangeStmt.setDate(1, new java.sql.Date(start.getTime()));
                     loadMonthRangeStmt.setDate(2, new java.sql.Date(end.getTime()));
-                    Vector<ScheduleRangeObject> vpg = ScheduleRangeIO.getLoadRS(loadMonthRangeStmt, DATA_CONNECTION);
+                    List<ScheduleRangeObject> vpg = ScheduleRangeIO.getLoadRS(loadMonthRangeStmt, DATA_CONNECTION);
                     //ERIC 2.17
                      System.out.println("setMonthSchedule PersonCacheSize=" + DataCache.PERSON_CACHE.size());
                     //dump("plagemois.ser",vpg);
@@ -1185,19 +1185,19 @@ public class DataCache {
         System.out.println("setDaySchedule PersonCacheSize=" + DataCache.PERSON_CACHE.size());
     }
 
-    public Vector<CategoryOccup> getOccupationalCat() {
+    public List<CategoryOccup> getOccupationalCat() {
         return occupCat;
     }
 
-    public Vector<Param> getVacancyCat() {
+    public List<Param> getVacancyCat() {
         return vacancyCat;
     }
 
-    public Vector<Param> getWebSiteCat() {
+    public List<Param> getWebSiteCat() {
         return webSiteCat;
     }
 
-    public Vector<Instrument> getInstruments() {
+    public List<Instrument> getInstruments() {
         return instruments;
     }
 
@@ -1356,7 +1356,7 @@ public class DataCache {
         }
     }
 
-    <T extends Object> void dump(String p, Vector<T> v) {
+    <T extends Object> void dump(String p, List<T> v) {
         try (
             FileOutputStream fic = new FileOutputStream(p);
             ObjectOutputStream out = new ObjectOutputStream(fic)) {

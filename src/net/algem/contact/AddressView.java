@@ -26,7 +26,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.border.Border;
 import net.algem.util.BundleUtil;
@@ -95,11 +96,11 @@ public class AddressView
     }
   }
 
-  public Vector<Address> getAll() {
-    Vector<Address> v = new Vector<Address>();
+  public List<Address> getAll() {
+    List<Address> v = new ArrayList<>();
     Address a = get();
     if (a != null) {
-      v.addElement(a);
+      v.add(a);
     }
     return v;
   }

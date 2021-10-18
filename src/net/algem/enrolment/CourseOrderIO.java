@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import net.algem.config.Instrument;
 import net.algem.config.InstrumentIO;
 import net.algem.contact.PersonIO;
@@ -142,12 +141,12 @@ public class CourseOrderIO
    * @return a list of course orders
    * @throws java.sql.SQLException
    */
-  public static Vector<CourseOrder> findId(int orderId, DataConnection dc) throws SQLException {
+  public static List<CourseOrder> findId(int orderId, DataConnection dc) throws SQLException {
     String query = "WHERE cc.idcmd = " + orderId;
     return find(query, dc);
   }
 
-  public static Vector<CourseOrder> find(String where, DataConnection dc) throws SQLException {
+  public static List<CourseOrder> find(String where, DataConnection dc) throws SQLException {
     String query = "SELECT " + COLUMNS + ", c.titre FROM "
       + TABLE + " cc JOIN " + ActionIO.TABLE + " a ON cc.idaction = a.id"
       + " LEFT JOIN cours c ON a.cours = c.id";
@@ -164,7 +163,7 @@ public class CourseOrderIO
    * @throws SQLException
    * @deprecated
    */
-  public static Vector<CourseOrder> find(String where, int member, DataConnection dc) throws SQLException {
+  public static List<CourseOrder> find(String where, int member, DataConnection dc) throws SQLException {
     String query = "SELECT " + COLUMNS + ", cours.titre FROM " + TABLE + " cc, commande c, "
       + " action LEFT JOIN cours ON action.cours = cours.id"
       + " WHERE cc.idcmd = c.id"
@@ -174,8 +173,8 @@ public class CourseOrderIO
     return fillCourseOrder(query + where, dc);
   }
 
-  private static Vector<CourseOrder> fillCourseOrder(String query, DataConnection dc) throws SQLException {
-    Vector<CourseOrder> courseOrders = new Vector<CourseOrder>();
+  private static List<CourseOrder> fillCourseOrder(String query, DataConnection dc) throws SQLException {
+    List<CourseOrder> courseOrders = new ArrayList<>();
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         CourseOrder c = new CourseOrder();
@@ -190,7 +189,7 @@ public class CourseOrderIO
         c.setCode(rs.getInt(9));
         c.setTitle(rs.getString(10));
 
-        courseOrders.addElement(c);
+        courseOrders.add(c);
       }
     }
     return courseOrders;

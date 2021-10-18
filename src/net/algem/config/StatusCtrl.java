@@ -22,6 +22,7 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import java.util.Enumeration;
 import net.algem.planning.ActionIO;
 import net.algem.planning.ActionService;
 import net.algem.util.DataCache;
@@ -51,7 +52,7 @@ public class StatusCtrl
   public void load() {
     service = new ActionService(desktop.getDataCache());
     try {
-      load(service.getStatusAll().elements());
+      load((Enumeration<? extends Param>) service.getStatusAll());
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }

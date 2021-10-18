@@ -24,7 +24,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.*;
 import net.algem.accounting.GroupOrderLineEditor;
 import net.algem.accounting.OrderLineTableModel;
@@ -117,7 +116,7 @@ public class GroupFileEditor
       Contact tour = service.getContact(group.getIdbook());
       group.setContact(ref, man, tour);
       group.setNote(service.getNote(group.getId()));
-      Vector<WebSite> sites = service.getSites(group.getId());
+      List<WebSite> sites = service.getSites(group.getId());
       group.setSites(sites);
       oldGroup = group;
       view = groupFileTabView = new GroupFileView(desktop, service, group);

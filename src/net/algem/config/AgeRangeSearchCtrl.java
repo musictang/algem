@@ -22,7 +22,7 @@ package net.algem.config;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -73,7 +73,7 @@ public class AgeRangeSearchCtrl
       wCard.add("liste", list);
 
       String query = " ORDER BY agemin";
-      Vector<AgeRange> v = dao.find(query);
+      List<AgeRange> v = dao.find(query);
       if (v == null || v.isEmpty()) {
         setStatus(EMPTY_LIST);
       } /*else if (v.size() == 1) {
@@ -108,12 +108,12 @@ public class AgeRangeSearchCtrl
     query += " ORDER BY agemin";
 
     try {
-      Vector<AgeRange> v = dao.find(query);
+      List<AgeRange> v = dao.find(query);
       if (v == null || v.isEmpty()) {
         setStatus(EMPTY_LIST);
       } else if (v.size() == 1) {
         ((CardLayout) wCard.getLayout()).show(wCard, "masque");
-        mask.loadCard(v.elementAt(0));
+        mask.loadCard(v.get(0));
       } else {
         ((CardLayout) wCard.getLayout()).show(wCard, "liste");
         list.loadResult(v);

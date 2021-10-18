@@ -29,8 +29,8 @@ import java.awt.event.ItemListener;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import net.algem.util.DataCache;
 import net.algem.util.ui.GemChoice;
 import net.algem.util.ui.GemField;
@@ -125,7 +125,7 @@ public abstract class PlanDetailTrimCtrl
             + " AND jour >= '01/01/" + an + "'"
             + " AND jour <= '31/12/" + an + "'";
 
-    Vector<Schedule> pl = ScheduleIO.findCourse(query, DataCache.getDataConnection());
+    List<Schedule> pl = ScheduleIO.findCourse(query, DataCache.getDataConnection());
 
     plan.loadPlanning(pl);
     curDate = date;

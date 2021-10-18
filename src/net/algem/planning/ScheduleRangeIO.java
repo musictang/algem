@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import net.algem.contact.Organization;
 import net.algem.contact.Person;
 import net.algem.course.Course;
@@ -139,13 +138,13 @@ public class ScheduleRangeIO
         dc.executeUpdate(query);
     }
 
-    public static Vector<ScheduleRange> find(String where, DataConnection dc) throws SQLException {
+    public static List<ScheduleRange> find(String where, DataConnection dc) throws SQLException {
         String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
         return ifind(query, dc);
     }
 
-    private static Vector<ScheduleRange> ifind(String query, DataConnection dc) throws SQLException {
-        Vector<ScheduleRange> v = new Vector<ScheduleRange>();
+    private static List<ScheduleRange> ifind(String query, DataConnection dc) throws SQLException {
+        List<ScheduleRange> v = new ArrayList<>();
         try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
                 ScheduleRange p = new ScheduleRange();
@@ -156,7 +155,7 @@ public class ScheduleRangeIO
                 p.setMemberId(rs.getInt(5));
                 p.setNote(rs.getInt(6));
 
-                v.addElement(p);
+                v.add(p);
             }
         }
 
@@ -212,33 +211,33 @@ public class ScheduleRangeIO
         return p;
     }
 
-    public static Vector<ScheduleRangeObject> findRangeObject(String and, PlanningService service, DataConnection dc) throws SQLException {
+    public static List<ScheduleRangeObject> findRangeObject(String and, PlanningService service, DataConnection dc) throws SQLException {
         String query = "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype"
                 + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
                 + " WHERE pg.idplanning = p.id " + and;
         return findObject(query, service, dc);
     }
 
-    public static Vector<ScheduleRangeObject> findObject(String query, PlanningService service, DataConnection dc) throws SQLException {
-        Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
+    public static List<ScheduleRangeObject> findObject(String query, PlanningService service, DataConnection dc) throws SQLException {
+        List<ScheduleRangeObject> v = new ArrayList<>();
 
         try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
                 ScheduleRangeObject p = rangeObjectFactory(rs, service);
-                v.addElement(p);
+                v.add(p);
             }
         }
 
         return v;
     }
 
-    public static Vector<ScheduleRangeObject> getLoadRS(PreparedStatement ps, DataConnection dc) {
-        Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
+    public static List<ScheduleRangeObject> getLoadRS(PreparedStatement ps, DataConnection dc) {
+        List<ScheduleRangeObject> v = new ArrayList<>();
         PlanningService service = new PlanningService(dc);
         try (ResultSet rs = ps.executeQuery()) {
             while (!Thread.interrupted() && rs.next()) {
                 ScheduleRangeObject p = rangeObjectFactory(rs, service);
-                v.addElement(p);
+                v.add(p);
             }
 
         } catch (SQLException e) {
@@ -247,8 +246,8 @@ public class ScheduleRangeIO
         return v;
     }
 
-    public static Vector<ScheduleRangeObject> findFollowUp(String where, boolean action, DataConnection dc) throws SQLException {
-        Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
+    public static List<ScheduleRangeObject> findFollowUp(String where, boolean action, DataConnection dc) throws SQLException {
+        List<ScheduleRangeObject> v = new ArrayList<>();
         String query = getFollowUpRequest(action);
         query += where;
         PlanningService pService = new PlanningService(dc);
@@ -263,7 +262,7 @@ public class ScheduleRangeIO
                 p.setFollowUp(up);
                 p.setNote2(rs.getString(15));
 
-                v.addElement(p);
+                v.add(p);
             }
         }
         return v;

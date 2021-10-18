@@ -21,7 +21,7 @@
 package net.algem.contact;
 
 import java.util.List;
-import java.util.Vector;
+import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoiceModel;
 import net.algem.util.ui.GenericSelector;
 
@@ -35,6 +35,6 @@ public class EmployeeSelector
   extends GenericSelector {
 
   public EmployeeSelector(List<Person> list) {
-    super(new GemChoiceModel(new Vector<Person>(list)));
+    super(new GemChoiceModel(new GemList(list)));
   }
 }
