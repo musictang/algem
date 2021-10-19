@@ -132,7 +132,7 @@ public class MemberCardService {
       //jour = 1;
       return "";
     }
-    return PlanningService.WEEK_DAYS[day];
+    return PlanningService.getWeekDays()[day];
   }
 
   String getTeacher(int idTeacher) {

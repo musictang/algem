@@ -64,7 +64,7 @@ public class AccountTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Account c = (Account) tuples.get(line);
+    Account c = tuples.get(line);
     switch (col) {
       case 0:
         return c.getId();

@@ -125,7 +125,7 @@ public class StopAndDefineDlg
       CourseSchedule c = tuples.get(line);
       switch (col) {
         case 0:
-          return PlanningService.WEEK_DAYS[c.getDate().getDayOfWeek()];
+          return PlanningService.getWeekDays()[c.getDate().getDayOfWeek()];
         case 1:
           return c.getStart();
         case 2:

@@ -8,6 +8,7 @@ import javax.swing.table.AbstractTableModel;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import net.algem.util.GemLogger;
 
 public class FactTableModel extends AbstractTableModel {
     private final List<PlanningFact> facts;
@@ -64,7 +65,7 @@ public class FactTableModel extends AbstractTableModel {
                 try {
                     return DataCache.findId(fact.getProf(), Model.Teacher) + " (" + fact.getProf() + ")";
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    GemLogger.logException(e);
                     return null;
                 }
             case 4:

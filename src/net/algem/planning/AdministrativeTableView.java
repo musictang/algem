@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.List;
 import javax.swing.DefaultCellEditor;
@@ -57,7 +58,7 @@ public class AdministrativeTableView
 {
 
   private final JTableModel<AdministrativeActionModel> tableModel;
-  private final String weekDays[] = PlanningService.WEEK_DAYS;
+  private final String weekDays[] = new DateFormatSymbols().getWeekdays();
   private DayOfWeek[] days = new DayOfWeek[7];
   private RoomChoice roomChoice;
   private final JTable table;

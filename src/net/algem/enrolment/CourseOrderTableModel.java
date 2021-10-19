@@ -38,7 +38,7 @@ public class CourseOrderTableModel
   String[] weekDays;
 
   public CourseOrderTableModel() {
-    weekDays = PlanningService.WEEK_DAYS;
+    weekDays = PlanningService.getWeekDays();
     header = new String[]{
       BundleUtil.getLabel("Type.label"),
       BundleUtil.getLabel("Course.label"),

@@ -203,7 +203,7 @@ public class EnrolmentWishService {
             while (rs.next()) {
                 String[] cols = new String[5];
                 cols[0] = rs.getString(1);
-                cols[1] = PlanningService.WEEK_DAYS[rs.getInt(2) + 1];
+                cols[1] = PlanningService.getWeekDays()[rs.getInt(2) + 1];
                 cols[2] = rs.getString(3);
                 cols[3] = rs.getString(4);
                 cols[4] = rs.getString(5);

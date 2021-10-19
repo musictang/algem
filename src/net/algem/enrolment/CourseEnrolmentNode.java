@@ -20,6 +20,7 @@
  */
 package net.algem.enrolment;
 
+import java.text.DateFormatSymbols;
 import net.algem.planning.PlanningService;
 
 /**
@@ -31,7 +32,7 @@ public class CourseEnrolmentNode
         extends EnrolmentNode
 {
 
-  private final String[] dayNames = PlanningService.WEEK_DAYS;
+  private final String[] dayNames = new DateFormatSymbols().getWeekdays();
   private CourseOrder cc;
   private int day;
 

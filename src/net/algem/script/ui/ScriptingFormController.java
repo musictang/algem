@@ -50,6 +50,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GridBagHelper;
 
@@ -139,7 +140,6 @@ public class ScriptingFormController
             scriptResult = scriptExecutorService.executeScript(script, userArguments);
             resultTable.setModel(new ScriptResultTableModel(scriptResult));
           } catch (Exception e) {
-            e.printStackTrace();
             SQLErrorDlg.displayException(getPanel(), "Erreur durant l'éxécution du script", e);
           }
           progressBar1.setVisible(false);
@@ -188,7 +188,6 @@ public class ScriptingFormController
           try {
             scriptExportService.exportScriptResult(scriptResult, outFile);
           } catch (Exception e) {
-            e.printStackTrace();
             SQLErrorDlg.displayException(getPanel(), "Erreur durant l'exportation du script", e);
           }
           progressBar2.setVisible(false);
@@ -208,7 +207,7 @@ public class ScriptingFormController
       argumentsTable.getColumnModel().getColumn(1).setCellRenderer(new ScriptArgumentTableModel.MyCellRenderer(arguments, dataCache));
       resultTable.setModel(new DefaultTableModel());
     } catch (Exception e) {
-      e.printStackTrace();
+        GemLogger.logException(e);
     }
 
   }

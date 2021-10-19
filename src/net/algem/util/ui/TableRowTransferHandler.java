@@ -29,6 +29,7 @@ import javax.activation.DataHandler;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
+import net.algem.util.GemLogger;
 
 /**
  * Handles drag & drop row reordering.
@@ -88,7 +89,7 @@ public class TableRowTransferHandler
         return true;
       }
     } catch (Exception e) {
-      e.printStackTrace();
+        GemLogger.logException(e);
     }
     return false;
   }

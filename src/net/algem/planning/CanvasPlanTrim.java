@@ -77,7 +77,7 @@ public class CanvasPlanTrim
     cal = Calendar.getInstance(Locale.FRANCE);
     df = new SimpleDateFormat("EEEEE dd MMMMM yyyy", Locale.FRANCE);
 
-    dayLabels = PlanningService.WEEK_DAYS;
+    dayLabels = PlanningService.getWeekDays();
     monthLabels = new DateFormatSymbols(Locale.FRANCE).getMonths();
     setLayout(new BorderLayout());
     sb = new Scrollbar(Scrollbar.HORIZONTAL, 0, 3, 0, 12);

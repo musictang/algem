@@ -51,10 +51,8 @@ import net.algem.config.Company;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.ThemeConfig;
-import net.algem.contact.Employee;
 import net.algem.contact.OrganizationIO;
 import net.algem.security.AuthDlg;
-import net.algem.security.User;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.module.GemSPADesktop;
@@ -73,7 +71,6 @@ import org.apache.commons.codec.binary.Base64;
 public class Algem {
 
     public static final String APP_VERSION = "3.0.0";
-    public static final List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
     private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
     private static final int DEF_HEIGHT = 780;
     private static final int BOOT_ICON_MAX_WIDTH = 128;
@@ -91,12 +88,12 @@ public class Algem {
 
     private JFrame frame;
     private DataCache cache;
-    private String driverName = "org.postgresql.Driver";
     private String hostName = "localhost";
     private String baseName = "algem";
     private static Properties props = new Properties();
     private static final Font MY_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
     private DataConnection dc;
+    private static final List<LookAndFeelInfo> alternativeLaf = new ArrayList<>();
 
     public Algem() {
         Locale.setDefault(Locale.FRENCH);
@@ -116,6 +113,10 @@ public class Algem {
         return Boolean.parseBoolean(props.getProperty("feature." + featureName, "false"));
     }
 
+    public static List<LookAndFeelInfo> getAlternativeLaf() {
+        return alternativeLaf;
+    }
+    
     public static File getScriptsPath() {
         Preferences prefs = Preferences.userRoot().node("/algem/paths");
         String path = prefs.get("scripts.path", ConfigUtil.getConf(ConfigKey.SCRIPTS_PATH.getKey()));
@@ -271,11 +272,10 @@ public class Algem {
         frame.setLocation(prefs.getInt("desktop.x", DEF_LOCATION.x), prefs.getInt("desktop.y", DEF_LOCATION.y));
         checkVersion(frame);
 
-        GemDesktop desktop;
         if (cache.getUser().getDesktop() == 2) {
-            desktop = new GemSPADesktop(frame, cache, props);
+            new GemSPADesktop(frame, cache, props);
         } else {
-            desktop = new GemDesktopCtrl(frame, cache, props);
+            new GemDesktopCtrl(frame, cache, props);
         }
         frame.setVisible(true);
     }
@@ -320,11 +320,6 @@ public class Algem {
     }
 
     private void setDB(String host, String base, Properties props) throws SQLException {
-
-        String s = props.getProperty("driver");
-        if (s != null) {
-            driverName = s;
-        }
 
         if (host == null) {
             hostName = props.getProperty("host");
@@ -416,7 +411,7 @@ public class Algem {
             if (k.startsWith("lookandfeel")) {
                 String clazz = props.getProperty(k);
                 final String lafName = k.substring(k.lastIndexOf('.') + 1);
-                ALTERNATIVE_LAF.add(new ThemeConfig.GemLafInfo(lafName, clazz));
+                alternativeLaf.add(new ThemeConfig.GemLafInfo(lafName, clazz));
             }
         }
 
@@ -584,7 +579,6 @@ public class Algem {
                     MessageUtil.getMessage("application.create.error") + " :\n" + ex.getClass().getName() + "\n" + st + (msg == null ? "" : "\n" + msg),
                     "Erreur",
                     JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
             System.exit(7);
         }
     }

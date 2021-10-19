@@ -87,7 +87,7 @@ public class SubstituteTeacherCtrl
   private SubstituteTeacherTableModel substituteModel;
   private JTable table;
 
-  public static String[] WEEK_DAYS = {"lu", "ma", "me", "je", "ve", "sa", "di"};
+  private static String[] WEEK_DAYS = {"lu", "ma", "me", "je", "ve", "sa", "di"};
 
   public SubstituteTeacherCtrl(GemDesktop desktop) {
     this.desktop = desktop;

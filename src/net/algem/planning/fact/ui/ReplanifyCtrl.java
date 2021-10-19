@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import net.algem.util.GemLogger;
 
 public class ReplanifyCtrl implements ReplanifyDialog.ControllerCallbacks {
     private final GemDesktop desktop;
@@ -83,7 +84,7 @@ public class ReplanifyCtrl implements ReplanifyDialog.ControllerCallbacks {
             }
             return StringUtils.join(parts, "\n");
         } catch (SQLException e) {
-            e.printStackTrace();
+            GemLogger.logException(e);
         }
         return "";
     }
@@ -110,7 +111,7 @@ public class ReplanifyCtrl implements ReplanifyDialog.ControllerCallbacks {
             Teacher teacher = (Teacher) DataCache.findId(s.getIdPerson(), Model.Teacher);
             return String.format("Salle %s / %s / %s - %s", room, teacher, s.getStart(), s.getEnd());
         } catch (SQLException e) {
-            e.printStackTrace();
+            GemLogger.logException(e);
             return null;
         }
     }

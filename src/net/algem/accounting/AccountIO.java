@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
 
 /**
@@ -118,7 +119,9 @@ public class AccountIO
         Account c = new Account(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBoolean(4));
         v.add(c);
       }
-    } catch (SQLException ignore) {}
+    } catch (SQLException ex) {
+        GemLogger.logException(ex);
+    }
 
     return v;
   }
@@ -132,9 +135,8 @@ public class AccountIO
    * @param id
    * @param dc
    * @return an account
-   * @throws SQLException
    */
-  public static Account find(int id, DataConnection dc) throws SQLException {
+  public static Account find(int id, DataConnection dc)  {
     return find(id, true, dc);
   }
 
@@ -149,11 +151,13 @@ public class AccountIO
       if (rs.next()) {
         c = new Account(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBoolean(4));
       }
-    } catch (SQLException ignore) {}
+    } catch (SQLException ex) {
+        GemLogger.logException(ex);
+    }
     return c;
   }
 
-  public static List<Account> load(DataConnection dc) throws SQLException {
+  public static List<Account> load(DataConnection dc) {
     return find(null, ORDER_COLUMN, dc);
   }
 }

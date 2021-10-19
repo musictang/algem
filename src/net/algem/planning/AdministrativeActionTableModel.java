@@ -67,7 +67,7 @@ extends JTableModel<AdministrativeActionModel>
   @Override
   public int getIdFromIndex(int i) {
     AdministrativeActionModel a = tuples.get(i);
-    return Arrays.asList(PlanningService.WEEK_DAYS).indexOf(a.getDay());
+    return Arrays.asList(PlanningService.getWeekDays()).indexOf(a.getDay());
   }
 
   @Override

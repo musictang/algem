@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import net.algem.contact.Contact;
@@ -55,7 +56,7 @@ import net.algem.util.module.GemDesktop;
  */
 public class ExportMemberRTF {
 
-    static String[] dayNames = PlanningService.WEEK_DAYS;
+    static String[] dayNames = new DateFormatSymbols().getWeekdays();
     private DataCache dataCache;
     private PrintWriter out;
     private PersonFile member;

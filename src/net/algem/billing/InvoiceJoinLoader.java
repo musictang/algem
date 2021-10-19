@@ -122,7 +122,6 @@ public class InvoiceJoinLoader
         }
         } catch (Exception ex) {
             System.out.println("InvoiceJoinLoader EX="+ex);
-            ex.printStackTrace();
         }
         return null;
     }

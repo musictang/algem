@@ -54,7 +54,7 @@ import net.algem.util.ui.MessagePopup;
  */
 public class PlanningService {
 
-  public final static String[] WEEK_DAYS = new DateFormatSymbols().getWeekdays();
+  private final static String[] weekDays = new DateFormatSymbols().getWeekdays();
   private DataConnection dc;
   private ActionIO actionIO;
   private ConflictService conflictService;
@@ -65,6 +65,9 @@ public class PlanningService {
     this.conflictService = new ConflictService(dc);
   }
 
+  public static String[] getWeekDays() {
+      return weekDays;
+  }
   /**
    * Utility method to reformat midnight.
    * Postgresql usually represents midnight as "00:00".

@@ -176,7 +176,7 @@ public class ThemeConfig
     for (UIManager.LookAndFeelInfo look : UIManager.getInstalledLookAndFeels()) {
       themes.addItem(new GemLafInfo(look.getName(), look.getClassName()));
     }
-    List<LookAndFeelInfo> alt = Algem.ALTERNATIVE_LAF;
+    List<LookAndFeelInfo> alt = Algem.getAlternativeLaf();
     if (alt.size() > 0) {
       Collections.sort(alt, new Comparator<LookAndFeelInfo>() {
         @Override

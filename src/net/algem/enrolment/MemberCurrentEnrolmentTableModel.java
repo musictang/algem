@@ -38,7 +38,7 @@ public class MemberCurrentEnrolmentTableModel
   String[] weekDays;
 
   public MemberCurrentEnrolmentTableModel() {
-    weekDays = PlanningService.WEEK_DAYS;
+    weekDays = PlanningService.getWeekDays();
     header = new String[]{
       BundleUtil.getLabel("Course.label"),
       BundleUtil.getLabel("Day.label"),

@@ -24,7 +24,6 @@ package net.algem.accounting;
 import java.sql.SQLException;
 import net.algem.config.Param;
 import net.algem.config.ParamTableCtrl;
-import net.algem.util.GemLogger;
 import net.algem.util.event.GemEvent;
 import net.algem.util.module.GemDesktop;
 
@@ -45,8 +44,8 @@ public class AccountCtrl
    * By default, account numbers are editable and accounts are activated.
    * @param _desktop main frame controller
    */
-  public AccountCtrl(GemDesktop _desktop) {
-    super(_desktop, "Comptes comptables", true, true);
+  public AccountCtrl(GemDesktop desktop) {
+    super(desktop, "Comptes comptables", true, true);
     service = new AccountingServiceImpl(dc);
   }
 

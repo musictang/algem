@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.config.Param;
 import net.algem.config.ParamTableIO;
 import net.algem.config.Preference;
@@ -43,7 +42,7 @@ public class AccountPrefIO
         extends TableIO {
 
     public static final String TABLE = "comptepref";
-    public static final String[] COLUMNS = {"id", "idcompte", "idanalytique"};
+    private static final String[] COLUMNS = {"id", "idcompte", "idanalytique"};
     public static final String MEMBERSHIP = "ADHÉSIONS";
     public static final String PRO_MEMBERSHIP = "ADHÉSIONS PRO";
     public static final String LEISURE = "FORMATION LOISIR";

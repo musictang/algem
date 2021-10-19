@@ -140,11 +140,11 @@ public class DataCache {
     /**
      * Cached action memos. Key = action id, value = Note instance.
      */
-    public static HashMap<Integer, Note> ACTION_MEMO_CACHE = new HashMap<Integer, Note>();
+    private static HashMap<Integer, Note> ACTION_MEMO_CACHE = new HashMap<Integer, Note>();
     /**
      * Cached action colors. Key = action id, value = action color.
      */
-    public static Map<Integer, Integer> ACTION_COLOR_CACHE = new HashMap<Integer, Integer>();
+    private static Map<Integer, Integer> ACTION_COLOR_CACHE = new HashMap<Integer, Integer>();
 
     private static GemList<Course> COURSE_LIST;
     private static GemList<Course> WORKSHOP_LIST;

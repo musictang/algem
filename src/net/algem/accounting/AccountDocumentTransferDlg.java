@@ -84,7 +84,6 @@ public class AccountDocumentTransferDlg
     add(buttons, BorderLayout.SOUTH);
     setSize(460,300);
     setLocation(200, 100);
-    //pack();
   }
 
   @Override
@@ -99,7 +98,7 @@ public class AccountDocumentTransferDlg
       view.getDocument(),
       view.withUnpaid()
     );
-    if (orderLines.size() <= 0) {
+    if (orderLines.isEmpty()) {
       MessagePopup.information(this, MessageUtil.getMessage("payment.transfer.empty.collection"));
       return;
     }
@@ -117,7 +116,7 @@ public class AccountDocumentTransferDlg
         path = path.replace(".txt", ".csv");
         exportService.exportCSV(path, orderLines);
         List<String> errorsCSV = exportService.exportCSV(path, orderLines);
-        if (errorsCSV.size() > 0) {
+        if (!errorsCSV.isEmpty()) {
           writeErrorLog(errorsCSV, path + ".log");
           MessagePopup.warning(this, MessageUtil.getMessage("payment.transfer.error.log.warning", new Object[] {errorsCSV.size(), path + ".log"}));
         }

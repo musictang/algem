@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
+import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.List;
@@ -606,7 +607,7 @@ public class CourseEnrolmentDlg
 
 class DayRange {
 
-  static final String[] dayLabels = PlanningService.WEEK_DAYS;
+  static final String[] dayLabels = new DateFormatSymbols().getWeekdays();
   private Schedule plan;
   private int dayOfWeek;
   private String range;

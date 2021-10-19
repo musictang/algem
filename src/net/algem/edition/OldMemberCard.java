@@ -172,7 +172,7 @@ public class OldMemberCard
       int cpt1, cpt2, cpt3, cpt4;
       cpt1 = cpt2 = cpt3 = cpt4 = 0;
 
-      String[] journom = PlanningService.WEEK_DAYS;
+      String[] journom = PlanningService.getWeekDays();
       for (CourseOrder cc : cmc) {
 
         // Récupération du jour correspondant à chaque cours

@@ -67,25 +67,25 @@ public class TestAdministrativeSchedule
 
     int vacancy = 0;
     List<AdministrativeActionModel> result = new ArrayList<>();
-    result.add(createAction(new DayOfWeek(Calendar.MONDAY, PlanningService.WEEK_DAYS[Calendar.MONDAY]), "10:00", "17:00", 1));
-    result.add(createAction(new DayOfWeek(Calendar.MONDAY, PlanningService.WEEK_DAYS[Calendar.MONDAY]), "10:00", "17:00", 1));
-    result.add(createAction(new DayOfWeek(Calendar.TUESDAY, PlanningService.WEEK_DAYS[Calendar.TUESDAY]), "10:00", "17:00", 1));
-    result.add(createAction(new DayOfWeek(Calendar.WEDNESDAY, PlanningService.WEEK_DAYS[Calendar.WEDNESDAY]), "10:00", "10:00", 1));
-    result.add(createAction(new DayOfWeek(Calendar.WEDNESDAY, PlanningService.WEEK_DAYS[Calendar.WEDNESDAY]), "10:00", "14:00", 1));//
-    result.add(createAction(new DayOfWeek(Calendar.THURSDAY, PlanningService.WEEK_DAYS[Calendar.THURSDAY]), "10:00", "14:00", 2));
-    result.add(createAction(new DayOfWeek(Calendar.THURSDAY, PlanningService.WEEK_DAYS[Calendar.THURSDAY]), "14:00", "17:00", 3));
+    result.add(createAction(new DayOfWeek(Calendar.MONDAY, PlanningService.getWeekDays()[Calendar.MONDAY]), "10:00", "17:00", 1));
+    result.add(createAction(new DayOfWeek(Calendar.MONDAY, PlanningService.getWeekDays()[Calendar.MONDAY]), "10:00", "17:00", 1));
+    result.add(createAction(new DayOfWeek(Calendar.TUESDAY, PlanningService.getWeekDays()[Calendar.TUESDAY]), "10:00", "17:00", 1));
+    result.add(createAction(new DayOfWeek(Calendar.WEDNESDAY, PlanningService.getWeekDays()[Calendar.WEDNESDAY]), "10:00", "10:00", 1));
+    result.add(createAction(new DayOfWeek(Calendar.WEDNESDAY, PlanningService.getWeekDays()[Calendar.WEDNESDAY]), "10:00", "14:00", 1));//
+    result.add(createAction(new DayOfWeek(Calendar.THURSDAY, PlanningService.getWeekDays()[Calendar.THURSDAY]), "10:00", "14:00", 2));
+    result.add(createAction(new DayOfWeek(Calendar.THURSDAY, PlanningService.getWeekDays()[Calendar.THURSDAY]), "14:00", "17:00", 3));
 
     List<Action> actions = AdministrativeScheduleCtrl.createActions(result, 1234, new DateFr("16-09-2014"), new DateFr("28-06-2015"), vacancy);
     assertTrue(5 == actions.size());
     for (Action a : actions) {
-      System.out.println(a + " : " + PlanningService.WEEK_DAYS[a.getDay()]);
+      System.out.println(a + " : " + PlanningService.getWeekDays()[a.getDay()]);
     }
-    assertTrue(new DayOfWeek(Calendar.TUESDAY, PlanningService.WEEK_DAYS[Calendar.TUESDAY]).getIndex() == actions.get(1).getDay());
+    assertTrue(new DayOfWeek(Calendar.TUESDAY, PlanningService.getWeekDays()[Calendar.TUESDAY]).getIndex() == actions.get(1).getDay());
     assertEquals(new Hour("10:00"), actions.get(1).getStartTime());
     assertEquals(new Hour("17:00"), actions.get(1).getEndTime());
     assertTrue(1 == actions.get(1).getRoom());
 
-    assertTrue(new DayOfWeek(Calendar.THURSDAY, PlanningService.WEEK_DAYS[Calendar.THURSDAY]).getIndex() == actions.get(4).getDay());
+    assertTrue(new DayOfWeek(Calendar.THURSDAY, PlanningService.getWeekDays()[Calendar.THURSDAY]).getIndex() == actions.get(4).getDay());
     assertEquals(new Hour("14:00"), actions.get(4).getStartTime());
     assertEquals(new Hour("17:00"), actions.get(4).getEndTime());
     assertTrue(3 == actions.get(4).getRoom());

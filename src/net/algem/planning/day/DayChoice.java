@@ -20,6 +20,7 @@
  */
 package net.algem.planning.day;
 
+import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import net.algem.planning.DayOfWeek;
 import net.algem.planning.PlanningService;
@@ -36,7 +37,7 @@ public class DayChoice
         extends GemChoice
 {
 
-  static final String[] dayLabel = PlanningService.WEEK_DAYS;
+  static final String[] dayLabel = new DateFormatSymbols().getWeekdays();
 
   /**
    * Days are numbered from 1 (sunday) to (saturday) 7.

@@ -44,8 +44,7 @@ public class AccountChoice
 
   @Override
   public int getKey() {
-    int key = ((Account) getSelectedItem()).getId();
-    return key;
+    return ((Account) getSelectedItem()).getId();
   }
 
   @Override

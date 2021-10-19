@@ -63,7 +63,7 @@ public class ImageUtil
   public static final String DELETE_ICON = "quitter_trans_12x12.png";
   public static final String EDIT_ICON = "edit_12x12.png";
   public static final String TAB_CLOSING_ICON = "quitter_trans_12x12.png";
-  public static final String [] DEFAULT_IMG_EXTENSIONS = {".jpg",".jpg",".JPG",".JPEG",".png",".PNG"};
+  private static final String [] DEFAULT_IMG_EXTENSIONS = {".jpg",".jpg",".JPG",".JPEG",".png",".PNG"};
   public static final int PHOTO_ID_HEIGHT = 130;
   private static final int PHOTO_ID_WIDTH = 100;
   private static final PhotoHandler PHOTO_HANDLER = new SimplePhotoHandler(DataCache.getDataConnection());

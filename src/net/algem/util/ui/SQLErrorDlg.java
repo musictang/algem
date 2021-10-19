@@ -71,7 +71,6 @@ public class SQLErrorDlg
       }
     } else {
       pos.println(message +"\n" + ex.getMessage());
-      //ex.printStackTrace(pos);
     }
 
     pos.flush();

@@ -28,7 +28,10 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.text.DateFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -41,6 +44,8 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.config.PageTemplateIO;
 import net.algem.contact.Email;
 import net.algem.contact.Person;
@@ -75,24 +80,24 @@ public class MemberEnrolmentWishEditor
 
     private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     private final DateTimeFormatter timestampFileNameFormatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm");
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
 
     private boolean loaded;
-    private PersonFile personFile;
+    private final PersonFile personFile;
 
-    private EnrolmentWishTableModel tableModel;
-    private MemberCurrentEnrolmentTableModel currentModel;
-    private JTable detailTable;
-    private JTable noteTable;
-    private JTable currentTable;
-    private JTextField mailInfoDate;
-    private GemButton mailInfoButton;
-    private JTextField mailConfirmDate;
-    private GemButton mailConfirmButton;
+    private final EnrolmentWishTableModel tableModel;
+    private final MemberCurrentEnrolmentTableModel currentModel;
+    private final JTable detailTable;
+    private final JTable noteTable;
+    private final JTable currentTable;
+    private final JTextField mailInfoDate;
+    private final GemButton mailInfoButton;
+    private final JTextField mailConfirmDate;
+    private final GemButton mailConfirmButton;
 
     private final EnrolmentWishService wishService;
     private List<EnrolmentWish> wishes = new ArrayList();
-    private final String[] dayNames = PlanningService.WEEK_DAYS;
+    private final String[] dayNames = new DateFormatSymbols().getWeekdays();
     
     public MemberEnrolmentWishEditor(GemDesktop desktop, PersonFile pf) {
         super(desktop);
@@ -248,8 +253,8 @@ public class MemberEnrolmentWishEditor
                         wishService.setMailInfoDate(personFile.getId(), mailDate);
                         sended = true;
 
-                        //String saveFileName = "lettre-reinscription-" + personFile.getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
-                        //Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
+                        String saveFileName = "lettre-reinscription-" + personFile.getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
+                        Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
 
                     } catch (Exception e) {
                         MessagePopup.warning(desktop.getFrame(), e.getMessage());

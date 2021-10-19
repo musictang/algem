@@ -51,7 +51,7 @@ import net.algem.util.DataConnection;
  */
 public class ExportService {
 
-  public static final String[] CSV_HEADER = {
+  private static final String[] CSV_HEADER = {
     BundleUtil.getLabel("First.name.label"),
     BundleUtil.getLabel("Name.label"),
     BundleUtil.getLabel("Address1.label"),

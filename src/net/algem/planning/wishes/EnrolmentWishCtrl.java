@@ -483,7 +483,6 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
             }
         } catch (Exception e) {
             GemLogger.log("EnrolmentWishCtrl.actionPerformed e=" + e);
-            e.printStackTrace();
             MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.exception", e.getMessage()));
         }
     }

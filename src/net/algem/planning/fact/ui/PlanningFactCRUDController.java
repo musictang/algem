@@ -154,8 +154,7 @@ public class PlanningFactCRUDController {
             table1.setModel(model);
             table1.setRowSorter(new TableRowSorter<>(model));
         } catch (Exception e) {
-            e.printStackTrace();
-        }
+            GemLogger.logException(e);        }
     }
 
     private PlanningFactDAO.Query getQuery() {

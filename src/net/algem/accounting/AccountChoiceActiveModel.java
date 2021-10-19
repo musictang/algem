@@ -38,7 +38,6 @@ public class AccountChoiceActiveModel
   public <T extends GemModel> AccountChoiceActiveModel(GemList<T> list) {
     super(list);
     load(list);
-//    selected = this.list.getElementAt(indices.get(0));
   }
   
   
