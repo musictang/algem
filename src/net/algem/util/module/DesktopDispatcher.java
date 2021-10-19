@@ -60,6 +60,8 @@ public class DesktopDispatcher {
         while (true) {
             try {
                 Socket client = serverSocket.accept();
+                if (client.getInetAddress().isLoopbackAddress())
+                    break;
                 ThreadDispatcher t = new ThreadDispatcher(client, this);
                 t.start();
             } catch (IOException e) {

@@ -341,10 +341,12 @@ public class DayPlanView
     if (vpci == null || vpci.isEmpty()) {
       return;
     }
-    showRangeCompletion(vpci, i, c);
+//    showRangeCompletion(vpci, i, c);
+    showRangeCompletion(vpci, i);
   }
   
-  private void showRangeCompletion(List<ScheduleRangeObject> vpci, int col, Color _c) {
+//  private void showRangeCompletion(List<ScheduleRangeObject> vpci, int col, Color _c) {
+  private void showRangeCompletion(List<ScheduleRangeObject> vpci, int col) {
     int n = 0; // nombre de participants
     int w = 0; // largeur de plage occupée
     int idx = 0; // index plage
@@ -543,7 +545,7 @@ public class DayPlanView
 
   private void showQuota(ScheduleRangeObject p, String quota, int col) {
     int x = setX(col, 2);
-    if (p.getClass() != ScheduleRangeObject.class || quota == null) {
+    if (p == null || p.getClass() != ScheduleRangeObject.class || quota == null) {
       return;
     }
     int y = setY(p.getEnd().toMinutes()) - (fm.getHeight() / 4);// - (fm.getHeight()/2);

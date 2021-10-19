@@ -1,6 +1,7 @@
 package net.algem.util;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Lightweight Option type, that behaves like a zero or one element list
@@ -22,7 +23,7 @@ public class Option<T> implements Iterable<T> {
                         hasNext = false;
                         return data;
                     }
-                    return null;
+                    throw new NoSuchElementException();
                 }
 
                 @Override
@@ -39,7 +40,7 @@ public class Option<T> implements Iterable<T> {
 
                 @Override
                 public T next() {
-                    return null;
+                    throw new NoSuchElementException();
                 }
 
                 @Override

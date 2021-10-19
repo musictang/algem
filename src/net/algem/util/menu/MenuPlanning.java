@@ -72,7 +72,7 @@ public class MenuPlanning
   private JMenuItem miReplacement;
   private JMenuItem miAdministrative;
   private JMenuItem miEnrolmentWish;    //TODO ERIC
-  private CourseScheduleCtrl csCtrl;
+
   private EnrolmentWishCtrl ewCtrl;
 
   public MenuPlanning(GemDesktop desktop) {

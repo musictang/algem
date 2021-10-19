@@ -143,7 +143,8 @@ public class PlanningFactService {
 
         //noinspection LoopStatementThatDoesntLoop
         for (Schedule schedule : maybeConflict) {
-            throw new ConflictException(schedule);
+            if (schedule.isValid())
+                throw new ConflictException(schedule);
         }
 
     }

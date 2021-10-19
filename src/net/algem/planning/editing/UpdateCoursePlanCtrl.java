@@ -58,13 +58,14 @@ public class UpdateCoursePlanCtrl
 	@Override
 	protected boolean save() {
 		Action action = actions.get(0);
-		if (action != null && action.getDates().isEmpty()) {
+		if (action != null) {
+                    if (action.getDates().isEmpty()) {
 			JOptionPane.showMessageDialog(contentPane,
 				MessageUtil.getMessage("empty.planning.create.warning"),
 				BundleUtil.getLabel("Warning.label"),
 				JOptionPane.ERROR_MESSAGE);
 			return false;
-		}
+                    }
 
 		try {
 			action.setId(plan.getIdAction());// on récupère le numéro d'action déjà planifiée
@@ -77,7 +78,9 @@ public class UpdateCoursePlanCtrl
 				MessageUtil.getMessage("planning.course.create.exception") + " :\n" + ex.getMessage());
 			return false;
 		}
-
+                } else {
+                    return false;
+                }
 	}
 
 	@Override

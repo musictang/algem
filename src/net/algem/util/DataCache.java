@@ -98,7 +98,7 @@ import net.algem.util.ui.MessagePopup;
  */
 public class DataCache {
 
-    private static volatile DataCache INSTANCE;
+    private static DataCache INSTANCE;
     private static MemberIO MEMBER_IO;
     private static PersonIO PERSON_IO;
     private static PersonFileIO PERSON_FILE_IO;
@@ -289,13 +289,9 @@ public class DataCache {
      * @return a cache instance
      * @see   <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">"Double-Checked Locking Broken" Declaration</a>
      */
-    public static DataCache getInstance(DataConnection dc, String user) {
+    public static synchronized DataCache getInstance(DataConnection dc, String user) {
         if (INSTANCE == null) {
-            synchronized (DataCache.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new DataCache(dc, user);
-                }
-            }
+                INSTANCE = new DataCache(dc, user);
         }
         return INSTANCE;
     }

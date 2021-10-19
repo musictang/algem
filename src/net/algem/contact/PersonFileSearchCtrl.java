@@ -149,29 +149,31 @@ public class PersonFileSearchCtrl
 
         int nb = ContactIO.count(query, dc);
 
-        if (nb == 0) {
-            setStatus(EMPTY_LIST);
-        } else if (nb == 1) {
-            ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
-            currentContact = ContactIO.findId(query, dc);
-            ContactIO.complete(currentContact, dc);
-            createModule();
-        } else {
-            setStatus(MessageUtil.getMessage("search.list.status", nb));
-            if (thread != null) {
-                abort = true;
-                try {
-                    thread.join();
-                } catch (InterruptedException ignore) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-            abort = false;
-            thread = new Thread(this, "select");
-            list.clear();
-
-            thread.start();
-            ((CardLayout) wCard.getLayout()).show(wCard, "liste");
+        switch (nb) {
+            case 0:
+                setStatus(EMPTY_LIST);
+                break;
+            case 1:
+                ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
+                currentContact = ContactIO.findId(query, dc);
+                ContactIO.complete(currentContact, dc);
+                createModule();
+                break;
+            default:
+                setStatus(MessageUtil.getMessage("search.list.status", nb));
+                if (thread != null) {
+                    abort = true;
+                    try {
+                        thread.join();
+                    } catch (InterruptedException ignore) {
+                        Thread.currentThread().interrupt();
+                    }
+                }   abort = false;
+                thread = new Thread(this, "select");
+                list.clear();
+                thread.start();
+                ((CardLayout) wCard.getLayout()).show(wCard, "liste");
+                break;
         }
     }
 

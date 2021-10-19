@@ -212,11 +212,16 @@ public class Contact
 
   public boolean telsEqual(Contact c) {
 
-    if ((telephones == null || telephones.isEmpty()) && c.getTele() == null) {
+    if (telephones == null) {
+        if (c.getTele() == null)
+            return true;
+        else if (c.getTele().isEmpty())
+            return true;
+        else
+            return false;
+    }            
+    if (telephones.isEmpty() && c.getTele().isEmpty()) {
       return true;
-    }
-    if (telephones == null && c.getTele() != null || (telephones != null && c.getTele() == null)) {
-      return false;
     }
     if (telephones.size() != c.getTele().size()) {
       return false;
@@ -231,11 +236,16 @@ public class Contact
 
   public boolean emailsEqual(Contact c) {
 
-    if ((emails == null || emails.isEmpty()) && c.getEmail() == null) {
-      return true;
+    if (emails == null) {
+        if(c.getEmail() == null)
+            return true;
+        else if (c.getEmail().isEmpty())
+            return true;
+        else
+            return false;
     }
-    if (emails == null && c.getEmail() != null || emails != null && c.getEmail() == null) {
-      return false;
+    if (emails.isEmpty() && c.getEmail().isEmpty()) {
+      return true;
     }
     if (emails.size() != c.getEmail().size()) {
       return false;

@@ -44,19 +44,15 @@ public class DirectDebitService
 
   private DateFormat df = new SimpleDateFormat("MMM yyyy", Locale.UK);// UK Locale (avoid accents)
   private DirectDebitIO dao;
-  private static volatile DirectDebitService INSTANCE;
+  private static DirectDebitService INSTANCE;
 
   private DirectDebitService(DataConnection dc) {
     dao = new DirectDebitIO(dc);
   }
 
-  public static DirectDebitService getInstance(DataConnection dc) {
+  public static synchronized DirectDebitService getInstance(DataConnection dc) {
     if (INSTANCE == null) {
-      synchronized (DirectDebitService.class) {
-        if (INSTANCE == null) {
           INSTANCE = new DirectDebitService(dc);
-        }
-      }
     }
     return INSTANCE;
   }

@@ -38,7 +38,6 @@ import net.algem.util.event.GemEventListener;
  * @version 2.13.0
  */
  public abstract class CardCtrl
-        //extends GemPanel
         implements ActionListener	//,KeyListener
 {
 
@@ -74,8 +73,6 @@ import net.algem.util.event.GemEventListener;
 
     wCard = new GemPanel();
     wCard.setLayout(new CardLayout());
-
-    //setLayout(new BorderLayout());
 
     buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 3));

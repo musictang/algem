@@ -216,7 +216,7 @@ public class PostitCanvas
 
     double bestdist = Double.MAX_VALUE;
     for (PostitPosition p : postits) {
-      double dist = (p.getX() - x) * (p.getX() - x) + (p.getY() - y) * (p.getY() - y);
+      double dist = (p.getX() - x) * (p.getX() - x) + (double)(p.getY() - y) * (p.getY() - y);
       if (dist < bestdist) {
         pick = p;
         bestdist = dist;

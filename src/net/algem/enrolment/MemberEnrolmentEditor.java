@@ -976,9 +976,8 @@ public class MemberEnrolmentEditor
         } catch (IOException ex) {
             GemLogger.log(ex.getMessage());
         } finally {
-            try {
-            pw.close();
-            } catch (NullPointerException ignore) {}
+            if (pw != null)
+                pw.close();
             desktop.setDefaultCursor();
         }
     }
