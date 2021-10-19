@@ -83,20 +83,20 @@ public class MemberEnrolmentEditor
         extends FileTab
         implements ActionListener {
 
-    private final static String ENROLMENT_DATE_CHANGE = BundleUtil.getLabel("Enrolment.date.change.label");
-    private final static String STOP = BundleUtil.getLabel("Course.stop.label");
-    private final static String COURSE_MODIF = BundleUtil.getLabel("Course.define.label");
-    private final static String REDEFINE = BundleUtil.getLabel("Course.stop.and.define.label");
-    private final static String HOUR_MODIF = BundleUtil.getLabel("Course.hour.modification.label");
-    private final static String COURSE_ADD = BundleUtil.getLabel("New.course.label");
-    private final static String MODULE_ADD = BundleUtil.getLabel("New.module.label");
-    private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");
-    private final static String MODULE_STOP = BundleUtil.getLabel("Module.stop.label");
-    private final static String MODULE_TIME_CHANGE = BundleUtil.getLabel("Module.time.change.label");
-    private final static String MODULE_DATE_CHANGE = BundleUtil.getLabel("Module.date.change.label");
-    private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
-    private final static String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
-    private final static String PRINT_ORDER = BundleUtil.getLabel("Order.print.detail.label");
+    private static final String ENROLMENT_DATE_CHANGE = BundleUtil.getLabel("Enrolment.date.change.label");
+    private static final String STOP = BundleUtil.getLabel("Course.stop.label");
+    private static final String COURSE_MODIF = BundleUtil.getLabel("Course.define.label");
+    private static final String REDEFINE = BundleUtil.getLabel("Course.stop.and.define.label");
+    private static final String HOUR_MODIF = BundleUtil.getLabel("Course.hour.modification.label");
+    private static final String COURSE_ADD = BundleUtil.getLabel("New.course.label");
+    private static final String MODULE_ADD = BundleUtil.getLabel("New.module.label");
+    private static final String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");
+    private static final String MODULE_STOP = BundleUtil.getLabel("Module.stop.label");
+    private static final String MODULE_TIME_CHANGE = BundleUtil.getLabel("Module.time.change.label");
+    private static final String MODULE_DATE_CHANGE = BundleUtil.getLabel("Module.date.change.label");
+    private static final String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
+    private static final String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
+    private static final String PRINT_ORDER = BundleUtil.getLabel("Order.print.detail.label");
 
     private PersonFile dossier;
     private DefaultMutableTreeNode root;
@@ -976,7 +976,9 @@ public class MemberEnrolmentEditor
         } catch (IOException ex) {
             GemLogger.log(ex.getMessage());
         } finally {
+            try {
             pw.close();
+            } catch (NullPointerException ignore) {}
             desktop.setDefaultCursor();
         }
     }

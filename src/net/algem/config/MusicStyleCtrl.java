@@ -40,8 +40,8 @@ public class MusicStyleCtrl
         extends ParamTableCtrl
 {
 
-  private final static String COLUMN_KEY = "id";
-  private final static String COLUMN_NAME = "libelle";
+  private static final String COLUMN_KEY = "id";
+  private static final String COLUMN_NAME = "libelle";
   private DataCache dataCache;
 
   public MusicStyleCtrl(GemDesktop _desktop) {

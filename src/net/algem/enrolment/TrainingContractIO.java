@@ -43,9 +43,9 @@ public class TrainingContractIO
         extends TableIO
 {
 
-  private final static String TABLE = "contratformation";
-  private final static String COLUMNS = "id,ctype,idper,idcmd,libelle,saison,debut,fin,financement,total,montant,volumint,volumext,datesign";
-  private final static String SEQUENCE = "contratformation_id_seq";
+  private static final String TABLE = "contratformation";
+  private static final String COLUMNS = "id,ctype,idper,idcmd,libelle,saison,debut,fin,financement,total,montant,volumint,volumext,datesign";
+  private static final String SEQUENCE = "contratformation_id_seq";
 
   private DataConnection dc;
 
@@ -193,7 +193,7 @@ public class TrainingContractIO
               price += p * 3;
               break;
             case "HOUR":
-              price += p * (rs.getInt(4) / 60);
+              price += p * (rs.getInt(4) / 60f);
             default:
               price += p;
           }

@@ -39,11 +39,11 @@ public class PersonSubscriptionCardIO
         extends TableIO
 {
 
-  public final static String TABLE = "carteabopersonne";
-  private final static String SEQUENCE = "carteabopersonne_id_seq";
-  private final static String SESSION_TABLE = "carteabopersessions";
-  private final static String SESSION_SEQUENCE = "carteabopersessions_id_seq";
-  private final static String COLUMNS = "id, idper, idpass, date_achat, restant";
+  public static final String TABLE = "carteabopersonne";
+  private static final String SEQUENCE = "carteabopersonne_id_seq";
+  private static final String SESSION_TABLE = "carteabopersessions";
+  private static final String SESSION_SEQUENCE = "carteabopersessions_id_seq";
+  private static final String COLUMNS = "id, idper, idpass, date_achat, restant";
   private DataConnection dc;
 
   public PersonSubscriptionCardIO(DataConnection dc) {

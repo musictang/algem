@@ -261,7 +261,7 @@ public class ModuleDlg
   }
 
   private double minutesToDecimal(int min) {
-    return min / 60;
+    return min / 60f;
   }
 
   public Object getField(int n) {

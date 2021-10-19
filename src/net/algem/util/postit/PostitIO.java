@@ -39,9 +39,9 @@ import net.algem.util.model.TableIO;
 public class PostitIO
 	extends TableIO {
 
-	private final static String TABLE = "postit";
-	private final static String SEQUENCE = "idpostit";
-  private final static int MAX_LENGTH = 256;
+	private static final String TABLE = "postit";
+	private static final String SEQUENCE = "idpostit";
+        private static final int MAX_LENGTH = 256;
 
 	public static void insert(Postit p, DataConnection dc) throws SQLException {
 		int numero = nextId(SEQUENCE, dc);

@@ -74,7 +74,7 @@ public class SigningSheetView
   private JCheckBox checkIndividualRehearsals;
   private JCheckBox checkGroupRehearsals;
   private HourField pm = new HourField("14:00");
-  private final static Preferences SIGNING_SHEET_PREFS = Preferences.userRoot().node("/algem/emargement");
+  private static final Preferences SIGNING_SHEET_PREFS = Preferences.userRoot().node("/algem/emargement");
 
   public SigningSheetView() {
   }

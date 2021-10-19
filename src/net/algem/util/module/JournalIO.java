@@ -36,8 +36,8 @@ import net.algem.util.model.TableIO;
 public class JournalIO
 	extends TableIO {
 
-	private final static String TABLE = "journal";
-	private final static String SEQUENCE = "journal_id_seq";
+	private static final String TABLE = "journal";
+	private static final String SEQUENCE = "journal_id_seq";
 
         public final static int LOGIN = 1;
 

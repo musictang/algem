@@ -20,6 +20,8 @@
  */
 package net.algem.opt;
 
+import java.util.Objects;
+
 /**
  * comment
  *
@@ -37,6 +39,17 @@ public class CdTitle
     private String title;
     private String performer;
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 41 * hash + this.cd;
+        hash = 41 * hash + this.number;
+        hash = 41 * hash + Objects.hashCode(this.title);
+        hash = 41 * hash + Objects.hashCode(this.performer);
+        return hash;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

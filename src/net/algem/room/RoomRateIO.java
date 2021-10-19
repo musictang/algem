@@ -39,8 +39,8 @@ public class RoomRateIO
 {
 
   private static final String TABLE = "tarifsalle";
-  private final static String COLUMNS = "id, libelle, type, hc, hp, plafond, forfaithc, forfaithp";
-  private final static String SEQUENCE = "tarifsalle_id_seq";
+  private static final String COLUMNS = "id, libelle, type, hc, hp, plafond, forfaithc, forfaithp";
+  private static final String SEQUENCE = "tarifsalle_id_seq";
   private DataConnection dc;
 
   public RoomRateIO(DataConnection dc) {

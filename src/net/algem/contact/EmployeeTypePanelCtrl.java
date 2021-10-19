@@ -48,7 +48,7 @@ public class EmployeeTypePanelCtrl
 {
 
   private List<EmployeeTypePanel> panels;
-  private final static int SPACING = 4;
+  private static final int SPACING = 4;
   private DataCache dataCache;
 
   public EmployeeTypePanelCtrl(DataCache dataCache) {

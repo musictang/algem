@@ -37,9 +37,9 @@ public class StudioTypeIO
         extends GemParamIO
         implements Cacheable {
 
-    public final static String TABLE = "categorie_studio";
-    private final static String COLS = "id, nom";
-    private final static String SEQUENCE = "categorie_studio_id_seq";
+    public static final String TABLE = "categorie_studio";
+    private static final String COLS = "id, nom";
+    private static final String SEQUENCE = "categorie_studio_id_seq";
 
     public StudioTypeIO(DataConnection dc) {
         this.dc = dc;

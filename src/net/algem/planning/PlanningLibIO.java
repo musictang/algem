@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
 public class PlanningLibIO
         extends TableIO {
 
-    private final static String VIEW = "planningvue";
+    private static final String VIEW = "planningvue";
 
     /**
      * View is saved in database. Any modification in source code must be

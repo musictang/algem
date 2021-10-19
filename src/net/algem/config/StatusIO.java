@@ -37,8 +37,8 @@ public class StatusIO
   implements Cacheable
 {
 
-  private final static String TABLE = "statut";
-  private final static String SEQUENCE = "statut_id_seq";
+  private static final String TABLE = "statut";
+  private static final String SEQUENCE = "statut_id_seq";
 
   public StatusIO(DataConnection dc) {
     this.dc = dc;

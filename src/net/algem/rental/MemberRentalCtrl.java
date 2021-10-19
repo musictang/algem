@@ -139,7 +139,7 @@ public class MemberRentalCtrl
         r.setDescription(view.getDescription());
         try {
             rentalService.saveRental(r);
-            rentalService.saveRentalOrderLine(view.getRentable(), personFile, view.getDate(), r.getAmount()/100);
+            rentalService.saveRentalOrderLine(view.getRentable(), personFile, view.getDate(), r.getAmount()/100f);
         } catch (Exception ex) {
             throw new RentException(ex.getMessage());
         }

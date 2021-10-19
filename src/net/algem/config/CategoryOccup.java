@@ -20,6 +20,7 @@
  */
 package net.algem.config;
 
+import java.util.Objects;
 import net.algem.util.model.GenericTable;
 
 /**
@@ -55,6 +56,15 @@ public class CategoryOccup
         return label;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 71 * hash + this.id;
+        hash = 71 * hash + Objects.hashCode(this.label);
+        return hash;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

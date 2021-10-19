@@ -115,9 +115,9 @@ public class XLSWorkingTimePlugin
     }
 
     private Double getHour(int min) {
-        double res = ((min % 60) * 100) / 60;
+        double res = ((min % 60) * 100) / 60f;
         res = res / 100;
-        res = res + (min / 60);
+        res = res + (min / 60f);
         return Double.valueOf(res);
 
     }

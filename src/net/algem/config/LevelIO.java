@@ -35,8 +35,8 @@ public class LevelIO
         implements Cacheable
 {
 
-  private final static String TABLE = "niveau";
-  private final static String SEQUENCE = "niveau_id_seq";
+  private static final String TABLE = "niveau";
+  private static final String SEQUENCE = "niveau_id_seq";
  
   public LevelIO(DataConnection dc) {
     this.dc = dc;

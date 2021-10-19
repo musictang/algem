@@ -124,7 +124,7 @@ public class EnrolmentOrderUtil {
           totalFraction += d;
         }
         if (i == len - 1) {
-          double b = ol.getAmount() + totalFraction;
+          double b = ol.getAmount() + (double)totalFraction;
           ol.setAmount(Math.rint(b * 0.01));// ajustement
         }
       } else {
@@ -531,8 +531,9 @@ public class EnrolmentOrderUtil {
    * @param e
    * @return a list of order lines
    */
+  //TODOERIC voir dates null
   ArrayList<OrderLine> setMonthOrderLines(ModuleOrder moduleOrder, OrderLine e, List<DateFr> dates) {
-    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
+    ArrayList<OrderLine> orderLines = new ArrayList<>();
 //    List<DateFr> orderDates = getMonthPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
     int firstDocumentNumber = 0;
     try {
@@ -544,13 +545,13 @@ public class EnrolmentOrderUtil {
     int orderLinesNumber = 0;
     if (dates != null) {
       orderLinesNumber = dates.size();
+      e.setDate(dates.get(0));
+    documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(0)).getMonth());
     }
     // DESACTIVATION CALCUL PRORATA
 //		double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "MOIS");
 //		e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
     e.setAmount(AccountUtil.getIntValue(total));
-    e.setDate(dates.get(0));
-    documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(0)).getMonth());
     if ("PRL".equals(moduleOrder.getModeOfPayment())) {
       e.setDocument("PRL" + String.valueOf(documentNumber));
     } else {
@@ -559,10 +560,14 @@ public class EnrolmentOrderUtil {
     orderLines.add(new OrderLine(e));
 
     for (int i = 1; i < orderLinesNumber; i++) {
+        if (dates != null) {
       e.setDate((DateFr) dates.get(i));
+        }
       if ("PRL".equals(moduleOrder.getModeOfPayment())) {
+          if (dates != null) {
         documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(i)).getMonth());
         e.setDocument("PRL" + String.valueOf(documentNumber));
+          }
       } else {
         e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
       }

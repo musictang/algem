@@ -32,8 +32,8 @@ import java.util.regex.Pattern;
  */
 public class BankUtil {
 	
-	private final static String bicRegex;
-	private final static Pattern bicPattern;
+	private static final String bicRegex;
+	private static final Pattern bicPattern;
 	
 	static {
 		bicRegex = "[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}";
@@ -53,7 +53,7 @@ public class BankUtil {
       //Works on base 36 (26 lettres + 10 chiffres)
       int currentCharValue = Character.digit(currentChar, Character.MAX_RADIX);
       //Convert character to simple digit
-      extendedRib.append(currentCharValue < 10 ? currentCharValue : (currentCharValue + (int) StrictMath.pow(2, (currentCharValue - 10) / 9)) % 10);
+      extendedRib.append(currentCharValue < 10 ? currentCharValue : (currentCharValue + (int) StrictMath.pow(2, (currentCharValue - 10) / 9f)) % 10);
     }
 
     return new BigDecimal(extendedRib.toString()).remainder(new BigDecimal(97)).intValue() == 0;

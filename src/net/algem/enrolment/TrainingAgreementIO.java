@@ -39,9 +39,9 @@ public class TrainingAgreementIO
         extends TableIO
 {
 
-  public final static String TABLE = "conventionstage";
-  private final static String COLUMNS = "id,ctype,idper,idorg,assurance,assuranceref,libelle,saison,debut,fin,datesign";
-  private final static String SEQUENCE = "conventionstage_id_seq";
+  public static final String TABLE = "conventionstage";
+  private static final String COLUMNS = "id,ctype,idper,idorg,assurance,assuranceref,libelle,saison,debut,fin,datesign";
+  private static final String SEQUENCE = "conventionstage_id_seq";
 
   private DataConnection dc;
   private final OrganizationIO organizationIO;

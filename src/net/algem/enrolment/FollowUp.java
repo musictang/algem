@@ -29,7 +29,8 @@ import net.algem.config.FollowUpStatus;
  * @version 2.11.0
  * @since 2.11.0 16/09/16
  */
-public class FollowUp {
+public class FollowUp 
+        implements java.io.Serializable {
 
   private int id;
   private int scheduleId;

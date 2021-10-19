@@ -46,7 +46,7 @@ public class RoomPanelCtrl
 {
 
   private List<RoomPanel> panels;
-  private final static int SPACING = 4;
+  private static final int SPACING = 4;
   private DataCache dataCache;
 
   public RoomPanelCtrl(DataCache dataCache) {

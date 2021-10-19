@@ -52,7 +52,6 @@ public class DesktopDispatcher {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
             GemLogger.logException(e);
-            return;
         }
     }
     

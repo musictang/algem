@@ -37,11 +37,11 @@ public class ConfigIO
         extends TableIO
 {
 
-  public final static String TABLE = "config";
-  public final static String COLUMNS = "clef,valeur";
+  public static final String TABLE = "config";
+  public static final String COLUMNS = "clef,valeur";
 
-  private final static String KEY = "clef";
-  private final static String VAL = "valeur";
+  private static final String KEY = "clef";
+  private static final String VAL = "valeur";
   private static final Map<String, Config> cache = new HashMap<String, Config>();
 
   /**

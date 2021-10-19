@@ -39,18 +39,18 @@ import net.algem.util.GemLogger;
  */
 public class EnrolmentWishParticularCourseTableModel extends AbstractTableModel {
 
-    public final static int COLUMN_HOUR = 0;
-    public final static int COLUMN_CURRENT = 1;
-    public final static int COLUMN_SELECTED = 2;
-    public final static int COLUMN_MAILDATE = 3;
-    public final static int COLUMN_SAMEASCURRENT = 4;
-    public final static int COLUMN_CHOICE1 = 5;
-    public final static int COLUMN_CHOICE2 = 6;
-    public final static int COLUMN_CHOICE3 = 7;
-    public final static int COLUMN_COUNT = 8;
+    public static final int COLUMN_HOUR = 0;
+    public static final int COLUMN_CURRENT = 1;
+    public static final int COLUMN_SELECTED = 2;
+    public static final int COLUMN_MAILDATE = 3;
+    public static final int COLUMN_SAMEASCURRENT = 4;
+    public static final int COLUMN_CHOICE1 = 5;
+    public static final int COLUMN_CHOICE2 = 6;
+    public static final int COLUMN_CHOICE3 = 7;
+    public static final int COLUMN_COUNT = 8;
     
-    public final static int MINUTES_PER_ROW = 5;
-    private final static String DATE_FORMATTER= "dd-MM-yyyy HH:mm";
+    public static final int MINUTES_PER_ROW = 5;
+    private static final String DATE_FORMATTER= "dd-MM-yyyy HH:mm";
     
     private List<EnrolmentWishParticularCourseLine> dataLines = new ArrayList<>();
     

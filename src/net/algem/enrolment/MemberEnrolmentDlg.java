@@ -76,7 +76,7 @@ public class MemberEnrolmentDlg
     static final String MODULE_REMOVE = BundleUtil.getLabel("Module.remove.label");
     static final String COURSE_MODIFY = BundleUtil.getLabel("Course.modification.label");
 
-    private final static int SESSIONS_MAX = 66;
+    private static final int SESSIONS_MAX = 66;
     private EnrolmentView view;
 
     /**

@@ -71,7 +71,7 @@ public class MemberCardEditor implements Printable {
   private static final int HEIGHT = 297;// hauteur par défaut en mm
 
   private static int TOP_CUTTING_MARK_Y = ImageUtil.mmToPoints(96);//95mm +1 à cause de la perte de précision entière
-  private static int BOTTOM_CUTTING_MARK_Y = ImageUtil.mmToPoints(HEIGHT - 76);//75mm
+  private static int BOTTOM_CUTTING_MARK_Y = ImageUtil.mmToPoints(HEIGHT - 76f);//75mm
 
   private PersonFile dossier;
   private List<DrawableElement> blocks;

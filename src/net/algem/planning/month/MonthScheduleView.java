@@ -65,8 +65,8 @@ public class MonthScheduleView
         implements PropertyChangeListener
 {
 
-  private final static int PREF_WIDTH = 800;
-  private final static int PREF_HEIGHT = 600;
+  private static final int PREF_WIDTH = 800;
+  private static final int PREF_HEIGHT = 600;
   private GemList<Establishment> estabList;
   private MonthSchedule monthSchedule;
   private MonthPlanDetailView teacherView;

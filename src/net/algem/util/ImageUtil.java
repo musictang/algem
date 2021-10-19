@@ -140,7 +140,7 @@ public class ImageUtil
       if (width > PHOTO_ID_WIDTH) {
         double half_width = width / 2;
         //System.out.println("half width "+half_width);
-        x = (int) (half_width - (PHOTO_ID_WIDTH / 2));
+        x = (int) (half_width - (PHOTO_ID_WIDTH / 2f));
         //System.out.println("x = "+x);
         BufferedImage img2 = img.getSubimage(x, 0, PHOTO_ID_WIDTH, h);
         return img2;

@@ -364,7 +364,7 @@ public class DateFr
     Calendar cal2 = Calendar.getInstance();
     cal1.setTime(date2);
     //difference in month for years
-    monthsBetween = (cal1.get(Calendar.YEAR) - cal2.get(Calendar.YEAR)) * 12;
+    monthsBetween = (cal1.get(Calendar.YEAR) - cal2.get(Calendar.YEAR)) * 12f;
     //difference in month for months
     monthsBetween += cal1.get(Calendar.MONTH) - cal2.get(Calendar.MONTH);
     //difference in month for days

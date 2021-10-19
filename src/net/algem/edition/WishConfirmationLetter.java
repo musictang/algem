@@ -64,10 +64,10 @@ public class WishConfirmationLetter {
 
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     
-    private final static Font titleFont = new Font(Font.SERIF, Font.BOLD, 12);
-    private final static Font textFont = new Font(Font.SERIF, Font.PLAIN, 10);
-    private final static Font studentFont = new Font(Font.SERIF, Font.BOLD, 12);
-    private final static Font tableFont = new Font(Font.SERIF, Font.PLAIN, 10);
+    private static final Font titleFont = new Font(Font.SERIF, Font.BOLD, 12);
+    private static final Font textFont = new Font(Font.SERIF, Font.PLAIN, 10);
+    private static final Font studentFont = new Font(Font.SERIF, Font.BOLD, 12);
+    private static final Font tableFont = new Font(Font.SERIF, Font.PLAIN, 10);
 
     private PdfHandler pdfHandler;
     private PageTemplateIO ptio;

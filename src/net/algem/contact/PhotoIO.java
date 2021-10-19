@@ -43,11 +43,11 @@ public class PhotoIO
         extends TableIO
 {
 
-  public final static String TABLE = "personne_photo";
-  private final static String LOAD_QUERY = "SELECT photo FROM " + TABLE + " WHERE idper = ?";
-  private final static String FIND_QUERY = "SELECT idper FROM " + TABLE + " WHERE idper = ?";
-  private final static String SAVE_QUERY = "INSERT INTO " + TABLE + " VALUES(?,?)";
-  private final static String UPDATE_QUERY = "UPDATE " + TABLE + " SET photo = ? WHERE idper = ?";
+  public static final String TABLE = "personne_photo";
+  private static final String LOAD_QUERY = "SELECT photo FROM " + TABLE + " WHERE idper = ?";
+  private static final String FIND_QUERY = "SELECT idper FROM " + TABLE + " WHERE idper = ?";
+  private static final String SAVE_QUERY = "INSERT INTO " + TABLE + " VALUES(?,?)";
+  private static final String UPDATE_QUERY = "UPDATE " + TABLE + " SET photo = ? WHERE idper = ?";
   private static PreparedStatement SAVE_STMT;
   private static PreparedStatement FIND_STMT;
   private static PreparedStatement UPDATE_STMT;

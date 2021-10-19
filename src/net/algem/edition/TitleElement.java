@@ -53,7 +53,7 @@ class TitleElement extends DrawableElement
     int w = fm.stringWidth(title);
     int margin = fm.charWidth('x');
     w = w + (2*margin);
-    x = (int) (centerPos - (w / 2));
+    x = (int) (centerPos - (w / 2f));
     g.drawRoundRect(x, y, w, h, angle, angle);
     g.drawString(title, x + margin, y + (h * 3 / 4)); // 3/4 de la hauteur
   }

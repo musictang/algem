@@ -37,8 +37,8 @@ public class CourseCodeIO
         implements Cacheable
 {
 
-  private final static String TABLE = "module_type";
-  private final static String SEQUENCE = "idmoduletype";
+  private static final String TABLE = "module_type";
+  private static final String SEQUENCE = "idmoduletype";
   private final Comparator<GemParam> comparator;
 
   public CourseCodeIO(DataConnection dc) {

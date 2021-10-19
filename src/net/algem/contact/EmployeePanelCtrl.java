@@ -45,7 +45,7 @@ public class EmployeePanelCtrl
 {
 
   private List<EmployeePanel> panels;
-  private final static int SPACING = 4;
+  private static final int SPACING = 4;
   private List<Person> employees;
 
   public EmployeePanelCtrl(String label) {

@@ -40,9 +40,9 @@ public class EmployeeTypeIO
         extends GemParamIO
         implements Cacheable {
 
-    private final static String COLS = "id, libelle";
-    private final static String TABLE = "categorie_salarie";
-    private final static String SEQUENCE = "categorie_salarie_id_seq";
+    private static final String COLS = "id, libelle";
+    private static final String TABLE = "categorie_salarie";
+    private static final String SEQUENCE = "categorie_salarie_id_seq";
 
     public EmployeeTypeIO(DataConnection dc) {
         this.dc = dc;

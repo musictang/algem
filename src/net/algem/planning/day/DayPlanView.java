@@ -344,7 +344,7 @@ public class DayPlanView
     showRangeCompletion(vpci, i, c);
   }
   
-  private void showRangeCompletion(List<ScheduleRangeObject> vpci, int col, Color c) {
+  private void showRangeCompletion(List<ScheduleRangeObject> vpci, int col, Color _c) {
     int n = 0; // nombre de participants
     int w = 0; // largeur de plage occupée
     int idx = 0; // index plage
@@ -361,7 +361,7 @@ public class DayPlanView
       int places = vpci.get(idx).getAction().getPlaces();
       if (places > 0) {
         w = getScheduleRangeWidth(places, n);
-        c = getScheduleColor(vpci.get(idx));// important! previous range color
+        Color c = getScheduleColor(vpci.get(idx));// important! previous range color
         String quota = n + "/" + places;
         ScheduleRangeObject prev =  vpci.get(idx);
         if (prev != null && prev.getCourse().isCourseCoInst()) {
@@ -376,7 +376,7 @@ public class DayPlanView
     // last schedule of the column
     int places = vpci.get(idx).getAction().getPlaces();
     if (places > 0) {
-      c = getScheduleColor(vpci.get(idx));
+      Color c = getScheduleColor(vpci.get(idx));
       w = getScheduleRangeWidth(places, n);
 
       String quota = n + "/" + places;

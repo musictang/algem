@@ -85,8 +85,8 @@ public class InvoiceView
   implements ActionListener, GemEventListener, Printable {
 
   public static final int MARGIN = ImageUtil.mmToPoints(15);
-  private final static Font sans = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
-  private final static Font serif = new Font(Font.SERIF, Font.PLAIN, 9);
+  private static final Font sans = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
+  private static final Font serif = new Font(Font.SERIF, Font.PLAIN, 9);
   private GemField invoiceId;
   private GemField invoiceLabel;
   private DateFrField date;
@@ -510,7 +510,7 @@ public class InvoiceView
       ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
     int left = ImageUtil.mmToPoints(110);
     int top = ImageUtil.mmToPoints(50);
-    int bottom = ImageUtil.mmToPoints(297 - 20);// hauteur de page - 20 mm de marge
+    int bottom = ImageUtil.mmToPoints(297 - 20f);// hauteur de page - 20 mm de marge
     int margin = ImageUtil.mmToPoints(15);
     Font defaultFont = g.getFont();
     g.setFont(serif);
@@ -560,7 +560,7 @@ public class InvoiceView
       ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
     int left = ImageUtil.mmToPoints(110);
     int top = ImageUtil.mmToPoints(50);
-    int bottom = ImageUtil.mmToPoints(297 - 20);// hauteur de page - 20 mm de marge
+    int bottom = ImageUtil.mmToPoints(297 - 20f);// hauteur de page - 20 mm de marge
     int margin = ImageUtil.mmToPoints(15);
 
     Font defaultFont = g.getFont();

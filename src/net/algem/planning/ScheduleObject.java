@@ -20,6 +20,7 @@
  */
 package net.algem.planning;
 
+import java.util.Objects;
 import net.algem.contact.Person;
 import net.algem.enrolment.FollowUp;
 import net.algem.room.Room;
@@ -35,7 +36,7 @@ public abstract class ScheduleObject
         extends Schedule
         implements java.io.Serializable {
 
-    protected Object activity;	//action
+    protected transient Object activity;	//action //TODOERIC voir sérialisation
     protected Person person;	//idper
     protected Room room;		//lieux
     protected String noteValue;
@@ -56,6 +57,18 @@ public abstract class ScheduleObject
         note = d.note;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 71 * hash + Objects.hashCode(this.activity);
+        hash = 71 * hash + Objects.hashCode(this.person);
+        hash = 71 * hash + Objects.hashCode(this.room);
+        hash = 71 * hash + Objects.hashCode(this.noteValue);
+        hash = 71 * hash + Objects.hashCode(this.followUp);
+        return hash;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -109,7 +122,7 @@ public abstract class ScheduleObject
         this.followUp = followUp;
     }
 
-    abstract public String getScheduleLabel();
+    public abstract  String getScheduleLabel();
 
-    abstract public String getScheduleDetail();
+    public abstract  String getScheduleDetail();
 }
