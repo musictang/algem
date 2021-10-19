@@ -143,7 +143,7 @@ public class EnrolmentOrderUtil {
 
       AccountUtil.createEntry(ol, false, dc);
     }
-    if (lines.size() > 0 && (billing || AccountUtil.isPersonalAccount(lines.get(0).getAccount()))) {
+    if (!lines.isEmpty() && (billing || AccountUtil.isPersonalAccount(lines.get(0).getAccount()))) {
       int totalBilling = 0;
       for (OrderLine o : lines) {
         totalBilling += o.getAmount();
@@ -167,7 +167,7 @@ public class EnrolmentOrderUtil {
    */
   List<OrderLine> getOrderLines(ModuleOrder mo, OrderLine e) throws SQLException {
 
-    List<OrderLine> orderLines = new ArrayList<OrderLine>();
+    List<OrderLine> orderLines = new ArrayList<>();
     if (ModeOfPayment.NUL.toString().equals(mo.getModeOfPayment())) {
       return orderLines;
     }
@@ -223,7 +223,7 @@ public class EnrolmentOrderUtil {
     Map<Integer, List<OrderLine>> counterpartMapByAccountId = new HashMap<>();
     Date now = new Date();
     String suffix = " p" + mo.getPayer() + " a" + memberId;
-    if (stdLines.size() > 0) {
+    if (!stdLines.isEmpty()) {
       for (OrderLine o : stdLines) {
         if (service.exists(o, startDateCheck, memberId)) {
           continue;// do not include duplicates
@@ -242,7 +242,7 @@ public class EnrolmentOrderUtil {
 
         List<OrderLine> linesWithSameAccountId = counterpartMapByAccountId.get(o.getAccount().getId());
         if (linesWithSameAccountId == null) {
-          linesWithSameAccountId = new ArrayList<OrderLine>();
+          linesWithSameAccountId = new ArrayList<>();
           counterpartMapByAccountId.put(o.getAccount().getId(), linesWithSameAccountId);
         }
         if (billing || AccountUtil.isPersonalAccount(o.getAccount())) {
@@ -290,7 +290,6 @@ public class EnrolmentOrderUtil {
   private DateFr getFirstDateOfPayment(DateFr orderDateStart) {
 
     DateFr first = new DateFr(orderDateStart);
-    //first.setDay(15);
     first.setDay(DEFAULT_DUE_DAY);
     // report to next month if first payment not in delay
     if (isFirstPaymentAfter(orderDateStart)) {
@@ -464,7 +463,7 @@ public class EnrolmentOrderUtil {
    * @return a list of order lines
    */
   ArrayList<OrderLine> setQuarterOrderLines(ModuleOrder moduleOrder, OrderLine e, List<DateFr> dates) {
-    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
+    ArrayList<OrderLine> orderLines = new ArrayList<>();
 //    List<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
     int firstDocumentNumber = 0;
     try {
@@ -479,10 +478,10 @@ public class EnrolmentOrderUtil {
     // double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "TRIM");
     // e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
     e.setAmount(AccountUtil.getIntValue(total));
-    e.setDate((DateFr) dates.get(0));
+    e.setDate(dates.get(0));
     if (moduleOrder.getModeOfPayment().equals("PRL")) {
-      documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(0)).getMonth());
-      e.setDocument("PRL" + String.valueOf(documentNumber));
+      documentNumber = calcDocumentNumber(firstDocumentNumber, dates.get(0).getMonth());
+      e.setDocument("PRL" + documentNumber);
     } else {
       e.setDocument(moduleOrder.getModeOfPayment() + 1);// pas nécessaire
     }
@@ -490,12 +489,12 @@ public class EnrolmentOrderUtil {
     for (int i = 1; i < dates.size(); i++) {
       //libelle numero piece
       if (moduleOrder.getModeOfPayment().equals("PRL")) {
-        documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(i)).getMonth());
-        e.setDocument("PRL" + String.valueOf(documentNumber));
+        documentNumber = calcDocumentNumber(firstDocumentNumber, dates.get(i).getMonth());
+        e.setDocument("PRL" + documentNumber);
       } else {
         e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
       }
-      e.setDate((DateFr) dates.get(i));
+      e.setDate(dates.get(i));
       orderLines.add(new OrderLine(e)); // others
     }
     return orderLines;
@@ -531,7 +530,6 @@ public class EnrolmentOrderUtil {
    * @param e
    * @return a list of order lines
    */
-  //TODOERIC voir dates null
   ArrayList<OrderLine> setMonthOrderLines(ModuleOrder moduleOrder, OrderLine e, List<DateFr> dates) {
     ArrayList<OrderLine> orderLines = new ArrayList<>();
 //    List<DateFr> orderDates = getMonthPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
@@ -543,31 +541,25 @@ public class EnrolmentOrderUtil {
     }
     int documentNumber = firstDocumentNumber;
     int orderLinesNumber = 0;
-    if (dates != null) {
-      orderLinesNumber = dates.size();
-      e.setDate(dates.get(0));
-    documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(0)).getMonth());
-    }
+    orderLinesNumber = dates.size();
     // DESACTIVATION CALCUL PRORATA
 //		double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "MOIS");
 //		e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
     e.setAmount(AccountUtil.getIntValue(total));
+    e.setDate(dates.get(0));
+    documentNumber = calcDocumentNumber(firstDocumentNumber, dates.get(0).getMonth());
     if ("PRL".equals(moduleOrder.getModeOfPayment())) {
-      e.setDocument("PRL" + String.valueOf(documentNumber));
+      e.setDocument("PRL" + documentNumber);
     } else {
       e.setDocument(moduleOrder.getModeOfPayment() + 1);
     }
     orderLines.add(new OrderLine(e));
 
     for (int i = 1; i < orderLinesNumber; i++) {
-        if (dates != null) {
-      e.setDate((DateFr) dates.get(i));
-        }
+      e.setDate(dates.get(i));
       if ("PRL".equals(moduleOrder.getModeOfPayment())) {
-          if (dates != null) {
-        documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(i)).getMonth());
-        e.setDocument("PRL" + String.valueOf(documentNumber));
-          }
+        documentNumber = calcDocumentNumber(firstDocumentNumber, dates.get(i).getMonth());
+        e.setDocument("PRL" + documentNumber);
       } else {
         e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
       }
@@ -616,7 +608,7 @@ public class EnrolmentOrderUtil {
   //ERIC 2.17 23/08/2019
   //FIXME
   ArrayList<OrderLine> setSemesterOrderLines(ModuleOrder moduleOrder, OrderLine e, List<DateFr> dates) {
-    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
+    ArrayList<OrderLine> orderLines = new ArrayList<>();
 //    List<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
     int firstDocumentNumber = 0;
     try {
@@ -631,10 +623,10 @@ public class EnrolmentOrderUtil {
     // double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "TRIM");
     // e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
     e.setAmount(AccountUtil.getIntValue(total));
-    e.setDate((DateFr) dates.get(0));
+    e.setDate(dates.get(0));
     if (moduleOrder.getModeOfPayment().equals("PRL")) {
-      documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(0)).getMonth());
-      e.setDocument("PRL" + String.valueOf(documentNumber));
+      documentNumber = calcDocumentNumber(firstDocumentNumber, dates.get(0).getMonth());
+      e.setDocument("PRL" + documentNumber);
     } else {
       e.setDocument(moduleOrder.getModeOfPayment() + 1);// pas nécessaire
     }
@@ -642,12 +634,12 @@ public class EnrolmentOrderUtil {
     for (int i = 1; i < dates.size(); i++) {
       //libelle numero piece
       if (moduleOrder.getModeOfPayment().equals("PRL")) {
-        documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(i)).getMonth());
-        e.setDocument("PRL" + String.valueOf(documentNumber));
+        documentNumber = calcDocumentNumber(firstDocumentNumber, dates.get(i).getMonth());
+        e.setDocument("PRL" + documentNumber);
       } else {
         e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
       }
-      e.setDate((DateFr) dates.get(i));
+      e.setDate(dates.get(i));
       orderLines.add(new OrderLine(e)); // others
     }
     return orderLines;
