@@ -82,7 +82,7 @@ public class RoomRateCardCtrl
 
   @Override
   public boolean prev() {
-    if (MessagePopup.confirm(this, MessageUtil.getMessage("delete.rate.confirmation"),
+    if (MessagePopup.confirm(contentPane, MessageUtil.getMessage("delete.rate.confirmation"),
             BundleUtil.getLabel("Warning.label"))) {
       return delete(getRate());
     }
@@ -156,7 +156,7 @@ public class RoomRateCardCtrl
       dataCache.add(roomRate);
       desktop.postEvent(new GemEvent(this, GemEvent.CREATION, GemEvent.ROOM_RATE, roomRate));
     } catch (Exception e1) {
-      GemLogger.logException("insertion tarif salle", e1, this);
+      GemLogger.logException("insertion tarif salle", e1, contentPane);
       return false;
     }
     if (actionListener != null) {
@@ -171,7 +171,7 @@ public class RoomRateCardCtrl
       dataCache.update(roomRate);
       desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.ROOM_RATE, roomRate));
     } catch (Exception e1) {
-      GemLogger.logException("update tarif salle", e1, this);
+      GemLogger.logException("update tarif salle", e1, contentPane);
       return false;
     }
     if (actionListener != null) {

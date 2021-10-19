@@ -199,12 +199,12 @@ public class GroupFileEditor
     } else if (src == miPass) {
       passCreateCtrl = new GroupPassCreateCtrl(desktop, group);
       passCreateCtrl.addActionListener(this);
-      desktop.addPanel("Group.pass", passCreateCtrl);
+      desktop.addPanel("Group.pass", passCreateCtrl.getContentPane());
       desktop.getSelectedModule().setSize(GemModule.M_SIZE);
     } else if ("Rehearsal".equals(arg)) {
       rehearsalCtrl = new GroupRehearsalCreateCtrl(desktop, group);
       rehearsalCtrl.addActionListener(this);
-      desktop.addPanel("Group.rehearsal", rehearsalCtrl, GemModule.S_SIZE);
+      desktop.addPanel("Group.rehearsal", rehearsalCtrl.getContentPane(), GemModule.S_SIZE);
       rehearsalCtrl.init();
       rehearsalCtrl.addGemEventListener(this);
     } else if (GemCommand.NOTE_CMD.equals(arg)) {

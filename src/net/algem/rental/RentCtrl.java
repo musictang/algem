@@ -92,11 +92,11 @@ public class RentCtrl
             dataCache.remove(rentable);
             desktop.postEvent(new RentEvent(this, GemEvent.SUPPRESSION, rentable));
           } else {
-            MessagePopup.warning(this, MessageUtil.getMessage("action.authorization.error", dataCache.getUser().getLogin()));
+            MessagePopup.warning(contentPane, MessageUtil.getMessage("action.authorization.error", dataCache.getUser().getLogin()));
           }
           close();
         } catch (RentException cex) {
-          MessagePopup.warning(this, cex.getMessage());
+          MessagePopup.warning(contentPane, cex.getMessage());
           return false;
         } catch (SQLException ex) {
           GemLogger.logException(ex);
@@ -142,7 +142,7 @@ public class RentCtrl
         desktop.postEvent(new RentEvent(this, GemEvent.MODIFICATION, rentable));
       }
     } catch (SQLException e1) {
-      GemLogger.logException(getClass().getSimpleName() + "#validation", e1, this);
+      GemLogger.logException(getClass().getSimpleName() + "#validation", e1, contentPane);
       return false;
     }
     cancel();

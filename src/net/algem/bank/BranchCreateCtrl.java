@@ -89,7 +89,7 @@ public class BranchCreateCtrl
             BankIO.insert(b, dc);
           }
         } catch (Exception e) {
-          GemLogger.logException("insert banque", e, this);
+          GemLogger.logException("insert banque", e, contentPane);
         }
       }
     }
@@ -97,12 +97,12 @@ public class BranchCreateCtrl
       BankBranch a = branchView.getBankBranch();
 
       if (!a.isValid()) {
-        MessagePopup.error(this, MessageUtil.getMessage("incomplete.entry.error"));
+        MessagePopup.error(contentPane, MessageUtil.getMessage("incomplete.entry.error"));
         return false;
       }
       bankBranchIO.insert(a);
     } catch (Exception ex) {
-      GemLogger.logException("insert guichet", ex, this);
+      GemLogger.logException("insert guichet", ex, contentPane);
       return false;
     }
     clear();

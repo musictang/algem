@@ -99,7 +99,7 @@ public class AgeRangeCardCtrl
   @Override
   public boolean prev() {
 
-    if (MessagePopup.confirm(this, MessageUtil.getMessage("age.range.delete.confirmation"), "Suppression tranche d'âge")) {
+    if (MessagePopup.confirm(contentPane, MessageUtil.getMessage("age.range.delete.confirmation"), "Suppression tranche d'âge")) {
       if (actionListener != null) {
         actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.DELETE_CMD));
         actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));

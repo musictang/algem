@@ -62,7 +62,7 @@ public class CourseSearchCtrl
     mask.addActionListener(this);
 
     wCard.add("cherche", searchView);
-    wCard.add("masque", mask);
+    wCard.add("masque", mask.getContentPane());
     wCard.add("liste", list);
 
     ((CardLayout) wCard.getLayout()).show(wCard, "cherche");

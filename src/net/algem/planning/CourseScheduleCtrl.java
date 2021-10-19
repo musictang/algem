@@ -98,7 +98,7 @@ public class CourseScheduleCtrl
       msg += "\n" + MessageUtil.getMessage("hour.range.error");
     }
     Action a = v.get();
-    if (a.getIdper() == 0 && !MessagePopup.confirm(this, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
+    if (a.getIdper() == 0 && !MessagePopup.confirm(contentPane, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
       msg += "\n" + MessageUtil.getMessage("teacher.invalid.choice");
     }
     if (a.getRoom() == 0) {
@@ -125,7 +125,7 @@ public class CourseScheduleCtrl
         action = validate(av);
       } catch (PlanningException pe) {
         desktop.setDefaultCursor();
-        JOptionPane.showMessageDialog(this, pe.getMessage(), t, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(contentPane, pe.getMessage(), t, JOptionPane.ERROR_MESSAGE);
         return prev();
       }
       actions = getPlanification(action, av.getIntervall());
@@ -259,7 +259,7 @@ public class CourseScheduleCtrl
     for (Action a : actions) {
       //FIX other actions may be not empty
       if (a.getDates().isEmpty()) {
-        MessagePopup.error(this, MessageUtil.getMessage("empty.planning.create.warning"));
+        MessagePopup.error(contentPane, MessageUtil.getMessage("empty.planning.create.warning"));
         return false;
       }
       for (DateFr d : a.getDates()) {
@@ -271,7 +271,7 @@ public class CourseScheduleCtrl
     }
     // Is there at least one active date
     if (!hasActiveDates) {
-      MessagePopup.warning(this, MessageUtil.getMessage("no.active.date.warning"));
+      MessagePopup.warning(contentPane, MessageUtil.getMessage("no.active.date.warning"));
       return false;
     }
     try {
@@ -279,7 +279,7 @@ public class CourseScheduleCtrl
       service.plan(actions);
       return true;
     } catch (PlanningException ex) {
-      MessagePopup.warning(this,
+      MessagePopup.warning(contentPane,
               MessageUtil.getMessage("planning.course.create.exception") + " :\n" + ex.getMessage());
       return false;
     } finally {

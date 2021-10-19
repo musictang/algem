@@ -105,7 +105,7 @@ public class StudioScheduleCtrl
           btNext.setText("");//lock validation
         }
       } catch (PlanningException pe) {
-        JOptionPane.showMessageDialog(this, pe.getMessage(), t, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(contentPane, pe.getMessage(), t, JOptionPane.ERROR_MESSAGE);
         return prev();
       }
     }
@@ -130,7 +130,7 @@ public class StudioScheduleCtrl
   public boolean validation() {
     List<ScheduleTestConflict> resolved = conflictsView.getResolvedConflicts();
     if (resolved.isEmpty()) {
-      MessagePopup.warning(this, MessageUtil.getMessage("no.schedule.to.plan"));
+      MessagePopup.warning(contentPane, MessageUtil.getMessage("no.schedule.to.plan"));
       return false;
     }
     List<GemDateTime> dates = new ArrayList<>();
@@ -146,7 +146,7 @@ public class StudioScheduleCtrl
       GemDateTime dte = dates.get(dates.size() - 1);
       desktop.postEvent(new ModifPlanEvent(this, dts.getDate(), dte.getDate()));
     } catch (PlanningException ex) {
-      MessagePopup.warning(this, ex.getMessage());
+      MessagePopup.warning(contentPane, ex.getMessage());
       return false;
     }
     clear();

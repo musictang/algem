@@ -129,28 +129,28 @@ public class GroupPassCreateCtrl
 
   private boolean hasErrors() {
     if (passView.getRoom() == 0) {
-        MessagePopup.error(this,MessageUtil.getMessage("room.invalid.choice"), wt);
+        MessagePopup.error(contentPane,MessageUtil.getMessage("room.invalid.choice"), wt);
         return true;
       }
 
       DateFr date = passView.getDateStart();
       if (date.bufferEquals(DateFr.NULLDATE)) {
-        MessagePopup.error(this,MessageUtil.getMessage("beginning.date.invalid.choice"), wt);
+        MessagePopup.error(contentPane,MessageUtil.getMessage("beginning.date.invalid.choice"), wt);
         return true;
       }
       if (date.before(dataCache.getStartOfPeriod())
               || date.after(dataCache.getEndOfPeriod())) {
-        MessagePopup.error(this,MessageUtil.getMessage("beginning.date.out.of.period"), wt);
+        MessagePopup.error(contentPane,MessageUtil.getMessage("beginning.date.out.of.period"), wt);
         return true;
       }
       date = passView.getDateEnd();
       if (date.bufferEquals(DateFr.NULLDATE)) {
-        MessagePopup.error(this,MessageUtil.getMessage("end.date.invalid.choice"), wt);
+        MessagePopup.error(contentPane,MessageUtil.getMessage("end.date.invalid.choice"), wt);
         return true;
       }
       if (date.before(dataCache.getStartOfPeriod())
               || date.after(dataCache.getEndOfPeriod())) {
-        MessagePopup.error(this,MessageUtil.getMessage("end.date.out.of.period"), wt);
+        MessagePopup.error(contentPane,MessageUtil.getMessage("end.date.out.of.period"), wt);
         return true;
       }
       Hour hStart = passView.getHourStart();
@@ -159,7 +159,7 @@ public class GroupPassCreateCtrl
       if (hStart.toString().equals("00:00")
               || hEnd.toString().equals("00:00")
               || !(hEnd.after(hStart))) {
-        MessagePopup.error(this,MessageUtil.getMessage("hour.range.error"), wt);
+        MessagePopup.error(contentPane,MessageUtil.getMessage("hour.range.error"), wt);
         return true;
       }
       if (!RoomService.isOpened(passView.getRoom(), passView.getDateStart(), hStart, hEnd)) {
@@ -205,17 +205,17 @@ public class GroupPassCreateCtrl
       }
     }
     if (dates.isEmpty()) {
-      MessagePopup.error(this,MessageUtil.getMessage("empty.planning.create.warning"), wt);
+      MessagePopup.error(contentPane,MessageUtil.getMessage("empty.planning.create.warning"), wt);
       return false;
     }
 
     try {
       service.createPassRehearsal(dates, passView.getHourStart(), passView.getHourEnd(), group.getId(), passView.getRoom());
-      MessagePopup.information(this,MessageUtil.getMessage("planning.update.info"));
+      MessagePopup.information(contentPane,MessageUtil.getMessage("planning.update.info"));
       desktop.postEvent(new ModifPlanEvent(this, passView.getDateStart(), passView.getDateEnd()));
     } catch (GroupException ex) {
-      MessagePopup.warning(this, ex.getMessage());
-      GemLogger.logException("Insertion répétition", ex, this);
+      MessagePopup.warning(contentPane, ex.getMessage());
+      GemLogger.logException("Insertion répétition", ex, contentPane);
       return false;
     }
     clear();

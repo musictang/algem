@@ -84,7 +84,7 @@ public class ModuleCtrl
           delete(view.get());
         } catch (ModuleException ex) {
           GemLogger.log(ex.getMessage());
-          MessagePopup.warning(this, ex.getMessage());
+          MessagePopup.warning(contentPane, ex.getMessage());
           return false;
         }
         break;
@@ -109,7 +109,7 @@ public class ModuleCtrl
     for (CourseModuleInfo cm : m.getCourses()) {
       String err = isValid(cm);
       if (err != null) {
-        MessagePopup.error(this, err);
+        MessagePopup.error(contentPane, err);
         return false;
       }
     }
@@ -119,7 +119,7 @@ public class ModuleCtrl
       }
     } catch (ModuleException e1) {
       GemLogger.logException("Edition module", e1);
-      MessagePopup.error(this, e1.getMessage());
+      MessagePopup.error(contentPane, e1.getMessage());
       return false;
     }
 
@@ -233,10 +233,10 @@ public class ModuleCtrl
         service.create(m);
         dataCache.add(m);
         desktop.postEvent(new ModuleEvent(this, GemEvent.CREATION, m));
-        MessagePopup.information(this, MessageUtil.getMessage("create.info"));
+        MessagePopup.information(contentPane, MessageUtil.getMessage("create.info"));
       } else {
         if (service.isUsed(m.getId(), dataCache.getStartOfPeriod())) {
-          if (!MessagePopup.confirm(this, MessageUtil.getMessage("module.update.confirmation"))) {
+          if (!MessagePopup.confirm(contentPane, MessageUtil.getMessage("module.update.confirmation"))) {
             return;
           }
         }
@@ -259,7 +259,7 @@ public class ModuleCtrl
       service.delete(m);
       dataCache.remove(m);
       desktop.postEvent(new ModuleEvent(this, GemEvent.SUPPRESSION, m));
-      MessagePopup.information(this, MessageUtil.getMessage("delete.info"));
+      MessagePopup.information(contentPane, MessageUtil.getMessage("delete.info"));
 //      cancel();
       if (actionListener != null) {
         actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.NEW_SEARCH_CMD));

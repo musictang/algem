@@ -94,7 +94,7 @@ public class RightsCtrl
       //TODO update cache
 
     } catch (UserException e1) {
-      GemLogger.logException("Update user", e1, this);
+      GemLogger.logException("Update user", e1, contentPane);
       return false;
     }
     if (actionListener != null) {
@@ -124,7 +124,7 @@ public class RightsCtrl
       setActionDelete();
       
     } catch (Exception e) {
-      GemLogger.logException("lecture ficher droits", e, this);
+      GemLogger.logException("lecture ficher droits", e, contentPane);
       return false;
     }
     return true;
@@ -152,13 +152,13 @@ public class RightsCtrl
   public void actionPerformed(ActionEvent evt) {
     super.actionPerformed(evt);
     if (GemCommand.DELETE_CMD.equals(evt.getActionCommand())) {
-      if (MessagePopup.confirm(this, MessageUtil.getMessage("login.delete.confirmation", user.getLogin()))) {
+      if (MessagePopup.confirm(contentPane, MessageUtil.getMessage("login.delete.confirmation", user.getLogin()))) {
         try {
           service.delete(user);
           cancel();
         } catch (UserException ex) {
           GemLogger.log(ex.getMessage());
-          MessagePopup.warning(this, MessageUtil.getMessage("delete.error"));
+          MessagePopup.warning(contentPane, MessageUtil.getMessage("delete.error"));
         }
       }
     }

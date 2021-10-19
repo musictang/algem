@@ -107,7 +107,7 @@ public class WorkshopScheduleCtrl
       desktop.postEvent(new ModifPlanEvent(this, rv.getDate(), rv.getDate()));
       return cancel();
     } catch (PlanningException ex) {
-      MessagePopup.warning(this, ex.getMessage());
+      MessagePopup.warning(contentPane, ex.getMessage());
       return false;
     }
   }
@@ -138,7 +138,7 @@ public class WorkshopScheduleCtrl
     if (r == 0) {
       throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
     }
-    if (t == 0 && !MessagePopup.confirm(this, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
+    if (t == 0 && !MessagePopup.confirm(contentPane, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
       throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
     }
 

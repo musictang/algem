@@ -69,7 +69,7 @@ public class AgeRangeSearchCtrl
       mask.addActionListener(this);
 
       //    wCard.add("cherche", searchView);
-      wCard.add("masque", mask);
+      wCard.add("masque", mask.getContentPane());
       wCard.add("liste", list);
 
       String query = " ORDER BY agemin";

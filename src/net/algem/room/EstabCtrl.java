@@ -106,7 +106,7 @@ public class EstabCtrl
               actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
             }
         } catch (EstablishmentException cex) {
-          MessagePopup.warning(this, cex.getMessage());
+          MessagePopup.warning(contentPane, cex.getMessage());
           return false;
         }
       default:
@@ -134,12 +134,12 @@ public class EstabCtrl
         dataCache.update(estab);
         desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.ESTABLISHMENT, estab));
       } else {
-        MessagePopup.error(this, MessageUtil.getMessage("establishment.empty.name.exception"));
+        MessagePopup.error(contentPane, MessageUtil.getMessage("establishment.empty.name.exception"));
         select(0);
         return false;
       }
     } catch (SQLException e1) {
-      GemLogger.logException("update etablissement", e1, this);
+      GemLogger.logException("update etablissement", e1, contentPane);
       return false;
     }
     
@@ -185,7 +185,7 @@ public class EstabCtrl
       }
       select(0);
     } catch (Exception e) {
-      GemLogger.logException("lecture fiche etablissement", e, this);
+      GemLogger.logException("lecture fiche etablissement", e, contentPane);
       return false;
     }
     return true;

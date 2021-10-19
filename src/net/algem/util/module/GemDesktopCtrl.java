@@ -133,7 +133,7 @@ public class GemDesktopCtrl extends AbstractDesktopCtrl {
             ImportCsvCtrl importCtrl = new ImportCsvCtrl(new ImportCsvHandler());
             importCtrl.addActionListener(this);
             importCtrl.createUI();
-            addPanel("Menu.import.csv.contacts", importCtrl, new Dimension(905, 640));
+            addPanel("Menu.import.csv.contacts", importCtrl.getContentPane(), new Dimension(905, 640));
         } else if (BundleUtil.getLabel("Menu.contact.label").equals(arg)) {
             ContactExportDlg dlg = new ContactExportDlg(this);
             dlg.setVisible(true);

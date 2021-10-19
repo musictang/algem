@@ -101,13 +101,13 @@ public class BankBranchCtrl
     try {
       BankBranch a = branchView.getBankBranch();
       if (!a.isValid()) {
-        MessagePopup.error(this, MessageUtil.getMessage("incomplete.entry.error"));
+        MessagePopup.error(contentPane, MessageUtil.getMessage("incomplete.entry.error"));
         return false;
       }
       bankBranchIO.update(branch, a);
 
     } catch (Exception e) {
-      GemLogger.logException("update guichet", e, this);
+      GemLogger.logException("update guichet", e, contentPane);
       return false;
     }
     if (actionListener != null) {
@@ -137,7 +137,7 @@ public class BankBranchCtrl
       bankBranchIO.delete(branch);
     } catch (Exception ex) {
       GemLogger.log(Level.WARNING, ex.getMessage());
-      MessagePopup.error(this, ex.getMessage());
+      MessagePopup.error(contentPane, ex.getMessage());
     }
   }
   

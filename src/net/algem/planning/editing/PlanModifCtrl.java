@@ -798,7 +798,7 @@ public class PlanModifCtrl
     updatePlanCtrl = new UpdateCoursePlanCtrl(desktop, plan);
     updatePlanCtrl.init();
     updatePlanCtrl.addActionListener(this);
-    desktop.addPanel("planification cours", updatePlanCtrl);
+    desktop.addPanel("planification cours", updatePlanCtrl.getContentPane());
   }
 
   /**

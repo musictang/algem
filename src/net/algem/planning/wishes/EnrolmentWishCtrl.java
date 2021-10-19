@@ -719,7 +719,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
             csCtrl = new CourseScheduleCtrl(desktop);
             csCtrl.addActionListener(this);
             csCtrl.init();
-            desktop.addPanel(CourseScheduleCtrl.COURSE_SCHEDULING_KEY, csCtrl);
+            desktop.addPanel(CourseScheduleCtrl.COURSE_SCHEDULING_KEY, csCtrl.getContentPane());
         }
         desktop.setSelectedModule(CourseScheduleCtrl.COURSE_SCHEDULING_KEY);
         csCtrl.setReinscription(c, t, dow, range.getStart(), range.getEnd());

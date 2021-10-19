@@ -100,7 +100,7 @@ public class TrainingScheduleCtrl
           btNext.setText("");//lock validation
         }
       } catch (PlanningException pe) {
-        JOptionPane.showMessageDialog(this, pe.getMessage(), t, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(contentPane, pe.getMessage(), t, JOptionPane.ERROR_MESSAGE);
         return prev();
       }
     }
@@ -139,7 +139,7 @@ public class TrainingScheduleCtrl
       DateFr[] fromTo = save();
       desktop.postEvent(new ModifPlanEvent(this, fromTo[0], fromTo[1]));
     } catch (PlanningException ex) {
-      MessagePopup.warning(this, ex.getMessage());
+      MessagePopup.warning(contentPane, ex.getMessage());
       return false;
     }
     return cancel();
@@ -190,7 +190,7 @@ public class TrainingScheduleCtrl
     if (room == 0) {
       throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
     }
-    if (teacher == 0 && !MessagePopup.confirm(this, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
+    if (teacher == 0 && !MessagePopup.confirm(contentPane, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
       throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
     }
 

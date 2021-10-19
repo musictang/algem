@@ -158,8 +158,8 @@ public class GroupRehearsalCreateCtrl
         gemListener.postEvent(new RehearsalEvent(this, GemEvent.CREATION, GemEvent.REHEARSAL));
       }
     } catch (GroupException ex) {
-      GemLogger.logException(ex.getMessage(), ex, this);
-      MessagePopup.warning(this, ex.getMessage());
+      GemLogger.logException(ex.getMessage(), ex, contentPane);
+      MessagePopup.warning(contentPane, ex.getMessage());
       return false;
     }
     return true;

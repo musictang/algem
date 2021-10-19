@@ -21,6 +21,7 @@
 package net.algem.util.ui;
 
 import java.awt.*;
+import static java.awt.Component.RIGHT_ALIGNMENT;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -36,11 +37,16 @@ import net.algem.util.event.GemEventListener;
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.13.0
  */
-public abstract class CardCtrl
-        extends GemPanel
+ public abstract class CardCtrl
+        //extends GemPanel
         implements ActionListener	//,KeyListener
 {
 
+  protected GemPanel contentPane;
+
+    public GemPanel getContentPane() {
+        return contentPane;
+    }
   protected GemPanel buttons;
   protected List<JPanel> panels;
   protected List<String> titles;
@@ -57,6 +63,8 @@ public abstract class CardCtrl
   protected GemEventListener gemListener;
 
   public CardCtrl() {
+      
+      contentPane = new GemPanel(new BorderLayout());
 
     panels = new ArrayList<>();
     titles = new ArrayList<>();
@@ -67,7 +75,7 @@ public abstract class CardCtrl
     wCard = new GemPanel();
     wCard.setLayout(new CardLayout());
 
-    setLayout(new BorderLayout());
+    //setLayout(new BorderLayout());
 
     buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 3));
@@ -82,8 +90,8 @@ public abstract class CardCtrl
     mid.add(title, BorderLayout.NORTH);
     mid.add(wCard, BorderLayout.CENTER);
 
-    add(mid, BorderLayout.CENTER);
-    add(buttons, BorderLayout.SOUTH);
+    contentPane.add(mid, BorderLayout.CENTER);
+    contentPane.add(buttons, BorderLayout.SOUTH);
 
   }
 

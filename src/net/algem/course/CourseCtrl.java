@@ -98,11 +98,11 @@ public class CourseCtrl
             dataCache.remove(course);
             desktop.postEvent(new CourseEvent(this, GemEvent.SUPPRESSION, course));
           } else {
-            MessagePopup.warning(this, MessageUtil.getMessage("action.authorization.error", dataCache.getUser().getLogin()));
+            MessagePopup.warning(contentPane, MessageUtil.getMessage("action.authorization.error", dataCache.getUser().getLogin()));
           }
           close();
         } catch (CourseException cex) {
-          MessagePopup.warning(this, cex.getMessage());
+          MessagePopup.warning(contentPane, cex.getMessage());
           return false;
         } catch (SQLException ex) {
           GemLogger.logException(ex);
@@ -148,7 +148,7 @@ public class CourseCtrl
         desktop.postEvent(new CourseEvent(this, GemEvent.MODIFICATION, course));
       }
     } catch (SQLException e1) {
-      GemLogger.logException(getClass().getSimpleName() + "#validation", e1, this);
+      GemLogger.logException(getClass().getSimpleName() + "#validation", e1, contentPane);
       return false;
     }
     cancel();

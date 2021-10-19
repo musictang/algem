@@ -59,7 +59,7 @@ public class UpdateCoursePlanCtrl
 	protected boolean save() {
 		Action action = actions.get(0);
 		if (action != null && action.getDates().isEmpty()) {
-			JOptionPane.showMessageDialog(this,
+			JOptionPane.showMessageDialog(contentPane,
 				MessageUtil.getMessage("empty.planning.create.warning"),
 				BundleUtil.getLabel("Warning.label"),
 				JOptionPane.ERROR_MESSAGE);
@@ -73,7 +73,7 @@ public class UpdateCoursePlanCtrl
 			cancel();
 			return true;
 		} catch (PlanningException | NullPointerException ex) {
-			MessagePopup.warning(this,
+			MessagePopup.warning(contentPane,
 				MessageUtil.getMessage("planning.course.create.exception") + " :\n" + ex.getMessage());
 			return false;
 		}

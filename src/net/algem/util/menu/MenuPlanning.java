@@ -135,22 +135,22 @@ public class MenuPlanning
       CourseScheduleCtrl csCtrl = new CourseScheduleCtrl(desktop);
       csCtrl.addActionListener(this);
       csCtrl.init();
-      desktop.addPanel(CourseScheduleCtrl.COURSE_SCHEDULING_KEY, csCtrl);
+      desktop.addPanel(CourseScheduleCtrl.COURSE_SCHEDULING_KEY, csCtrl.getContentPane());
     } else if (src == miWorkshop) {
       WorkshopScheduleCtrl wsCtrl = new WorkshopScheduleCtrl(desktop);
       wsCtrl.addActionListener(this);
       wsCtrl.init();
-      desktop.addPanel(WorkshopScheduleCtrl.WORKSHOP_SCHEDULING_KEY, wsCtrl);
+      desktop.addPanel(WorkshopScheduleCtrl.WORKSHOP_SCHEDULING_KEY, wsCtrl.getContentPane());
     } else if (src == miTraining) {
       TrainingScheduleCtrl tsCtrl = new TrainingScheduleCtrl(desktop);
       tsCtrl.addActionListener(this);
       tsCtrl.init();
-      desktop.addPanel(TrainingScheduleCtrl.TRAINING_SCHEDULING_KEY, tsCtrl);
+      desktop.addPanel(TrainingScheduleCtrl.TRAINING_SCHEDULING_KEY, tsCtrl.getContentPane());
     } else if (src == miStudio) {
       StudioScheduleCtrl studioCtrl = new StudioScheduleCtrl(desktop);
       studioCtrl.addActionListener(this);
       studioCtrl.init();
-      desktop.addPanel(StudioScheduleCtrl.STUDIO_SCHEDULING_KEY, studioCtrl, new Dimension(650, 480));
+      desktop.addPanel(StudioScheduleCtrl.STUDIO_SCHEDULING_KEY, studioCtrl.getContentPane(), new Dimension(650, 480));
     } else if (src == miAttendanceSheet) {
        new AttendanceSheetDlg(desktop.getFrame(), dataCache);
     } else if (src == miSigningSheet) {

@@ -208,7 +208,7 @@ public class MenuConfig
       EstabCreateCtrl estabCreate = new EstabCreateCtrl(desktop);
       estabCreate.addActionListener(this);
       estabCreate.init();
-      desktop.addPanel("Establishment.create", estabCreate);
+      desktop.addPanel("Establishment.create", estabCreate.getContentPane());
       desktop.getSelectedModule().setSize(GemModule.XXL_SIZE);
     } else if (src == miEstabBrowse) {
       EstabSearchCtrl estabBrowse = new EstabSearchCtrl(desktop, BundleUtil.getLabel("Establishment.browser.label"));
@@ -241,7 +241,7 @@ public class MenuConfig
       BranchCreateCtrl branchCreate = new BranchCreateCtrl(dc);
       branchCreate.addActionListener(this);
       branchCreate.init();
-      desktop.addPanel("Menu.branch.bank.create", branchCreate);
+      desktop.addPanel("Menu.branch.bank.create", branchCreate.getContentPane());
     } else if (menus.get("Menu.holidays.cat.label").equals(arg)) {
       CategoryVacancyCtrl vacancyCatCtrl = new CategoryVacancyCtrl(desktop);
       vacancyCatCtrl.load();

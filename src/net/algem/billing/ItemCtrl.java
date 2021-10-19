@@ -77,7 +77,7 @@ public class ItemCtrl
   @Override
   public boolean prev() {
 
-    if (MessagePopup.confirm(this, MessageUtil.getMessage("invoice.item.delete.confirmation"),
+    if (MessagePopup.confirm(contentPane, MessageUtil.getMessage("invoice.item.delete.confirmation"),
             BundleUtil.getLabel("Warning.label"))) {
       try {
         Item a = view.get();

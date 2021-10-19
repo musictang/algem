@@ -183,7 +183,7 @@ public class ImportCsvCtrl
     try {
       if (src == btBrowse) {
         File file = FileUtil.getFile(
-                this,
+                contentPane,
                 BundleUtil.getLabel("FileChooser.selection"),
                 null,
                 MessageUtil.getMessage("filechooser.csv.filter.label"),
@@ -211,7 +211,7 @@ public class ImportCsvCtrl
   @Override
   public boolean next() {
     if (fileName.getText().isEmpty()) {
-      MessagePopup.warning(this, MessageUtil.getMessage("file.none.selected"));
+      MessagePopup.warning(contentPane, MessageUtil.getMessage("file.none.selected"));
       select(0);
       return false;
     }
@@ -281,7 +281,7 @@ public class ImportCsvCtrl
         }
       }
       if (!hasMatching) {
-        MessagePopup.error(this, MessageUtil.getMessage("import.matching.warning"));
+        MessagePopup.error(contentPane, MessageUtil.getMessage("import.matching.warning"));
         return null;
       }
       return importCsvHandler.create(buildProcessors(csvHeader), importMap);
@@ -370,7 +370,7 @@ public class ImportCsvCtrl
     if (contacts != null && contacts.size() > 0) {
       SwingWorker<Integer, Void> task = null;
       try {
-        ProgressMonitor monitor = new ProgressMonitor(this, BundleUtil.getLabel("Importing.label"), "", 1, 100);
+        ProgressMonitor monitor = new ProgressMonitor(contentPane, BundleUtil.getLabel("Importing.label"), "", 1, 100);
         monitor.setMillisToDecideToPopup(10);
         task = service.new ImportCsvTask(contacts);
         task.addPropertyChangeListener(new ProgressMonitorHandler(monitor, task));
@@ -378,7 +378,7 @@ public class ImportCsvCtrl
       } catch (Exception ex) {
         if (task != null) {task.cancel(true);}
         GemLogger.logException(ex);
-        MessagePopup.error(this, ex.getMessage());
+        MessagePopup.error(contentPane, ex.getMessage());
       }
       return true;
     }

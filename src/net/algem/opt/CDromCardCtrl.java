@@ -87,7 +87,7 @@ public class CDromCardCtrl
 		try {
 			CDromIO.update(cdrom, DataCache.getDataConnection());
 		} catch (SQLException e1) {
-			GemLogger.logException("Update CDrom", e1, this);
+			GemLogger.logException("Update CDrom", e1, contentPane);
 			return false;
 		}
 		if (actionListener != null) {
@@ -115,7 +115,7 @@ public class CDromCardCtrl
 
 			select(0);
 		} catch (Exception e) {
-			GemLogger.logException("lecture ficher CDrom", e, this);
+			GemLogger.logException("lecture ficher CDrom", e, contentPane);
 			return false;
 		}
 		return true;

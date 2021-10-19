@@ -92,7 +92,7 @@ public class BankCtrl
 			BankIO.update(bank, dc);
 
 		} catch (Exception e1) {
-			GemLogger.logException("update banque", e1, this);
+			GemLogger.logException("update banque", e1, contentPane);
 			return false;
 		}
 		if (actionListener != null) {

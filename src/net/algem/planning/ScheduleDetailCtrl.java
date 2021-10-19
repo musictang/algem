@@ -627,7 +627,7 @@ public class ScheduleDetailCtrl
           CourseCtrl courseCard = new CourseCtrl(desktop);
           courseCard.addActionListener(desktop);
           courseCard.loadCard(c);
-          desktop.addPanel("Cours " + c.getTitle(), courseCard);
+          desktop.addPanel("Cours " + c.getTitle(), courseCard.getContentPane());
           if (desktop.getSelectedModule() != null && desktop.getSelectedModule().getView() != null) {
           frame.setLocation(getOffset(desktop.getSelectedModule().getView()));
         }

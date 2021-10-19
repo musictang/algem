@@ -99,7 +99,7 @@ public class EstabCreateCtrl
         cancel();
       }
     } catch (SQLException ex) {
-      GemLogger.logException("Insertion etablissement", ex, this);
+      GemLogger.logException("Insertion etablissement", ex, contentPane);
       return false;
     }
 
@@ -132,7 +132,7 @@ public class EstabCreateCtrl
     e.setSites(contact.getSites());
 
     if (!e.isValid()) {
-      MessagePopup.error(this, MessageUtil.getMessage("establishment.empty.name.exception"));
+      MessagePopup.error(contentPane, MessageUtil.getMessage("establishment.empty.name.exception"));
       return null;
     }
 
