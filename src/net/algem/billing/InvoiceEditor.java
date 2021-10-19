@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLine;
 import net.algem.util.BundleUtil;
@@ -115,7 +115,7 @@ public class InvoiceEditor
     super(desktop);
   }
 
-  public Vector<Invoice> find(int client) {
+  public List<Invoice> find(int client) {
     return null;
   }
 

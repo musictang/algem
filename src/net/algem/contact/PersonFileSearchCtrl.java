@@ -23,7 +23,8 @@ package net.algem.contact;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.sql.*;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.Algem;
 import net.algem.config.InstrumentIO;
 import net.algem.contact.member.MemberIO;
@@ -184,16 +185,16 @@ public class PersonFileSearchCtrl
 
             int cpt = 0;
 
-            Vector<Contact> block; // vecteur de Contact
+            List<Contact> block; // vecteur de Contact
             try (Statement stmt = cnx.createStatement()) {
                 stmt.executeUpdate("begin");
                 stmt.executeUpdate(squery);
                 do {
-                    block = new Vector<Contact>();
+                    block = new ArrayList<>();
                     try (ResultSet rs = stmt.executeQuery("FETCH 20 in pc")) {
                         while (rs.next() && !abort) {
                             Contact c = new Contact(PersonIO.getFromRS(rs));
-                            block.addElement(c);
+                            block.add(c);
                             //barre.setValue(++row);
                         }
                     }

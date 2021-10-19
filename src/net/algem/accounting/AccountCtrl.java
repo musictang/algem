@@ -59,11 +59,7 @@ public class AccountCtrl
 
   @Override
   public void load() {
-    try {
-      load(AccountIO.find(false, dc).elements());
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-    }
+      load(AccountIO.find(false, dc));
   }
 
   @Override

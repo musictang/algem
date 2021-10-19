@@ -77,7 +77,7 @@ public class ActionService
     return null;
   }
 
-  public List<GemParam> getLevelAll() throws SQLException {
+  public List<Param> getLevelAll() throws SQLException {
     return dataCache.getList(Model.Level).getData();
   }
   
@@ -93,7 +93,7 @@ public class ActionService
     levelIO.delete(n);
   }
   
-  public List<GemParam> getStatusAll() throws SQLException {
+  public List<Param> getStatusAll() throws SQLException {
     return dataCache.getList(Model.Status).getData();
   }
   

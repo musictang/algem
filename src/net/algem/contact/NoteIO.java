@@ -23,7 +23,8 @@ package net.algem.contact;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
@@ -95,17 +96,14 @@ public class NoteIO
         return null;
     }
 
-    public static Vector<Note> find(String where, DataConnection dc) throws NoteException {
+    public static List<Note> find(String where, DataConnection dc) throws NoteException {
 
-        Vector<Note> v = new Vector<Note>();
+        List<Note> v = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE + " " + where;
-        try {
-            ResultSet rs = dc.executeQuery(query);
+        try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
-                v.addElement(getResultFromRS(rs));
+                v.add(getResultFromRS(rs));
             }
-            rs.close();
-
             return v;
         } catch (SQLException ex) {
             throw new NoteException(MessageUtil.getMessage("note.exception"));

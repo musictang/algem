@@ -27,11 +27,10 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import net.algem.contact.Person;
 import net.algem.contact.member.Member;
-import net.algem.planning.DateFr;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.model.Model;
@@ -66,7 +65,7 @@ public class ExportEMagnus
     }
 
     @Override
-    public void export(String path, Vector<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException {
+    public void export(String path, List<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException {
         OrderLine e = null;
 
         Collections.sort(lines);
@@ -79,11 +78,11 @@ public class ExportEMagnus
         //try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(path), "windows-1252"), true)) {
         try (PrintWriter out = new PrintWriter(path, "cp1252")) {
             StringBuilder sb = new StringBuilder();
-            prec = lines.elementAt(0);
+            prec = lines.get(0);
             mnt = prec.getAmount();
             libel = prec.getLabel();
             for (int i = 1, n = lines.size(); i < n; i++) {
-                e = lines.elementAt(i);
+                e = lines.get(i);
                 try {
                     payer = (Person) dataCache.findId(prec.getPayer(), Model.Person);
                 } catch (SQLException ex) {
@@ -216,7 +215,7 @@ public class ExportEMagnus
     }
     
     @Override
-    public int tiersExport(String path, Vector<OrderLine> lines) throws IOException, SQLException {
+    public int tiersExport(String path, List<OrderLine> lines) throws IOException, SQLException {
         System.out.println("ExportEMagnus.tiersExport");
         int errors = 0;
         return errors;

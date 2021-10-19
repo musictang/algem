@@ -22,7 +22,6 @@ package net.algem.config;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Enumeration;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
@@ -52,7 +51,7 @@ public class InstrumentCtrl
 
   @Override
   public void load() {
-    load((Enumeration<? extends Param>) ParamTableIO.find(TABLE, COLUMN_NAME, dc));
+    load(ParamTableIO.find(TABLE, COLUMN_NAME, dc));
   }
 
   @Override

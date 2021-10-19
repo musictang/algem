@@ -22,8 +22,8 @@ package net.algem.accounting;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -87,7 +87,7 @@ public class AccountIO
    * @return a list of accounts
    * @throws SQLException
    */
-  public static Vector<Account> find(boolean active, DataConnection dc) throws SQLException {
+  public static List<Account> find(boolean active, DataConnection dc) {
 
     String where = "";
     if (active) {
@@ -104,8 +104,8 @@ public class AccountIO
    * @return a list of accounts
    * @throws SQLException
    */
-  public static Vector<Account> find(String where, String orderColumn, DataConnection dc) throws SQLException {
-    Vector<Account> v = new Vector<Account>();
+  public static List<Account> find(String where, String orderColumn, DataConnection dc) {
+    List<Account> v = new ArrayList<>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE;
     if (where != null && !where.isEmpty()) {
       query += " " + where;
@@ -116,14 +116,14 @@ public class AccountIO
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         Account c = new Account(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBoolean(4));
-        v.addElement(c);
+        v.add(c);
       }
-    }
+    } catch (SQLException ignore) {}
 
     return v;
   }
 
-  public static Vector<Account> find(String where, DataConnection dc) throws SQLException {
+  public static List<Account> find(String where, DataConnection dc) {
     return find(where, ORDER_COLUMN, dc);
   }
 
@@ -138,7 +138,7 @@ public class AccountIO
     return find(id, true, dc);
   }
 
-  public static Account find(int id, boolean actif, DataConnection dc) throws SQLException {
+  public static Account find(int id, boolean actif, DataConnection dc) {
 
     Account c = null;
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id = " + id;
@@ -149,7 +149,7 @@ public class AccountIO
       if (rs.next()) {
         c = new Account(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBoolean(4));
       }
-    }
+    } catch (SQLException ignore) {}
     return c;
   }
 

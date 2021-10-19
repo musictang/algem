@@ -48,7 +48,7 @@ public class CostAccountCtrl
 
   @Override
   public void load() {
-    load(ActivableParamTableIO.find(tableName, columnName, columnFilter, dc).elements());
+    load(ActivableParamTableIO.find(tableName, columnName, columnFilter, dc));
   }
 
   @Override

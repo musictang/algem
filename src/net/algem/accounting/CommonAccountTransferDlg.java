@@ -27,7 +27,6 @@ import java.awt.GridBagLayout;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -98,7 +97,7 @@ public class CommonAccountTransferDlg
     // mode of payment selected in dialog
     String modeOfPayment = transferView.getModeOfPayment();
 
-    Vector<OrderLine> orderLines = getOrderLines(
+    List<OrderLine> orderLines = getOrderLines(
       modeOfPayment,
       transferView.getDateStart(),
       transferView.getDateEnd(),
@@ -153,7 +152,7 @@ public class CommonAccountTransferDlg
     }
   }
 
-  protected Vector<OrderLine> getOrderLines(String modeOfPayment, DateFr start, DateFr end, int school, boolean withUnpaid) {
+  protected List<OrderLine> getOrderLines(String modeOfPayment, DateFr start, DateFr end, int school, boolean withUnpaid) {
 
     String query = "WHERE echeance >= '" + start + "' AND echeance <= '" + end + "' AND ecole = '" + school + "'";
     if (!withUnpaid) {

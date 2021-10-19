@@ -21,7 +21,7 @@
 package net.algem.bank;
 
 import java.awt.CardLayout;
-import java.util.Vector;
+import java.util.List;
 import net.algem.contact.Person;
 import net.algem.util.DataConnection;
 import net.algem.util.ui.SearchCtrl;
@@ -86,12 +86,12 @@ public class BranchSearchCtrl
     query += query.length() > 0 ? " AND " : " WHERE ";
     query += "ptype=" + Person.BANK;
 
-    Vector<BankBranch> v = bankBranchIO.find(query, true);
+    List<BankBranch> v = bankBranchIO.find(query, true);
     if (v.isEmpty()) {
       setStatus(EMPTY_LIST);
     } else if (v.size() == 1) {
       ((CardLayout) wCard.getLayout()).show(wCard, "masque");
-      mask.loadCard(v.elementAt(0));
+      mask.loadCard(v.get(0));
     } else {
       ((CardLayout) wCard.getLayout()).show(wCard, "liste");
       list.loadResult(v);

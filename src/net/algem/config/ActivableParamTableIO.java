@@ -22,7 +22,8 @@ package net.algem.config;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 
@@ -93,7 +94,7 @@ public class ActivableParamTableIO {
 	 * @param dc
 	 * @return une liste de paramètres
 	 */
-	public static Vector<ActivableParam> findActive(String table, String columnName, String columnFilter, DataConnection dc) {
+	public static List<ActivableParam> findActive(String table, String columnName, String columnFilter, DataConnection dc) {
 		String where = " WHERE " + columnFilter + " = 't'";
 		return find(table, columnName, where, dc);
 	}
@@ -106,8 +107,8 @@ public class ActivableParamTableIO {
 	 * @param dc
 	 * @return une liste de paramètres
 	 */
-	public static Vector<ActivableParam> find(String _table, String _sortColumn, String where, DataConnection dc) {
-		Vector<ActivableParam> v = new Vector<ActivableParam>();
+	public static List<ActivableParam> find(String _table, String _sortColumn, String where, DataConnection dc) {
+		List<ActivableParam> v = new ArrayList<>();
 		String query = "SELECT * FROM " + _table;
 		if (where != null) {
 			query += " " + where;
@@ -115,17 +116,16 @@ public class ActivableParamTableIO {
 		if (_sortColumn != null) {
 			query += " ORDER BY " + _sortColumn;
 		}
-		try {
-			ResultSet rs = dc.executeQuery(query);
+		try (ResultSet rs = dc.executeQuery(query)) {
 			while (rs.next()) {
 				ActivableParam p = new ActivableParam();
 				p.setKey(rs.getString(1).trim());
 				p.setValue(rs.getString(2).trim());
 				p.setActive(rs.getBoolean(3));
 
-				v.addElement(p);
+				v.add(p);
 			}
-			rs.close();
+			
 		} catch (Exception e) {
 			GemLogger.logException(query, e);
 		}

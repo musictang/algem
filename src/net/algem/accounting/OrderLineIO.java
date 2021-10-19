@@ -23,8 +23,9 @@ package net.algem.accounting;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
-import java.util.Vector;
 import net.algem.config.Param;
 import net.algem.config.ParamTableIO;
 import net.algem.config.Preference;
@@ -208,7 +209,7 @@ public class OrderLineIO
    * @param dc dataConnection instance
    * @return a list of order lines
    */
-  public static Vector<OrderLine> findByMember(int m, int p, DataConnection dc) {
+  public static List<OrderLine> findByMember(int m, int p, DataConnection dc) {
     String where = "WHERE (adherent = " + m + " OR payeur = " + p + ") AND adherent in(SELECT adherent FROM " + TABLE + " WHERE adherent = " + m + ")";
     return find(where, dc);
   }
@@ -221,7 +222,7 @@ public class OrderLineIO
    * @param dc dataConnection instance
    * @return une liste d'échéances
    */
-  public static Vector<OrderLine> findByMemberOrPayer(int m, int p, DataConnection dc) {
+  public static List<OrderLine> findByMemberOrPayer(int m, int p, DataConnection dc) {
     return find("WHERE adherent = " + m + " OR payeur = " + p, dc);
   }
 
@@ -233,16 +234,16 @@ public class OrderLineIO
    * @param dc dataConnection instance
    * @return a list of orderlines
    */
-  public static Vector<OrderLine> find(String where, DataConnection dc) {
+  public static List<OrderLine> find(String where, DataConnection dc) {
     String query = getSelectWhereExpression(where, 0);
     return getResult(query, dc);
   }
 
   public static OrderLine find(int id, DataConnection dc) {
     String query = getSelectWhereExpression("WHERE oid = " + id, 1);
-    Vector<OrderLine> ve = getResult(query, dc);
+    List<OrderLine> ve = getResult(query, dc);
     if (ve != null && ve.size() > 0) {
-      return ve.elementAt(0);
+      return ve.get(0);
     }
     return null;
   }
@@ -263,8 +264,8 @@ public class OrderLineIO
       + " AND payeur = " + e.getPayer()
       + " AND echeance = '" + e.getDate() + "'"
       + " AND abs(montant) = " + Math.abs(e.getAmount());
-    Vector<OrderLine> r = getResult(query, dc);
-    return (r == null || r.isEmpty()) ? null : r.elementAt(0);
+    List<OrderLine> r = getResult(query, dc);
+    return (r == null || r.isEmpty()) ? null : r.get(0);
   }
 
   /**
@@ -275,7 +276,7 @@ public class OrderLineIO
    * @param dc dataConnection instance
    * @return une liste d'échéances
    */
-  public static Vector<OrderLine> find(String where, int limit, DataConnection dc) {
+  public static List<OrderLine> find(String where, int limit, DataConnection dc) {
     String query = getSelectWhereExpression(where, limit);
     return getResult(query, dc);
   }
@@ -385,7 +386,7 @@ public class OrderLineIO
    * @param dc
    * @return a list of order lines
    */
-  public static Vector<OrderLine> getOrderLines(String query, DataConnection dc) {
+  public static List<OrderLine> getOrderLines(String query, DataConnection dc) {
     return getResult(query, dc);
   }
 
@@ -458,10 +459,9 @@ public class OrderLineIO
     return num;
   }
 
-  private static Vector<OrderLine> getResult(String query, DataConnection dc) {
-    Vector<OrderLine> v = new Vector<OrderLine>();
-    try {
-      ResultSet rs = dc.executeQuery(query);
+  private static List<OrderLine> getResult(String query, DataConnection dc) {
+    List<OrderLine> v = new ArrayList<>();
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         OrderLine e = new OrderLine();
         e.setId(rs.getInt(1));
@@ -497,16 +497,15 @@ public class OrderLineIO
         e.setGroup(rs.getInt(17));
         e.setTax(rs.getFloat(18));
 
-        v.addElement(e);
+        v.add(e);
       }
-      rs.close();
     } catch (SQLException e) {
       GemLogger.logException(query, e);
     }
     return v;
   }
 
-  public static Vector<OrderLine> getBillingOrderLines(DataConnection dc) {
+  public static List<OrderLine> getBillingOrderLines(DataConnection dc) {
 //    String where = "oid IN (SELECT id_echeancier FROM " + InvoiceIO.JOIN_TABLE + ")";
     String where = "WHERE facture IS NOT NULL";
     return find(where, dc);

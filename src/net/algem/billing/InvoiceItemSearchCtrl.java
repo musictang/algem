@@ -22,7 +22,8 @@ package net.algem.billing;
 
 import java.awt.CardLayout;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.BundleUtil;
 import net.algem.util.event.GemEventListener;
 import net.algem.util.module.GemDesktop;
@@ -66,16 +67,16 @@ public class InvoiceItemSearchCtrl
   @Override
   public void loadResult(String query) throws SQLException {
 
-    Vector<Item> v = service.getItems(query);
+    List<Item> v = service.getItems(query);
 
     if (v == null) {
       setStatus(EMPTY_LIST);
     } else if (v.size() == 1) {
-      InvoiceItem af = new InvoiceItem(v.elementAt(0));
+      InvoiceItem af = new InvoiceItem(v.get(0));
       ((CardLayout) wCard.getLayout()).show(wCard, "masque");
       mask.loadCard(af);
     } else {
-      Vector<InvoiceItem> vf = new Vector<InvoiceItem>();
+      List<InvoiceItem> vf = new ArrayList<>();
       for (Item a : v) {
         vf.add(new InvoiceItem(a));
       }

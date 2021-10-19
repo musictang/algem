@@ -27,7 +27,6 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -84,7 +83,7 @@ public class AccountMatchingCfg
     table = new JTable(tableModel);
     table.setRowHeight(table.getRowHeight() + 3);
 
-    GemChoice accountSelector = new AccountChoice(new Vector<Account>(personalAccounts));
+    GemChoice accountSelector = new AccountChoice(personalAccounts);
     GemChoice revenueSelector = new ParamChoice(revenueAccounts);
     table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(accountSelector));
     table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(revenueSelector));

@@ -27,7 +27,6 @@ import java.awt.GridBagLayout;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -93,7 +92,7 @@ public class AccountDocumentTransferDlg
 
     String payment = view.getModeOfPayment();
 
-    Vector<OrderLine> orderLines = getOrderLines(
+    List<OrderLine> orderLines = getOrderLines(
       payment,
       view.getDateStart(),
       view.getDateEnd(),
@@ -141,7 +140,7 @@ public class AccountDocumentTransferDlg
     setCursor(Cursor.getDefaultCursor());
   }
 
-  private Vector<OrderLine> getOrderLines(String modeOfPayment, DateFr start, DateFr end, String document, boolean unpaid) {
+  private List<OrderLine> getOrderLines(String modeOfPayment, DateFr start, DateFr end, String document, boolean unpaid) {
 
     String query = "WHERE echeance >= '" + start + "' AND echeance <= '" + end
       + "' AND piece = '" + document

@@ -51,7 +51,7 @@ public class SchoolCtrl extends ParamTableCtrl
 
   @Override
   public void load() {
-    load(Collections.enumeration(ParamTableIO.find(TABLE, SORT_COLUMN, dc)));
+    load(ParamTableIO.find(TABLE, SORT_COLUMN, dc));
   }
 
   @Override

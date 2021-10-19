@@ -21,7 +21,6 @@
 package net.algem.config;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
@@ -53,7 +52,7 @@ public class MaritalStatusCtrl
   @Override
   public void load() {
     try {
-      load(Collections.enumeration(paramService.load()));
+      load(paramService.load());
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }

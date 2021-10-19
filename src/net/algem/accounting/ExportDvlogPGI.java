@@ -27,8 +27,9 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.List;
 import net.algem.billing.VatIO;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
@@ -65,7 +66,7 @@ public class ExportDvlogPGI
     }
 
     @Override
-    public void export(String path, Vector<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
+    public void export(String path, List<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
         int totalDebit = 0;
         int totalCredit = 0;
         String number = (documentAccount == null) ? "" : documentAccount.getNumber();
@@ -73,7 +74,7 @@ public class ExportDvlogPGI
         PrintWriter out = new PrintWriter(new FileWriter(path));
 
         for (int i = 0, n = orderLines.size(); i < n; i++) {
-            e = orderLines.elementAt(i);
+            e = orderLines.get(i);
             if (e.getAmount() > 0) {
                 totalDebit += e.getAmount();
             } else {
@@ -121,7 +122,7 @@ public class ExportDvlogPGI
     }
 
     @Override
-    public int tiersExport(String path, Vector<OrderLine> orderLines) throws IOException, SQLException {
+    public int tiersExport(String path, List<OrderLine> orderLines) throws IOException, SQLException {
         VatIO vatIO = new VatIO(dbx);
         int errors = 0;
         boolean m1 = false;
@@ -134,7 +135,7 @@ public class ExportDvlogPGI
         try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
             OrderLine e = null;
             for (int i = 0, n = orderLines.size(); i < n; i++) {
-                e = orderLines.elementAt(i);
+                e = orderLines.get(i);
                 if (!AccountUtil.isPersonalAccount(e.getAccount())) {
                     errors++;
                     log.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);

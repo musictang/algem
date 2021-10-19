@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
 import net.algem.billing.VatIO;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
@@ -76,7 +75,7 @@ extends CommonAccountExportService
   }
 
   @Override
-  public void export(String path, Vector<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException {
+  public void export(String path, List<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException {
     int totalDebit = 0;
     int totalCredit = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
@@ -88,7 +87,7 @@ extends CommonAccountExportService
       StringBuilder sb = new StringBuilder();
 
       for (int i = 0, n = lines.size(); i < n; i++) {
-        e = lines.elementAt(i);
+        e = lines.get(i);
         if (e.getAmount() > 0) {
           totalDebit += e.getAmount();
         } else {
@@ -151,7 +150,7 @@ extends CommonAccountExportService
   }
 
   @Override
-  public int tiersExport(String path, Vector<OrderLine> lines) throws IOException, SQLException {
+  public int tiersExport(String path, List<OrderLine> lines) throws IOException, SQLException {
     VatIO vatIO = new VatIO(dbx);
     OrderLine e = null;
     int errors = 0;
@@ -168,7 +167,7 @@ extends CommonAccountExportService
       StringBuilder sb = new StringBuilder();
 
       for (int i = 0, n = lines.size(); i < n; i++) {
-        e = lines.elementAt(i);
+        e = lines.get(i);
         if (!AccountUtil.isPersonalAccount(e.getAccount())) {
           errors++;
           logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);

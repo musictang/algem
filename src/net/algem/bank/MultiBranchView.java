@@ -28,8 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
@@ -51,7 +50,7 @@ public class MultiBranchView
 
   private MultiBranchTableModel branchTableModel;
   private JTable branchTable;
-  private Vector<BankBranch> branches;
+  private List<BankBranch> branches;
   private GemField bankCodeField;
   private GemField branchCodeField;
   private ActionListener actionListener;
@@ -117,20 +116,18 @@ public class MultiBranchView
       tce.stopCellEditing();
     }
     int n = branchTable.getSelectedRow();
-    return (BankBranch) branches.elementAt(n);
+    return branches.get(n);
   }
 
   void addBranch(BankBranch a) {
-    branches.addElement(a);
+    branches.add(a);
     branchTableModel.addItem(a);
     //addAdresse(a.getAdresse());
   }
 
-  void loadBranches(Vector<BankBranch> v) {
+  void loadBranches(List<BankBranch> v) {
     branches = v;
-    Enumeration<BankBranch> e = v.elements();
-    while (e.hasMoreElements()) {
-      BankBranch a = e.nextElement();
+    for (BankBranch a : v) {
       //addAdresse(a.getAdresse());//remplissage du table model
       branchTableModel.addItem(a);
     }

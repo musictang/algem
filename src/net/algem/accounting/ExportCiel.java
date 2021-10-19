@@ -31,8 +31,8 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import net.algem.billing.VatIO;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
@@ -70,7 +70,7 @@ public class ExportCiel
   }
 
   @Override
-  public void export(String path, Vector<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
+  public void export(String path, List<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
     int totalDebit = 0;
     int totalCredit = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
@@ -79,7 +79,7 @@ public class ExportCiel
     try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.ISO_8859_1), true)) {
       String movement = "1";
       for (int i = 0, n = orderLines.size(); i < n; i++) {
-        e = orderLines.elementAt(i);
+        e = orderLines.get(i);
         if (e.getAmount() > 0) {
           totalDebit += e.getAmount();
         } else {
@@ -139,7 +139,7 @@ public class ExportCiel
   }
 
   @Override
-  public int tiersExport(String path, Vector<OrderLine> orderLines) throws IOException, SQLException {
+  public int tiersExport(String path, List<OrderLine> orderLines) throws IOException, SQLException {
     VatIO vatIO = new VatIO(dbx);
     OrderLine e = null;
     int errors = 0;
@@ -154,7 +154,7 @@ public class ExportCiel
     try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.ISO_8859_1), true)) {
       int movement = 1;
       for (int i = 0, n = orderLines.size(); i < n; i++) {
-        e = orderLines.elementAt(i);
+        e = orderLines.get(i);
         if (!AccountUtil.isPersonalAccount(e.getAccount())) {
           errors++;
           logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);

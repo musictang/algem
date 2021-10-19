@@ -25,7 +25,6 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.Vector;
 import javax.swing.JCheckBox;
 import net.algem.contact.teacher.*;
 import net.algem.course.Course;

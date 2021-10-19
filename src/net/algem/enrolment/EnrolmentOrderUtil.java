@@ -465,7 +465,7 @@ public class EnrolmentOrderUtil {
    */
   ArrayList<OrderLine> setQuarterOrderLines(ModuleOrder moduleOrder, OrderLine e, List<DateFr> dates) {
     ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
-//    Vector<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
+//    List<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
     int firstDocumentNumber = 0;
     try {
       firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey()));

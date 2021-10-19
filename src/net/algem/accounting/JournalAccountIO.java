@@ -22,91 +22,99 @@ package net.algem.accounting;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
 /**
  * Journal account persistence.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.6.a
  * @since 2.2.a
  */
 public class JournalAccountIO
-        extends TableIO
-{
+        extends TableIO {
 
-  public static final String TABLE = "journalcompta";
-  public static final String SEQUENCE = "journalcompta_id_seq";
-  public static final String COLUMNS = "id,code,libelle,compte";
+    public static final String TABLE = "journalcompta";
+    public static final String SEQUENCE = "journalcompta_id_seq";
+    public static final String COLUMNS = "id,code,libelle,compte";
 
-  public static Vector<JournalAccount> find(DataConnection dc) throws SQLException {
-    String query = "SELECT " + COLUMNS + " FROM " + TABLE;
-    ResultSet rs = dc.executeQuery(query);
+    public static List<JournalAccount> find(DataConnection dc) {
+        String query = "SELECT " + COLUMNS + " FROM " + TABLE;
+        List<JournalAccount> journaux = new ArrayList<>();
+        try (ResultSet rs = dc.executeQuery(query)) {
 
-    Vector<JournalAccount> journaux = new Vector<JournalAccount>();
-    while (rs.next()) {
-      JournalAccount jc = new JournalAccount(rs.getString(1), rs.getString(2));
-      jc.setLabel(rs.getString(3));
-      Account c = AccountIO.find(rs.getInt(4), dc);
-      jc.setAccount(c);
+            while (rs.next()) {
+                JournalAccount jc = new JournalAccount(rs.getString(1), rs.getString(2));
+                jc.setLabel(rs.getString(3));
+                Account c = AccountIO.find(rs.getInt(4), dc);
+                jc.setAccount(c);
 
-      journaux.addElement(jc);
+                journaux.add(jc);
+            }
+        } catch (SQLException ignore) {
+        }
+        return journaux.isEmpty() ? null : journaux;
     }
 
-    return journaux.isEmpty() ? null : journaux;
-  }
-
-  public static JournalAccount find(JournalAccount j, DataConnection dc) throws SQLException {
-    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id = " + j.getKey();
-    ResultSet rs = dc.executeQuery(query);
-    if (!rs.next()) {
-      return null;
+    public static JournalAccount find(JournalAccount j, DataConnection dc) {
+        String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id = " + j.getKey();
+        try (ResultSet rs = dc.executeQuery(query)) {
+            if (!rs.next()) {
+                return null;
+            }
+            JournalAccount jc = new JournalAccount(rs.getString(1), rs.getString(2));
+            jc.setLabel(rs.getString(3));
+            Account c = AccountIO.find(rs.getInt(4), dc);
+            jc.setAccount(c);
+            return jc;
+        } catch (SQLException ignore) {
+        }
+        return null;
     }
-    JournalAccount jc = new JournalAccount(rs.getString(1), rs.getString(2));
-    jc.setLabel(rs.getString(3));
-    Account c = AccountIO.find(rs.getInt(4), dc);
-    jc.setAccount(c);
-    return jc;
-  }
 
-  public static JournalAccount find(int account, DataConnection dc) throws SQLException {
-    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE compte='" + account + "'";
-    ResultSet rs = dc.executeQuery(query);
-    if (!rs.next()) {
-      return null;
+    public static JournalAccount find(int account, DataConnection dc) throws SQLException {
+        String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE compte='" + account + "'";
+        try (ResultSet rs = dc.executeQuery(query)) {
+        if (!rs.next()) {
+            return null;
+        }
+        JournalAccount jc = new JournalAccount(rs.getString(1), rs.getString(2));
+        jc.setLabel(rs.getString(3));
+        Account c = AccountIO.find(rs.getInt(4), dc);
+        jc.setAccount(c);
+        return jc;
+        } catch (SQLException ignore) {
+        }
+        return null;
     }
-    JournalAccount jc = new JournalAccount(rs.getString(1), rs.getString(2));
-    jc.setLabel(rs.getString(3));
-    Account c = AccountIO.find(rs.getInt(4), dc);
-    jc.setAccount(c);
-    return jc;
-  }
 
-  public static void insert(JournalAccount j, DataConnection dc) throws SQLException {
+    public static void insert(JournalAccount j, DataConnection dc) throws SQLException {
 
-    int id = TableIO.nextId(SEQUENCE, dc);
+        int id = TableIO.nextId(SEQUENCE, dc);
 
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + id + ",'" + j.getValue() + "','" + j.getLabel() + "','" + j.getAccount().getId() + "')";
-    
-    dc.executeUpdate(query);
-    j.setKey(String.valueOf(id));
-  }
+        String query = "INSERT INTO " + TABLE + " VALUES("
+                + id + ",'" + j.getValue() + "','" + j.getLabel() + "','" + j.getAccount().getId() + "')";
 
-  public static void update(JournalAccount j, DataConnection dc) throws SQLException {
-    String[] columns = COLUMNS.split(",");
+        dc.executeUpdate(query);
+        j.setKey(String.valueOf(id));
+    }
 
-    String query = "UPDATE " + TABLE + " SET " + columns[1] + " = '" + j.getValue()
-            + "', " + columns[2] + " = '" + j.getLabel()
-            + "', " + columns[3] + " = '" + j.getAccount().getId()
-            + "' WHERE id = " + j.getKey();
-    dc.executeUpdate(query);
+    public static void update(JournalAccount j, DataConnection dc) throws SQLException {
+        String[] columns = COLUMNS.split(",");
 
-  }
+        String query = "UPDATE " + TABLE + " SET " + columns[1] + " = '" + j.getValue()
+                + "', " + columns[2] + " = '" + j.getLabel()
+                + "', " + columns[3] + " = '" + j.getAccount().getId()
+                + "' WHERE id = " + j.getKey();
+        dc.executeUpdate(query);
 
-  public static void delete(JournalAccount j, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + j.getKey();
-    dc.executeUpdate(query);
-  }
+    }
+
+    public static void delete(JournalAccount j, DataConnection dc) throws SQLException {
+        String query = "DELETE FROM " + TABLE + " WHERE id = " + j.getKey();
+        dc.executeUpdate(query);
+    }
 }

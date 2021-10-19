@@ -21,7 +21,6 @@
 package net.algem.rental;
 
 import java.util.List;
-import java.util.Vector;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoiceModel;
 

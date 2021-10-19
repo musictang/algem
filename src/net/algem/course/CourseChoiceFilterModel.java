@@ -21,7 +21,7 @@
 
 package net.algem.course;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
 import net.algem.util.ui.GemChoiceFilterModel;
@@ -36,7 +36,7 @@ public abstract class CourseChoiceFilterModel
   extends GemChoiceFilterModel
 {
 
-  public CourseChoiceFilterModel(Vector<? extends GemModel> list) {
+  public CourseChoiceFilterModel(List<? extends GemModel> list) {
     super(list);
   }
 

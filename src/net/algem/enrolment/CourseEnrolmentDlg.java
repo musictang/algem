@@ -27,7 +27,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.List;
 import java.util.Vector;

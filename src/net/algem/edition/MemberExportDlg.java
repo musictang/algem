@@ -77,11 +77,7 @@ public class MemberExportDlg
     GridBagHelper gb = new GridBagHelper(pCriterion);
 
     schoolChoice = new ParamChoice(ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dc));
-    try {
-      account = new AccountChoice(AccountIO.find(true, dc));
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-    }
+    account = new AccountChoice(AccountIO.find(true, dc));
 
     account.addItem(new Account(-1, "", MessageUtil.getMessage("export.criterium.any.account")));
     costAccount = new ParamChoice(ParamTableIO.find(CostAccountCtrl.tableName, CostAccountCtrl.columnName, dc));

@@ -414,7 +414,7 @@ if (total <= 0 || (total - inv.getDownPayment()) <= 0) return; //XXX TEST
   }
 
   @Override
-  public Vector<Item> getItems(String where) throws SQLException {
+  public List<Item> getItems(String where) throws SQLException {
     return itemIO.find(where);
   }
 

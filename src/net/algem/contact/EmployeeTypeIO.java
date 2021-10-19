@@ -18,13 +18,12 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.contact;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.config.GemParam;
 import net.algem.config.GemParamIO;
 import net.algem.util.BundleUtil;
@@ -38,65 +37,65 @@ import net.algem.util.model.Cacheable;
  * @since 2.8.v 28/05/14
  */
 public class EmployeeTypeIO
-  extends GemParamIO
-  implements Cacheable
-{
+        extends GemParamIO
+        implements Cacheable {
 
-  private final static String COLS = "id, libelle";
-  private final static String TABLE = "categorie_salarie";
-  private final static String SEQUENCE = "categorie_salarie_id_seq";
+    private final static String COLS = "id, libelle";
+    private final static String TABLE = "categorie_salarie";
+    private final static String SEQUENCE = "categorie_salarie_id_seq";
 
-  public EmployeeTypeIO(DataConnection dc) {
-    this.dc = dc;
-  }
-
-  @Override
-  protected String getSequence() {
-    return SEQUENCE;
-  }
-
-  @Override
-  protected String getTable() {
-    return TABLE;
-  }
-
-  @Override
-  public List<GemParam> load() throws SQLException {
-    return find();
-  }
-
-  @Override
-  public Vector<GemParam> find(String where) throws SQLException {
-    String query = "SELECT " + COLS + " FROM " + getTable();
-    if (where != null) {
-      query += " " + where;
+    public EmployeeTypeIO(DataConnection dc) {
+        this.dc = dc;
     }
-    query += " ORDER BY id";
-    Vector<GemParam> vn = new Vector<GemParam>();
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      GemParam n = new GemParam(rs.getInt(1));
-      //n.setLabel(rs.getString(2));
-      n.setLabel(getLocalizedLabel(rs.getInt(1)));
-      vn.addElement(n);
-    }
-    return vn;
-  }
 
-  private String getLocalizedLabel(int idx) {
-    switch (idx) {
-      case 0:
-        return BundleUtil.getLabel("None.label");
-      case 1:
-        return BundleUtil.getLabel("Teacher.label");
-      case 2:
-        return BundleUtil.getLabel("Technician.label");
-      case 3:
-        return BundleUtil.getLabel("Administrative.label");
-      case 4:
-        return BundleUtil.getLabel("Artist.label");
+    @Override
+    protected String getSequence() {
+        return SEQUENCE;
     }
-    return BundleUtil.getLabel("To.define.label");
-  }
+
+    @Override
+    protected String getTable() {
+        return TABLE;
+    }
+
+    @Override
+    public List<GemParam> load() throws SQLException {
+        return find();
+    }
+
+    @Override
+    public List<GemParam> find(String where) throws SQLException {
+        String query = "SELECT " + COLS + " FROM " + getTable();
+        if (where != null) {
+            query += " " + where;
+        }
+        query += " ORDER BY id";
+        List<GemParam> vn = new ArrayList<>();
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                GemParam n = new GemParam(rs.getInt(1));
+                //n.setLabel(rs.getString(2));
+                n.setLabel(getLocalizedLabel(rs.getInt(1)));
+                vn.add(n);
+            }
+        }
+        return vn;
+    }
+
+    private String getLocalizedLabel(int idx) {
+        switch (idx) {
+            case 0:
+                return BundleUtil.getLabel("None.label");
+            case 1:
+                return BundleUtil.getLabel("Teacher.label");
+            case 2:
+                return BundleUtil.getLabel("Technician.label");
+            case 3:
+                return BundleUtil.getLabel("Administrative.label");
+            case 4:
+                return BundleUtil.getLabel("Artist.label");
+        }
+        return BundleUtil.getLabel("To.define.label");
+    }
 
 }

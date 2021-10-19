@@ -22,11 +22,10 @@ package net.algem.bank;
 
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import java.util.logging.Level;
 import net.algem.contact.AddressIO;
 import net.algem.contact.CodePostalCtrl;
-import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -126,7 +125,7 @@ public class BankBranchCtrl
 //    BankBranch a = branchView.getBankBranch();
     
     try {
-      Vector<Rib> ribs = BranchIO.getRibs(branch.getId(), dc);
+      List<Rib> ribs = BranchIO.getRibs(branch.getId(), dc);
       if (ribs != null && ribs.size() > 0) {
         StringBuilder sb = new StringBuilder();
         for (Rib r : ribs) {

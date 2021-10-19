@@ -23,8 +23,8 @@ package net.algem.billing;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -83,15 +83,16 @@ public class ItemIO
     return n;
   }
 
-  public Vector<Item> find(String where) throws SQLException {
+  public List<Item> find(String where) throws SQLException {
 
-    Vector<Item> v = new Vector<Item>();
+    List<Item> v = new ArrayList<>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
-    ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
     while (rs.next()) {
       Item a = new Item(rs.getInt(1), rs.getString(2), rs.getDouble(3), rs.getInt(5), rs.getBoolean(6));
       a.setTax(getVat(rs.getInt(4)));
       v.add(a);
+    }
     }
     return v;
   }

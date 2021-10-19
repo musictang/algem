@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import net.algem.billing.VatIO;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
@@ -61,7 +61,7 @@ public class ExportOpenConcerto
   }
 
   @Override
-  public void export(String path, Vector<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException {
+  public void export(String path, List<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException {
     int totalDebit = 0;
     int totalCredit = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
@@ -74,7 +74,7 @@ public class ExportOpenConcerto
     try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
       StringBuilder sb = new StringBuilder();
       for (int i = 0, n = lines.size(); i < n; i++) {
-        e = lines.elementAt(i);
+        e = lines.get(i);
         String label = e.getLabel() == null ? "" : e.getLabel().replaceAll("\"", "");
         if (e.getAmount() > 0) {
           totalDebit += e.getAmount();
@@ -126,7 +126,7 @@ public class ExportOpenConcerto
   }
 
   @Override
-  public int tiersExport(String path, Vector<OrderLine> lines) throws IOException, SQLException {
+  public int tiersExport(String path, List<OrderLine> lines) throws IOException, SQLException {
     VatIO vatIO = new VatIO(dbx);
     OrderLine e = null;
     int errors = 0;
@@ -141,7 +141,7 @@ public class ExportOpenConcerto
     try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
       StringBuilder sb = new StringBuilder();
       for (int i = 0, n = lines.size(); i < n; i++) {
-        e = lines.elementAt(i);
+        e = lines.get(i);
         String label = e.getLabel() == null ? "" : e.getLabel().replaceAll("\"", "");
         if (!AccountUtil.isPersonalAccount(e.getAccount())) {
           errors++;

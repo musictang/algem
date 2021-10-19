@@ -30,7 +30,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;

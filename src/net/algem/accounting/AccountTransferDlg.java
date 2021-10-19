@@ -32,8 +32,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -124,14 +124,14 @@ public abstract class AccountTransferDlg
     }
   }
 
-  protected void updateTransfer(Vector<OrderLine> list) throws SQLException {
+  protected void updateTransfer(List<OrderLine> list) throws SQLException {
     if (MessagePopup.confirm(this,
             MessageUtil.getMessage("payment.transfer.confirm"),
             MessageUtil.getMessage("payment.transfer.confirm.title"))) {
       GemLogger.log(Level.INFO, "ComptaTransfertDlg");
       int n = list.size();
       for (int i = 0; i < n; i++) {
-        OrderLine e = list.elementAt(i);
+        OrderLine e = list.get(i);
         e.setTransfered(true);
         OrderLineIO.transfer(e, dc);
       }
@@ -153,8 +153,8 @@ public abstract class AccountTransferDlg
    * @param orderLines the lines to filter
    * @return a list of (possibly) filtered orderLines
    */
-  protected Vector<OrderLine> filter(Vector<OrderLine> orderLines) {
-    Vector<OrderLine> filtered = new Vector<>();
+  protected List<OrderLine> filter(List<OrderLine> orderLines) {
+    List<OrderLine> filtered = new ArrayList<>();
     for(OrderLine ol : orderLines) {
       if (!ModeOfPayment.FAC.name().equals(ol.getModeOfPayment())
         && AccountUtil.isPersonalAccount(ol.getAccount())

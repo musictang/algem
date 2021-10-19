@@ -25,7 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 
@@ -103,12 +103,12 @@ public class BankCodeCtrl
     bankCode = branchView.getBankCode();
     Bank b = BankIO.findCode(bankCode, dc);
 
-    Vector<BankBranch> v = bankBranchIO.findCode(bankCode, branchCode);
+    List<BankBranch> v = bankBranchIO.findCode(bankCode, branchCode);
     if (v.isEmpty()) { // s'il n'existe pas d'agence
       branchView.setBankBranch(null);
       //return;//creation si le codeguichet n'existe pas, commenté par jm depuis version 2.0pc
     } else if (v.size() == 1 && !b.isMulti() && !dlg) {
-        branchView.setBankBranch((BankBranch) v.elementAt(0));
+        branchView.setBankBranch((BankBranch) v.get(0));
         return;
     }
     if (createFlag) {
@@ -121,7 +121,7 @@ public class BankCodeCtrl
     searchBranch(branchCode, false);
   }
 
-  private void openBranchDlg(Vector<BankBranch> v) {
+  private void openBranchDlg(List<BankBranch> v) {
     Component parent = (Component) branchView;
     MultiBranchDlg branchDlg = new MultiBranchDlg(parent, "code guichet", bankCode, branchCode);
     branchDlg.loadBranchs(v);

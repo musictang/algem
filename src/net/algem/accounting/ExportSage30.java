@@ -31,8 +31,8 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import net.algem.billing.VatIO;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
@@ -79,7 +79,7 @@ public class ExportSage30
   /**
    * Export to 105 characters SAGE pnm format.
    */
-  public void export(String path, Vector<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
+  public void export(String path, List<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
     int totalDebit = 0;
     int totalCredit = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
@@ -91,7 +91,7 @@ public class ExportSage30
       out.print(TextUtil.truncate(dossierName, 30) + "\r\n");
 
       for (int i = 0, n = orderLines.size(); i < n; i++) {
-        e = orderLines.elementAt(i);
+        e = orderLines.get(i);
         Account a = e.getCostAccount();
         if (e.getAmount() > 0) {
           totalDebit += e.getAmount();
@@ -185,7 +185,7 @@ public class ExportSage30
   }
 
   @Override
-  public int tiersExport(String path, Vector<OrderLine> orderLines) throws IOException, SQLException {
+  public int tiersExport(String path, List<OrderLine> orderLines) throws IOException, SQLException {
     VatIO vatIO = new VatIO(dbx);
     OrderLine e = null;
     int errors = 0;
@@ -202,7 +202,7 @@ public class ExportSage30
       out.print(TextUtil.truncate(dossierName, 30) + "\r\n");
 
       for (int i = 0, n = orderLines.size(); i < n; i++) {
-        e = orderLines.elementAt(i);
+        e = orderLines.get(i);
         if (!AccountUtil.isPersonalAccount(e.getAccount())) {
           errors++;
           logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);

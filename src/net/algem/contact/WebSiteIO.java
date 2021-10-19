@@ -22,7 +22,8 @@ package net.algem.contact;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -32,110 +33,113 @@ import net.algem.util.model.TableIO;
  * @version 2.9.7
  */
 public class WebSiteIO
-        extends TableIO
-{
+        extends TableIO {
 
-  public final static String TABLE = "siteweb";
-  public final static String COLUMNS = "idx, ipder, url, type, ptype";
+    public final static String TABLE = "siteweb";
+    public final static String COLUMNS = "idx, ipder, url, type, ptype";
 
-  /**
-   * 
-   * @param w web site
-   * @param idx index
-   * @param dc data connection
-   * @throws SQLException 
-   */
-  public static void insert(WebSite w, int idx, DataConnection dc) throws SQLException {
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + idx
-            + "," + w.getIdper()
-            + ",'" + w.getUrl()
-            + "'," + w.getType()
-            + ", " + w.getPtype();
-    query += ")";
+    /**
+     *
+     * @param w web site
+     * @param idx index
+     * @param dc data connection
+     * @throws SQLException
+     */
+    public static void insert(WebSite w, int idx, DataConnection dc) throws SQLException {
+        String query = "INSERT INTO " + TABLE + " VALUES("
+                + idx
+                + "," + w.getIdper()
+                + ",'" + w.getUrl()
+                + "'," + w.getType()
+                + ", " + w.getPtype();
+        query += ")";
 
-    dc.executeUpdate(query);
-  }
-
-  /**
-   * 
-   * @param s site
-   * @param idx index
-   * @param dc data connection
-   * @throws SQLException 
-   */
-  public static void update(WebSite s, int idx, DataConnection dc) throws SQLException {
-    String query = "UPDATE " + TABLE
-            + " SET url = '" + s.getUrl()
-            + "', type = " + s.getType()
-            + " WHERE idx = " + idx + " AND idper = " + s.getIdper();
-    if (s.getPtype() != 4) { // ptype room bug
-      query += " AND ptype = " + s.getPtype();
+        dc.executeUpdate(query);
     }
 
-    dc.executeUpdate(query);
-  }
+    /**
+     *
+     * @param s site
+     * @param idx index
+     * @param dc data connection
+     * @throws SQLException
+     */
+    public static void update(WebSite s, int idx, DataConnection dc) throws SQLException {
+        String query = "UPDATE " + TABLE
+                + " SET url = '" + s.getUrl()
+                + "', type = " + s.getType()
+                + " WHERE idx = " + idx + " AND idper = " + s.getIdper();
+        if (s.getPtype() != 4) { // ptype room bug
+            query += " AND ptype = " + s.getPtype();
+        }
 
-  /**
-   * 
-   * @param idper contact id
-   * @param ptype person type
-   * @param dc data connection
-   * @throws SQLException 
-   */
-  public static void delete(int idper, int ptype, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE idper = " + idper + " AND ptype = " + ptype;
-    dc.executeUpdate(query);
-  }
-
-  /**
-   * 
-   * @param s url
-   * @param idx index
-   * @param dc data connection
-   * @throws SQLException 
-   */
-  public static void delete(WebSite s, int idx, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE idper = " + s.getIdper() + " AND idx = " + idx
-            + " AND ptype = " + s.getPtype();
-    dc.executeUpdate(query);
-  }
-
-  public static Vector<WebSite> find(int idper, int ptype, DataConnection dc) throws SQLException {
-    Vector<WebSite> v = new Vector<WebSite>();
-    String query = "SELECT * FROM " + TABLE + " WHERE idper=" + idper + " AND ptype = " + ptype + " ORDER BY idx";
-
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      WebSite w = new WebSite();
-      w.setIdx(rs.getInt(1));
-      w.setIdper(rs.getInt(2));
-      w.setUrl(rs.getString(3).trim());
-      w.setType(rs.getInt(4));
-      w.setPtype(rs.getShort(5));
-
-      v.addElement(w);
+        dc.executeUpdate(query);
     }
-    rs.close();
 
-    return v;
-  }
-  
-  /**
-   * Find by type.
-   * @param type category
-   * @param dc data connection
-   * @return the number of results or 0 if no site found.
-   * @throws SQLException 
-   */
-  public static int find(int type, DataConnection dc) throws SQLException {
-    String query = "SELECT * FROM " + TABLE + " WHERE type = " + type; 
-    ResultSet rs = dc.executeQuery(query);
-    int count = 0;
-    while (rs.next()) {
-      count ++;
+    /**
+     *
+     * @param idper contact id
+     * @param ptype person type
+     * @param dc data connection
+     * @throws SQLException
+     */
+    public static void delete(int idper, int ptype, DataConnection dc) throws SQLException {
+        String query = "DELETE FROM " + TABLE + " WHERE idper = " + idper + " AND ptype = " + ptype;
+        dc.executeUpdate(query);
     }
-    return count;
-  }
-  
+
+    /**
+     *
+     * @param s url
+     * @param idx index
+     * @param dc data connection
+     * @throws SQLException
+     */
+    public static void delete(WebSite s, int idx, DataConnection dc) throws SQLException {
+        String query = "DELETE FROM " + TABLE + " WHERE idper = " + s.getIdper() + " AND idx = " + idx
+                + " AND ptype = " + s.getPtype();
+        dc.executeUpdate(query);
+    }
+
+    public static List<WebSite> find(int idper, int ptype, DataConnection dc) {
+        List<WebSite> v = new ArrayList<>();
+        String query = "SELECT * FROM " + TABLE + " WHERE idper=" + idper + " AND ptype = " + ptype + " ORDER BY idx";
+
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                WebSite w = new WebSite();
+                w.setIdx(rs.getInt(1));
+                w.setIdper(rs.getInt(2));
+                w.setUrl(rs.getString(3).trim());
+                w.setType(rs.getInt(4));
+                w.setPtype(rs.getShort(5));
+
+                v.add(w);
+            }
+        } catch (SQLException ignore) {
+        }
+
+        return v;
+    }
+
+    /**
+     * Find by type.
+     *
+     * @param type category
+     * @param dc data connection
+     * @return the number of results or 0 if no site found.
+     * @throws SQLException
+     */
+    public static int find(int type, DataConnection dc) throws SQLException {
+        String query = "SELECT * FROM " + TABLE + " WHERE type = " + type;
+        int count = 0;
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                count++;
+            }
+        } catch (SQLException ignore) {
+        }
+        return count;
+    }
+
 }

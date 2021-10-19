@@ -30,7 +30,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -44,9 +43,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
 import javax.swing.JFormattedTextField;
@@ -291,7 +290,7 @@ public class InvoiceView
     issuerName.setText(i);
 
     if (quote.getItems() != null) {
-      itemList.loadResult(new Vector<InvoiceItem>(quote.getItems()));
+      itemList.loadResult(new ArrayList<InvoiceItem>(quote.getItems()));
     }
 
     if (!isInvoice) {

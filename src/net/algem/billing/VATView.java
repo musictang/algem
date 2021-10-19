@@ -23,7 +23,7 @@ package net.algem.billing;
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import net.algem.accounting.Account;
@@ -52,7 +52,7 @@ public class VATView
   private GemChoice account;
   private JFormattedTextField rate;
 
-  public VATView(Vector<Account> accounts) {
+  public VATView(List<Account> accounts) {
 
     account = new AccountChoice(accounts);
     key = new GemNumericField(5);

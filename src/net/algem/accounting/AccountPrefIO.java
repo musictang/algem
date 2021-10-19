@@ -22,6 +22,8 @@ package net.algem.accounting;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import net.algem.config.Param;
 import net.algem.config.ParamTableIO;
@@ -31,168 +33,173 @@ import net.algem.util.model.TableIO;
 
 /**
  * Default accounts persistence.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.14.0
  * @since 2.1.i
  *
  */
 public class AccountPrefIO
-	extends TableIO {
+        extends TableIO {
 
-	public static final String TABLE = "comptepref";
-	public static final String[] COLUMNS = {"id", "idcompte", "idanalytique"};
-	public static final String MEMBERSHIP = "ADHÉSIONS";
+    public static final String TABLE = "comptepref";
+    public static final String[] COLUMNS = {"id", "idcompte", "idanalytique"};
+    public static final String MEMBERSHIP = "ADHÉSIONS";
     public static final String PRO_MEMBERSHIP = "ADHÉSIONS PRO";
-	public static final String LEISURE = "FORMATION LOISIR";
-	public static final String PRO = "FORMATION PROFESSIONNELLE";
-	public static final String REHEARSAL = "RÉPÉTITIONS";
-	public static final String CASH = "COMPTE DE CAISSE";
-	public static final String BANK = "COMPTE DE BANQUE";
-	public static final String PERSONAL = "DIVERS/TIERS";
+    public static final String LEISURE = "FORMATION LOISIR";
+    public static final String PRO = "FORMATION PROFESSIONNELLE";
+    public static final String REHEARSAL = "RÉPÉTITIONS";
+    public static final String CASH = "COMPTE DE CAISSE";
+    public static final String BANK = "COMPTE DE BANQUE";
+    public static final String PERSONAL = "DIVERS/TIERS";
 
-	public static void insert(Preference p, String tablename, DataConnection dc) throws SQLException {
-		Object[] values = p.getValues();
-		String query = "INSERT INTO " + tablename + " VALUES('" + p.getKey() + "','" + values[0] + "','" + values[1] + "')";
-		dc.executeUpdate(query);
-	}
+    public static void insert(Preference p, String tablename, DataConnection dc) throws SQLException {
+        Object[] values = p.getValues();
+        String query = "INSERT INTO " + tablename + " VALUES('" + p.getKey() + "','" + values[0] + "','" + values[1] + "')";
+        dc.executeUpdate(query);
+    }
 
-	public static void update(Preference p, DataConnection dc) throws SQLException {
-		Object[] values = p.getValues();
-		String query = "UPDATE " + TABLE + " SET " + COLUMNS[1] + " = '" + values[0] + "', "
-			+ COLUMNS[2] + " = '" + values[1] + "' WHERE " + COLUMNS[0] + " = '" + p.getKey() + "'";
-		dc.executeUpdate(query);
-	}
+    public static void update(Preference p, DataConnection dc) throws SQLException {
+        Object[] values = p.getValues();
+        String query = "UPDATE " + TABLE + " SET " + COLUMNS[1] + " = '" + values[0] + "', "
+                + COLUMNS[2] + " = '" + values[1] + "' WHERE " + COLUMNS[0] + " = '" + p.getKey() + "'";
+        dc.executeUpdate(query);
+    }
 
-	/**
+    /**
      * Retrieves the default accounts for the category {@code key}.
-	 *
-	 * @param dc
-	 * @param key the category
-	 * @return a preference
-	 * @throws SQLException
-	 */
-	public static Preference find(String key, DataConnection dc) throws SQLException {
-		String query = "SELECT * FROM " + TABLE + " WHERE " + COLUMNS[0] + " = '" + key + "'";
-		ResultSet rs = dc.executeQuery(query);
+     *
+     * @param dc
+     * @param key the category
+     * @return a preference
+     * @throws SQLException
+     */
+    public static Preference find(String key, DataConnection dc) throws SQLException {
+        String query = "SELECT * FROM " + TABLE + " WHERE " + COLUMNS[0] + " = '" + key + "'";
+        ResultSet rs = dc.executeQuery(query);
 
-		if (!rs.next()) {
-			return null;
-		}
-		Preference p = new Preference(rs.getString(1));
-		p.setValues(new Object[]{rs.getInt(2), rs.getString(3)});
-		return p;
-	}
-    
-    
+        if (!rs.next()) {
+            return null;
+        }
+        Preference p = new Preference(rs.getString(1));
+        p.setValues(new Object[]{rs.getInt(2), rs.getString(3)});
+        return p;
+    }
+
     /**
      * Gets the account instance corresponding to preference value (account id).
+     *
      * @param p preference
      * @param dc data connection
      * @return an account instance
-     * @throws SQLException 
+     * @throws SQLException
      */
-	public static Account getAccount(Preference p, DataConnection dc) throws SQLException {
-		return AccountIO.find((Integer) p.getValues()[0], dc);
-	}
-    
+    public static Account getAccount(Preference p, DataConnection dc) throws SQLException {
+        return AccountIO.find((Integer) p.getValues()[0], dc);
+    }
+
     /**
      * Checks if an account is used in preferred accounts.
+     *
      * @param accountId
      * @param dc data connection
      * @return true if this account has been set in preferred accounts
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static boolean containsAccount(int accountId, DataConnection dc) throws SQLException {
-      String query = "SELECT idcompte FROM " + AccountPrefIO.TABLE + " WHERE idcompte = " + accountId;
-      ResultSet rs = dc.executeQuery(query);
-      return rs.next();
+        String query = "SELECT idcompte FROM " + AccountPrefIO.TABLE + " WHERE idcompte = " + accountId;
+        ResultSet rs = dc.executeQuery(query);
+        return rs.next();
     }
-    
+
     /**
      * Checks if a cost account is found in preferred accounts.
+     *
      * @param accountId account number
      * @param dc data connection
      * @return true if this account has been set in preferred accounts
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static boolean containsCostAccount(String accountId, DataConnection dc) throws SQLException {
-      String query = "SELECT idanalytique FROM " + AccountPrefIO.TABLE + " WHERE idanalytique = '" + accountId + "'";
-      ResultSet rs = dc.executeQuery(query);
-      return rs.next();
+        String query = "SELECT idanalytique FROM " + AccountPrefIO.TABLE + " WHERE idanalytique = '" + accountId + "'";
+        ResultSet rs = dc.executeQuery(query);
+        return rs.next();
     }
 
-	public static Account getCostAccount(Preference p, DataConnection dc) {
-		return OrderLineIO.findAccount(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, (String) p.getValues()[1], dc);
-	}
+    public static Account getCostAccount(Preference p, DataConnection dc) {
+        return OrderLineIO.findAccount(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, (String) p.getValues()[1], dc);
+    }
 
-	public static Account getCostAccount(int idCompte, DataConnection dc) throws SQLException {
-		Account c = AccountIO.find(idCompte, dc);
-		for (Preference p : findAll(dc)) {
-			int idc = (Integer) p.getValues()[0];// idcompte
-			if (idc == c.getId()) {
-				Param a = ParamTableIO.findByKey(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, (String) p.getValues()[1], dc);
-				return new Account(a);
-				//return new Account((String)p.getValues()[1]); // idanalytique
-			}
-		}
-		return new Account("");
-	}
+    public static Account getCostAccount(int idCompte, DataConnection dc) throws SQLException {
+        Account c = AccountIO.find(idCompte, dc);
+        for (Preference p : findAll(dc)) {
+            int idc = (Integer) p.getValues()[0];// idcompte
+            if (idc == c.getId()) {
+                Param a = ParamTableIO.findByKey(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, (String) p.getValues()[1], dc);
+                return new Account(a);
+                //return new Account((String)p.getValues()[1]); // idanalytique
+            }
+        }
+        return new Account("");
+    }
 
-	/**
+    /**
      * Retrieves the different categories of default accounts.
-     * 
-	 * @param dc
-	 * @return an array of Strings
-	 * @throws SQLException
-	 */
-	public static String[] findKeys(DataConnection dc) throws SQLException {
-		String query = "SELECT DISTINCT " + COLUMNS[0] + " FROM " + TABLE;
-		ResultSet rs = dc.executeQuery(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+     *
+     * @param dc
+     * @return an array of Strings
+     * @throws SQLException
+     */
+    public static String[] findKeys(DataConnection dc) {
+        String query = "SELECT DISTINCT " + COLUMNS[0] + " FROM " + TABLE;
+        try (ResultSet rs = dc.executeQuery(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
-		if (!rs.last()) {
-			return null;
-		}
-		int count = rs.getRow();
-		rs.beforeFirst();
+        if (!rs.last()) {
+            return null;
+        }
+        int count = rs.getRow();
+        rs.beforeFirst();
 
-		String[] keys = new String[count];
-		int i = 0;
-		while (rs.next()) {
-			keys[i++] = rs.getString(1);
-		}
+        String[] keys = new String[count];
+        int i = 0;
+        while (rs.next()) {
+            keys[i++] = rs.getString(1);
+        }
+        return keys;
+        } catch (SQLException ignore) {}
+        return new String[0];
+    }
 
-		return keys;
-	}
+    /**
+     * Retrieves all the preferences for the default accounts.
+     *
+     * @param dc
+     * @return VecListtor<Preference>
+     * @throws SQLException
+     */
+    public static List<Preference> findAll(DataConnection dc) {
+        String query = "SELECT * FROM " + TABLE + " ORDER BY " + COLUMNS[0];
+        try (ResultSet rs = dc.executeQuery(query)) {
 
-	/**
-	 * Retrieves all the preferences for the default accounts.
-	 *
-	 * @param dc
-	 * @return Vector<Preference>
-	 * @throws SQLException
-	 */
-	public static Vector<Preference> findAll(DataConnection dc) throws SQLException {
-		String query = "SELECT * FROM " + TABLE + " ORDER BY " + COLUMNS[0];
-		ResultSet rs = dc.executeQuery(query);
+            if (!rs.next()) {
+                return null;
+            }
+            List<Preference> prefs = new ArrayList<>();
+            while (rs.next()) {
+                Preference p = new Preference(rs.getString(1));
+                p.setValues(new Object[]{rs.getInt(2), rs.getString(3)});
+                prefs.add(p);
+            }
+            if (prefs.size() > 0) {
+                return prefs;
+            }
+        } catch (SQLException ignore) {
+        }
+        return null;
+    }
 
-		if (!rs.next()) {
-			return null;
-		}
-		Vector<Preference> prefs = new Vector<Preference>();
-		while (rs.next()) {
-			Preference p = new Preference(rs.getString(1));
-			p.setValues(new Object[]{rs.getInt(2), rs.getString(3)});
-			prefs.addElement(p);
-		}
-		if (prefs.size() > 0) {
-			return prefs;
-		}
-		return null;
-	}
-
-	public static void delete(Preference p, DataConnection dc) throws SQLException {
-		String query = "DELETE FROM " + TABLE + " WHERE " + COLUMNS[0] + " = '" + p.getKey() + "')";
-		dc.executeQuery(query);
-	}
+    public static void delete(Preference p, DataConnection dc) throws SQLException {
+        String query = "DELETE FROM " + TABLE + " WHERE " + COLUMNS[0] + " = '" + p.getKey() + "')";
+        dc.executeQuery(query);
+    }
 }

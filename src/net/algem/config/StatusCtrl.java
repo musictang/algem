@@ -52,7 +52,7 @@ public class StatusCtrl
   public void load() {
     service = new ActionService(desktop.getDataCache());
     try {
-      load((Enumeration<? extends Param>) service.getStatusAll());
+      load(service.getStatusAll());
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }

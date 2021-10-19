@@ -21,7 +21,7 @@
 package net.algem.accounting;
 
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -42,25 +42,12 @@ public class JournalAccountService
     this.dc = dc;
   }
 
-  public Vector<JournalAccount> find() throws ModelException {
-    try {
+  public List<JournalAccount> find() {
       return JournalAccountIO.find(dc);
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-      throw new ModelNotFoundException(
-              MessageUtil.getMessage("journal.notfound.exception") + "\n(" + ex.getMessage() + ")");
-    }
   }
 
-  public JournalAccount find(JournalAccount j) throws ModelException {
-    try {
+  public JournalAccount find(JournalAccount j) {
       return JournalAccountIO.find(j, dc);
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-      throw new ModelNotFoundException(
-              MessageUtil.getMessage("journal.notfound.exception") + "\n(" + ex.getMessage() + ")");
-      //return null;
-    }
   }
 
   public JournalAccount find(int account) throws ModelNotFoundException {
@@ -103,13 +90,8 @@ public class JournalAccountService
     }
   }
 
-  public Vector<Account> getAccounts() {
-    try {
+  public List<Account> getAccounts() {
       return AccountIO.find(true, dc);
       //return ActivableParamTableIO.find(dc, ComptesCtrl.tableName, ComptesCtrl.columnName, ComptesCtrl.columnFilter);
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-      return null;
-    }
   }
 }

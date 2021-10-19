@@ -35,7 +35,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import javax.swing.JComboBox;
 import net.algem.planning.DateBar;
 import net.algem.planning.ScheduleDetailEvent;

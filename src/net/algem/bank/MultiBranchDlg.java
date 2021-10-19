@@ -24,7 +24,7 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JDialog;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemModule;
@@ -97,7 +97,7 @@ public class MultiBranchDlg
     return createBranch;
   }
 
-  void loadBranchs(Vector<BankBranch> v) {
+  void loadBranchs(List<BankBranch> v) {
     gv.loadBranches(v);
   }
 

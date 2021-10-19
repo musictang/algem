@@ -20,7 +20,7 @@
  */
 package net.algem.accounting;
 
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoice;
 
@@ -34,7 +34,7 @@ public class AccountChoice
         extends GemChoice
 {
 
-  public AccountChoice(Vector<Account> accounts) {
+  public AccountChoice(List<Account> accounts) {
     super(accounts);
   }
 

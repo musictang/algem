@@ -25,7 +25,6 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import net.algem.contact.Contact;
 import net.algem.contact.Email;

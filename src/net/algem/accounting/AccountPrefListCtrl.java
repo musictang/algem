@@ -27,7 +27,6 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -75,7 +74,7 @@ public class AccountPrefListCtrl
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     table.setRowHeight(table.getRowHeight() + 3);
     TableColumnModel cm = table.getColumnModel();
-    GemChoice accountSelector = new AccountChoice(new Vector<Account>(accounts));
+    GemChoice accountSelector = new AccountChoice(accounts);
     GemChoice costAccountSelector = new ParamChoice(costAccounts);
     TableColumn accountCol = cm.getColumn(1);
     TableColumn costAccountCol = cm.getColumn(2);

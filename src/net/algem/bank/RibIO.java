@@ -22,7 +22,8 @@ package net.algem.bank;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -89,18 +90,17 @@ public class RibIO
 
   public static Rib findId(int n, DataConnection dc) {
     String query = "WHERE idper = " + n;
-    Vector<Rib> v = find(query, dc);
+    List<Rib> v = find(query, dc);
     if (v.size() > 0) {
-      return (Rib) v.elementAt(0);
+      return (Rib) v.get(0);
     }
     return null;
   }
 
-  public static Vector<Rib> find(String where, DataConnection dc) {
-    Vector<Rib> v = new Vector<Rib>();
+  public static List<Rib> find(String where, DataConnection dc) {
+    List<Rib> v = new ArrayList<>();
     String query = "SELECT * FROM " + TABLE + " " + where;
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         Rib r = new Rib(rs.getInt(1));
         r.setEstablishment(rs.getString(2));
@@ -110,7 +110,7 @@ public class RibIO
         r.setBranchId(rs.getInt(6));
         r.setIban(rs.getString(7));
         
-        v.addElement(r);
+        v.add(r);
       }
     } catch (SQLException e) {
       v.clear();

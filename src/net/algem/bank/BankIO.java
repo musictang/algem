@@ -22,7 +22,8 @@ package net.algem.bank;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -71,28 +72,26 @@ public class BankIO
    */
   public static Bank findCode(String code, DataConnection dc) {
     String query = "WHERE code = '" + code + "'";
-    Vector<Bank> v = find(query, dc);
+    List<Bank> v = find(query, dc);
     if (v.size() > 0) {
-      return (Bank) v.elementAt(0);
+      return (Bank) v.get(0);
     }
     return null;
   }
 
-  public static Vector<Bank> find(String where, DataConnection dc) {
-    Vector<Bank> v = new Vector<Bank>();
+  public static List<Bank> find(String where, DataConnection dc) {
+    List<Bank> v = new ArrayList<>();
     String query = "SELECT * FROM " + TABLE + " " + where;
     query += " ORDER BY code";
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         Bank b = new Bank();
         b.setCode(rs.getString(1));
         b.setName(rs.getString(2).trim());
         b.setMulti(rs.getBoolean(3));
 
-        v.addElement(b);
+        v.add(b);
       }
-      rs.close();
     } catch (Exception e) {
       GemLogger.logException(query, e);
     }

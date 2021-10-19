@@ -22,7 +22,8 @@ package net.algem.bank;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.contact.AddressIO;
 import net.algem.contact.ContactIO;
 import net.algem.contact.Person;
@@ -39,144 +40,142 @@ import net.algem.util.model.TableIO;
  * @version 2.9.4.13
  */
 public class BankBranchIO
-        extends TableIO
-{
+        extends TableIO {
 
-  private DataConnection dc;
-  private ContactIO contactIO;
+    private DataConnection dc;
+    private ContactIO contactIO;
 
-  public BankBranchIO(DataConnection dc, ContactIO contactIO) {
-    this.dc = dc;
-    this.contactIO = contactIO;
-  }
-
-  public BankBranchIO(DataConnection dc) {
-    this.dc = dc;
-    contactIO = new ContactIO(dc);
-  }
-
-  public void insert(BankBranch a) throws SQLException {
-    dc.setAutoCommit(false);
-
-    try {
-      contactIO.insert(a);
-      BranchIO.insert(a, dc);
-      dc.commit();
-    } catch (SQLException e1) {
-      GemLogger.logException("transaction insert agence", e1);
-      dc.rollback();
-      throw e1;
-    } finally {
-      dc.setAutoCommit(true);
-    }
-  }
-
-  public void update(BankBranch a, BankBranch newBranch) throws SQLException {
-
-    try {
-      dc.setAutoCommit(false);
-      contactIO.update(a, newBranch);
-      if (!a.equals(newBranch)) { //XXX
-        newBranch.setId(a.getId());
-        BranchIO.update(newBranch, dc);
-      }
-      dc.commit();
-    } catch (SQLException e1) {
-      dc.rollback();
-      GemLogger.logException("transaction update agence", e1);
-      throw e1;
-    } finally {
-      dc.setAutoCommit(true);
-    }
-  }
-  
-  public void updateBIC(BankBranch bb) throws SQLException {
-    BranchIO.update(bb, dc);
-  }
-
-  public void update(int branchId, String bicCode) throws SQLException {
-    BranchIO.update(branchId, bicCode, dc);
-  }
-
-  void delete(BankBranch a) throws Exception {
-    dc.setAutoCommit(false);
-
-    try {      
-      contactIO.delete(a);
-      BranchIO.delete(a, dc);
-      dc.commit();
-    } catch (Exception e1) {
-      dc.rollback();
-      GemLogger.logException("transaction delete agence", e1);
-      throw e1;
-    } finally {
-      dc.setAutoCommit(true);
-    }
-  }
-
-  public BankBranch findId(int n) {
-    String query = "WHERE p.id = " + n;
-    Vector<BankBranch> v = find(query, true);
-    if (v.size() > 0) {
-      return v.elementAt(0);
-    }
-    return null;
-  }
-
-  public Vector<BankBranch> findRib(Rib r) {
-    return find(" WHERE b.code='" + r.getEstablishment() + "' and g.code='" + r.getBranch() + "'", true);
-  }
-
-  /**
-   *
-   * @param b bank code
-   * @param c branch code
-   * @return a list of bankbranch
-   */
-  public Vector<BankBranch> findCode(String b, String c) {
-    return find("WHERE g.code='" + c + "' AND b.code='" + b + "'", true);
-  }
-
-  /**
-   * Finds branches.
-   * @param where optional request
-   * @param full with contact information
-   * @return a list of branches
-   */
-  public Vector<BankBranch> find(String where, boolean full) {
-    Vector<BankBranch> v = new Vector<BankBranch>();
-    String query = "SELECT DISTINCT p.id,p.ptype,b.code, b.nom,b.multiguichet,g.code,g.domiciliation,g.bic FROM personne p, guichet g, banque b ";
-    if (where != null && where.length() > 0) {
-      query += where + " AND p.id = g.id";
-    } else {
-      query += " WHERE p.id = g.id";
+    public BankBranchIO(DataConnection dc, ContactIO contactIO) {
+        this.dc = dc;
+        this.contactIO = contactIO;
     }
 
-    query += " AND p.ptype=" + Person.BANK + " AND b.code = g.banque ORDER BY b.code,g.code";
-    try {
-      ResultSet rs = dc.executeQuery(query);
-      while (rs.next()) {
-        BankBranch a = new BankBranch();
-        a.setId(rs.getInt(1));
-        a.setType(rs.getShort(2));
-        Bank b = new Bank();
-        b.setCode(rs.getString(3).trim());
-        b.setName(rs.getString(4).trim());
-        b.setMulti(rs.getBoolean(5));
-        a.setBank(b);
-        a.setCode(rs.getString(6).trim());
-        a.setDomiciliation(rs.getString(7).trim());
-        if (full) {
-          a.setAddress(AddressIO.findId(a.getId(), dc));
-          a.setTele(TeleIO.findId(a.getId(), dc));
+    public BankBranchIO(DataConnection dc) {
+        this.dc = dc;
+        contactIO = new ContactIO(dc);
+    }
+
+    public void insert(BankBranch a) throws SQLException {
+        dc.setAutoCommit(false);
+
+        try {
+            contactIO.insert(a);
+            BranchIO.insert(a, dc);
+            dc.commit();
+        } catch (SQLException e1) {
+            GemLogger.logException("transaction insert agence", e1);
+            dc.rollback();
+            throw e1;
+        } finally {
+            dc.setAutoCommit(true);
         }
-        a.setBicCode(rs.getString(8));
-        v.addElement(a);
-      }
-      rs.close();
-    } catch (SQLException e) {
-      GemLogger.logException(query, e);
     }
-    return v;
-  }
+
+    public void update(BankBranch a, BankBranch newBranch) throws SQLException {
+
+        try {
+            dc.setAutoCommit(false);
+            contactIO.update(a, newBranch);
+            if (!a.equals(newBranch)) { //XXX
+                newBranch.setId(a.getId());
+                BranchIO.update(newBranch, dc);
+            }
+            dc.commit();
+        } catch (SQLException e1) {
+            dc.rollback();
+            GemLogger.logException("transaction update agence", e1);
+            throw e1;
+        } finally {
+            dc.setAutoCommit(true);
+        }
+    }
+
+    public void updateBIC(BankBranch bb) throws SQLException {
+        BranchIO.update(bb, dc);
+    }
+
+    public void update(int branchId, String bicCode) throws SQLException {
+        BranchIO.update(branchId, bicCode, dc);
+    }
+
+    void delete(BankBranch a) throws Exception {
+        dc.setAutoCommit(false);
+
+        try {
+            contactIO.delete(a);
+            BranchIO.delete(a, dc);
+            dc.commit();
+        } catch (Exception e1) {
+            dc.rollback();
+            GemLogger.logException("transaction delete agence", e1);
+            throw e1;
+        } finally {
+            dc.setAutoCommit(true);
+        }
+    }
+
+    public BankBranch findId(int n) {
+        String query = "WHERE p.id = " + n;
+        List<BankBranch> v = find(query, true);
+        if (v.size() > 0) {
+            return v.get(0);
+        }
+        return null;
+    }
+
+    public List<BankBranch> findRib(Rib r) {
+        return find(" WHERE b.code='" + r.getEstablishment() + "' and g.code='" + r.getBranch() + "'", true);
+    }
+
+    /**
+     *
+     * @param b bank code
+     * @param c branch code
+     * @return a list of bankbranch
+     */
+    public List<BankBranch> findCode(String b, String c) {
+        return find("WHERE g.code='" + c + "' AND b.code='" + b + "'", true);
+    }
+
+    /**
+     * Finds branches.
+     *
+     * @param where optional request
+     * @param full with contact information
+     * @return a list of branches
+     */
+    public List<BankBranch> find(String where, boolean full) {
+        List<BankBranch> v = new ArrayList<>();
+        String query = "SELECT DISTINCT p.id,p.ptype,b.code, b.nom,b.multiguichet,g.code,g.domiciliation,g.bic FROM personne p, guichet g, banque b ";
+        if (where != null && where.length() > 0) {
+            query += where + " AND p.id = g.id";
+        } else {
+            query += " WHERE p.id = g.id";
+        }
+
+        query += " AND p.ptype=" + Person.BANK + " AND b.code = g.banque ORDER BY b.code,g.code";
+        try (ResultSet rs = dc.executeQuery(query)) {
+            while (rs.next()) {
+                BankBranch a = new BankBranch();
+                a.setId(rs.getInt(1));
+                a.setType(rs.getShort(2));
+                Bank b = new Bank();
+                b.setCode(rs.getString(3).trim());
+                b.setName(rs.getString(4).trim());
+                b.setMulti(rs.getBoolean(5));
+                a.setBank(b);
+                a.setCode(rs.getString(6).trim());
+                a.setDomiciliation(rs.getString(7).trim());
+                if (full) {
+                    a.setAddress(AddressIO.findId(a.getId(), dc));
+                    a.setTele(TeleIO.findId(a.getId(), dc));
+                }
+                a.setBicCode(rs.getString(8));
+                v.add(a);
+            }
+        } catch (SQLException e) {
+            GemLogger.logException(query, e);
+        }
+        return v;
+    }
 }

@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import net.algem.accounting.Account;
 import net.algem.config.Param;
 import net.algem.planning.DateRange;
@@ -130,7 +129,7 @@ public interface BillingService
 
   public Item getItem(int id) throws SQLException;
 
-  public Vector<Item> getItems(String where) throws SQLException;
+  public List<Item> getItems(String where) throws SQLException;
 
   public Collection<InvoiceItem> findItemsByInvoiceId(String invNumber) throws SQLException;
 

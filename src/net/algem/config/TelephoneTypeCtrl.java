@@ -21,7 +21,6 @@
 package net.algem.config;
 
 import java.sql.SQLException;
-import java.util.Enumeration;
 import net.algem.util.module.GemDesktop;
 
 /**
@@ -42,7 +41,7 @@ public class TelephoneTypeCtrl extends ParamTableCtrl {
 
 	@Override
 	public void load() {
-		load((Enumeration<? extends Param>) ParamTableIO.find(TABLE, COLUMN_KEY, dc));
+		load(ParamTableIO.find(TABLE, COLUMN_KEY, dc));
 	}
 
 	@Override

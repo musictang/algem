@@ -28,7 +28,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import net.algem.config.Category;

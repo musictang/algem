@@ -20,10 +20,10 @@
  */
 package net.algem.accounting;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
-import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.TableElementModel;
 
@@ -39,7 +39,7 @@ public class OrderControlTableModel
         implements TableElementModel
 {
 
-  private Vector<String[]> payerLines = new Vector<String[]>();
+  private List<String[]> payerLines = new ArrayList<String[]>();
 
   public OrderControlTableModel() {
   }
@@ -48,33 +48,33 @@ public class OrderControlTableModel
    * Loads a list of orderlines.
    * @param lines
    */
-  public void load(Vector<String[]> lines) {
+  public void load(List<String[]> lines) {
     payerLines = lines;
     fireTableDataChanged();
   }
 
   public void clear() {
-    payerLines.removeAllElements();
+    payerLines.clear();
     fireTableDataChanged();
   }
 
   @Override
   public void addElement(Object p) {
-    payerLines.addElement((String[]) p);
+    payerLines.add((String[]) p);
     //modif 1.2b index -1
     fireTableRowsInserted(payerLines.size() - 1, payerLines.size() - 1);
   }
 
   public String[] getOrderLineAt(int line) {
-    return payerLines.elementAt(line);
+    return payerLines.get(line);
   }
 
   public void setOrderLineAt(String[] p, int line) {
-    payerLines.setElementAt(p, line);
+    payerLines.set(line, p);
     fireTableRowsUpdated(line, line);
   }
 
-  public Vector<String[]> getData() {
+  public List<String[]> getData() {
     return payerLines;
   }
 
@@ -85,7 +85,7 @@ public class OrderControlTableModel
 
   @Override
   public void setElementAt(Object o, int line) {
-    payerLines.setElementAt((String[]) o, line);
+    payerLines.set(line, (String[]) o);
     fireTableRowsUpdated(line, line);
   }
 
@@ -97,7 +97,7 @@ public class OrderControlTableModel
 
   @Override
   public Object getElementAt(int line) {
-    return payerLines.elementAt(line);
+    return payerLines.get(line);
   }
 
   @Override
@@ -151,7 +151,7 @@ public class OrderControlTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    String[] e = (String[]) payerLines.elementAt(line);
+    String[] e = (String[]) payerLines.get(line);
     switch (col) {
       case 0:
       case 1:

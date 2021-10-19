@@ -701,7 +701,7 @@ public class PlanModifCtrl
     ScheduleObject newPlan = dlg.getSchedule();
     Hour[] range = dlg.getRange();
 //     if (!((Course) plan.getActivity()).isCollective()) {
-//        Vector<ScheduleRange> ranges = ScheduleRangeIO.find("WHERE idplanning = " + plan.getId(), dc);
+//        List<ScheduleRange> ranges = ScheduleRangeIO.find("WHERE idplanning = " + plan.getId(), dc);
 //        PersonListCtrl list = new PersonListCtrl();
 //        list.addBlock(ranges);
 //        // ouvrir un dialogue de sélection

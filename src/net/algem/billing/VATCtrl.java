@@ -21,9 +21,8 @@
 package net.algem.billing;
 
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.table.TableColumnModel;
 import net.algem.accounting.Account;
 import net.algem.accounting.AccountIO;
@@ -57,8 +56,7 @@ public class VATCtrl
   @Override
   public void load() {
     try {
-      List<Vat> taxes = vatIO.load();
-      load(Collections.enumeration(taxes));
+      load(vatIO.load());
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
@@ -93,12 +91,8 @@ public class VATCtrl
   public void setView(boolean activable) {
     table = new VatTableView(title, new VatTableModel());
     table.setColumnModel();
-    Vector<Account> accounts = new Vector<>();
-    try {
+    List<Account> accounts = new ArrayList<>();
       accounts = AccountIO.find(false, dc);// false: include inactive accounts
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-    }
     mask = new VATView(accounts);
   }
 

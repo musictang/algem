@@ -21,7 +21,7 @@
 package net.algem.bank;
 
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -71,7 +71,7 @@ public class BranchIO
 		dc.executeUpdate(query);
 	}
 
-	public static Vector<Rib> getRibs(int id, DataConnection dc) throws SQLException {
+	public static List<Rib> getRibs(int id, DataConnection dc) {
 		String query = "WHERE guichetid = " + id;
 		return RibIO.find(query, dc);
 	}

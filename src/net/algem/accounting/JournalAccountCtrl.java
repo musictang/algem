@@ -20,7 +20,7 @@
  */
 package net.algem.accounting;
 
-import java.util.Vector;
+import java.util.List;
 import javax.swing.table.TableColumnModel;
 import net.algem.util.ui.ErrorDlg;
 import net.algem.util.ui.GenericTableCtrl;
@@ -78,17 +78,10 @@ public class JournalAccountCtrl
 
   @Override
   protected void load() {
-    Vector<JournalAccount> v = null;
-    try {
-      v = service.find();
-    } catch (ModelException ex) {
-      return;
-    }
-    if (v == null) {
-      return;
-    }
-    for (int i = 0; i < v.size(); i++) {
-      tableModel.addItem(v.elementAt(i));
+    List<JournalAccount> v = service.find();
+
+    for (JournalAccount j : v) {
+      tableModel.addItem(j);
     }
   }
 

@@ -30,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import net.algem.bank.BankUtil;
 import net.algem.bank.Rib;
 import net.algem.bank.RibIO;
@@ -198,7 +197,7 @@ public abstract class CommonAccountExportService
    * @throws IOException
    */
   @Override
-  public List<String> exportCSV(String path, Vector<OrderLine> orderLines) throws IOException {
+  public List<String> exportCSV(String path, List<OrderLine> orderLines) throws IOException {
     DirectDebitService ddService = DirectDebitService.getInstance(dbx);
     List<String> errors = new ArrayList<>();
     int total = 0;
@@ -207,7 +206,7 @@ public abstract class CommonAccountExportService
     try (PrintWriter out = new PrintWriter(new File(path), "UTF-16LE")) {
       out.print("id payeur;payeur;id adherent;adherent;date;reglement;piece;libelle;montant;n°compte;libelle compte;analytique;libelle analytique" + TextUtil.LINE_SEPARATOR);
       for (int i = 0, n = orderLines.size(); i < n; i++) {
-        e = orderLines.elementAt(i);
+        e = orderLines.get(i);
         if (!e.isPaid()) {
           errors.add(MessageUtil.getMessage("payment.transfer.unpaid.error", e.getPayer()));
         }

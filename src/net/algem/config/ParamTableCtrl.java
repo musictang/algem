@@ -28,7 +28,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.Enumeration;
+import java.util.List;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
@@ -144,10 +144,9 @@ public abstract class ParamTableCtrl
     return false;
   }
 
-  public void load(Enumeration<? extends Param> list) {
-    while (list.hasMoreElements()) {
-      Param p = list.nextElement();
-      table.addRow(p);
+  public void load(List<? extends Param> list) {
+      for (Param p: list) {
+        table.addRow(p);
     }
   }
 

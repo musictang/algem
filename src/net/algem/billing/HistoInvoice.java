@@ -27,8 +27,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
 import net.algem.contact.PersonFile;
@@ -102,7 +102,7 @@ public class HistoInvoice
   @Override
   public <T extends Object> void load(Collection<T> c) {
     if (invoiceListCtrl != null && c != null) {
-      invoiceListCtrl.loadResult(new Vector<T>(c));
+      invoiceListCtrl.loadResult(new ArrayList<T>(c));
     }
     if (isLoaded()) {
       rangePanel.setStart(invoiceListCtrl.getElementAt(0).getDate());
