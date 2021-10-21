@@ -313,7 +313,10 @@ public class DataCache {
         }
         return DATA_CONNECTION;
     }
-
+    public static boolean isDataConnected() {
+        return DATA_CONNECTION != null;
+    }
+  
     /**
      * Generic getter for GemList instances.
      * @param model enumeration model

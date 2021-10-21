@@ -22,6 +22,7 @@ package net.algem.util.module;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
+import net.algem.security.User;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -40,25 +41,32 @@ public class JournalIO
 	private static final String SEQUENCE = "journal_id_seq";
 
         public final static int LOGIN = 1;
+        public final static int ERROR = 2;
+//        private final static PreparedStatement stmt = DataCache.getDataConnection().prepareStatement("INSERT INTO " + TABLE +" (logdate, type, login, message) VALUES (?,?,?,?,?)");
 
 	public static void log(int type, String message) {
-            log(type, DataCache.getInitializedInstance().getUser().toString(), message);
+            if (DataCache.getInitializedInstance() == null)
+                return;
+            User u = DataCache.getInitializedInstance().getUser();
+            log(type, u != null ? u.toString() : "unlogged", message);
         }
         
 	public static void log(int type, String user, String message) {
-            System.out.println("JournalIO.log:"+message);
+            if (!DataCache.isDataConnected())
+                return;
             DataConnection dc = DataCache.getDataConnection();
             try {
-		int id = nextId(SEQUENCE, dc);
-                PreparedStatement st = dc.prepareStatement("INSERT INTO " + TABLE +" (id, logdate, type, login, message) VALUES (?,?,?,?,?)");
-                st.setInt(1, id);
-                st.setObject(2, LocalDateTime.now());
-                st.setInt(3, type);
-                st.setString(4, user);
-                st.setString(5, message);
-                st.executeUpdate();
+		//int id = nextId(SEQUENCE, dc);
+                PreparedStatement stmt = dc.prepareStatement("INSERT INTO " + TABLE +" (logdate, type, login, message) VALUES (?,?,?,?)");
+//                PreparedStatement stmt = dc.prepareStatement("INSERT INTO " + TABLE +" (id, logdate, type, login, message) VALUES (?,?,?,?,?)");
+                //stmt.setInt(1, id);
+                stmt.setObject(1, LocalDateTime.now());
+                stmt.setInt(2, type);
+                stmt.setString(3, user);
+                stmt.setString(4, message);
+                stmt.executeUpdate();
             } catch (Exception e) {
-                GemLogger.log("JournalIO.log error");
+                System.err.println("JournalIO.log error");
             }
 	}
 

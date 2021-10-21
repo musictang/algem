@@ -26,6 +26,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.algem.util.module.JournalIO;
 import net.algem.util.ui.SQLErrorDlg;
 
 /**
@@ -52,22 +53,29 @@ public class GemLogger {
 
   public static void log(Level level, String msg) {
     LOGGER.log(level, msg);
+    if (level != Level.INFO)
+        JournalIO.log(JournalIO.ERROR, level.getName()+" "+msg);
   }
 
   public static void log(String msg) {
     LOGGER.warning(msg);
+    JournalIO.log(JournalIO.ERROR, "warning:"+msg);
   }
 
   public static void log(String sourceClass, String sourceMethod, String msg) {
     LOGGER.logp(Level.SEVERE, sourceClass, sourceMethod, msg);
+    JournalIO.log(JournalIO.ERROR, sourceClass+" "+sourceMethod+" "+msg);
   }
 
   public static void log(Level level, String sourceClass, String sourceMethod, String msg) {
     LOGGER.logp(level, sourceClass, sourceMethod, msg);
+    if (level != Level.INFO)
+        JournalIO.log(JournalIO.ERROR, sourceClass+" "+sourceMethod+" "+msg);
   }
 
   public static void log(String sourceClass, String sourceMethod, Throwable thrown) {
     LOGGER.throwing(sourceClass, sourceMethod, thrown);
+    JournalIO.log(JournalIO.ERROR, sourceClass+" "+sourceMethod+" "+thrown);
   }
 
   public static void logException(Exception e) {
@@ -80,6 +88,7 @@ public class GemLogger {
 
   public static void logException(String msg, Exception e, java.awt.Component parent) {
     LOGGER.log(Level.SEVERE, msg, e);
+    JournalIO.log(JournalIO.ERROR, msg+" "+e);
     if (e instanceof SQLException) {
       /*log(null, null, e);
 			SQLException sqle = (SQLException) e;
