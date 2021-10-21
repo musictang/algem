@@ -233,7 +233,8 @@ public class Algem {
         } while (!success && trials <= 3);
         if (success) {
             cache.setUser(login);
-            JournalIO.log(JournalIO.LOGIN, "c:onnexion");
+            String platform = System.getProperty("os.name")+" "+System.getProperty("os.version")+" JRE:"+System.getProperty("java.runtime.version");
+            JournalIO.log(JournalIO.LOGIN, "connexion "+platform);
 
         } else {
             MessagePopup.error(parent, MessageUtil.getMessage("unknown.login", login));
