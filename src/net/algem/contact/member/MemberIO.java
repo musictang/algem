@@ -194,14 +194,13 @@ public class MemberIO
     if (where != null) {
       query += " " + where;
     }
-    ResultSet rs;
-    rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
     while (rs.next()) {
       Member m = getFromRS(rs, 1);
       m.setInstruments(InstrumentIO.find(m.getId(), Instrument.MEMBER, dc));
       v.add(m);
     }
-    rs.close();
+    }
     return v;
   }
 

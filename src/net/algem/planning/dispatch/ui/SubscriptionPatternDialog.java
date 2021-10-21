@@ -8,7 +8,6 @@ import net.algem.planning.dispatch.model.SubscribeAction;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import java.util.List;
 
 public class SubscriptionPatternDialog extends JDialog {
@@ -154,7 +153,7 @@ public class SubscriptionPatternDialog extends JDialog {
         setTitle(person.getFirstnameName());
 
         spinner1.setModel(new SpinnerNumberModel(1, 1, 10, 1));
-        comboBox1.setModel(new DefaultComboBoxModel(new Vector(schedules)));
+        comboBox1.setModel(new DefaultComboBoxModel(schedules.toArray()));
         comboBox1.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

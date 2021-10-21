@@ -18,10 +18,14 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.util;
 
+import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -32,49 +36,69 @@ import net.algem.util.ui.MessagePopup;
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.n
  */
-public class BundleUtil
-{
-  public static ResourceBundle DEFAULT_BUNDLE;
-  static {
-    try {
-      DEFAULT_BUNDLE =  ResourceBundle.getBundle("algem");
-    } catch(MissingResourceException e) {
-      GemLogger.log(Level.SEVERE, e.getMessage());
-      MessagePopup.error(null, MessageUtil.getMessage("file.not.found.exception", "algem.properties"));
-    }
-  }
+public class BundleUtil {
 
-  public static String getLabel(String key) {
-    if (DEFAULT_BUNDLE == null) {
-      return "nobundle:" + key;
-    }
-    return get(key, DEFAULT_BUNDLE);
-  }
+    static Map<String, Libel> map = new HashMap<>();
 
-  public static String getLabel(String key, ResourceBundle bundle) {
-    return bundle == null ? getLabel(key) : get(key, bundle);
-  }
-
-  public static String getLabel(String key, Object[] args) {
-    String l = getLabel(key);
-    return MessageFormat.format(l, args);
-  }
-
-
-  private static String get(String key, ResourceBundle bundle) {
-    String label = null;
-    try {
-      label = bundle.getString(key);
-    } catch (MissingResourceException e) {
-			GemLogger.log(e.getKey()+" : "+e.getMessage());
-			if (key.endsWith("label")) {
-				key = key.substring(0, key.lastIndexOf('.'));
-			}	else {
-				key = "!"+key+"!";
-			}
+    public static ResourceBundle DEFAULT_BUNDLE;
+    static {
+        try {
+            DEFAULT_BUNDLE = ResourceBundle.getBundle("algem");
+        } catch (MissingResourceException e) {
+            GemLogger.log(Level.SEVERE, e.getMessage());
+            MessagePopup.error(null, MessageUtil.getMessage("file.not.found.exception", "algem.properties"));
+        }
     }
 
-    return label == null ? key : label;
-  }
+    public static void storeToBD(DataConnection dc) throws SQLException {
+        for (Enumeration<String> e = DEFAULT_BUNDLE.getKeys(); e.hasMoreElements();) {
+            String k = e.nextElement();
+            Libel l = new Libel(k, DEFAULT_BUNDLE.getString(k));
+            LibelIO.insert(l, dc);
+        }
+    }
+
+    public static void loadFromBD(DataConnection dc) {
+        List<Libel> liste = LibelIO.find("", dc);
+        for (Libel l : liste) {
+            map.put(l.getCode(), l);
+        }
+    }
+
+    public static String getLabel(String key) {
+        if (map.containsKey(key)) {
+            return map.get(key).getLibelle();
+        }
+
+        if (DEFAULT_BUNDLE == null) {
+            return "nobundle:" + key;
+        }
+        return get(key, DEFAULT_BUNDLE);
+    }
+
+    public static String getLabel(String key, ResourceBundle bundle) {
+        return bundle == null ? getLabel(key) : get(key, bundle);
+    }
+
+    public static String getLabel(String key, Object[] args) {
+        String l = getLabel(key);
+        return MessageFormat.format(l, args);
+    }
+
+    private static String get(String key, ResourceBundle bundle) {
+        String label = null;
+        try {
+            label = bundle.getString(key);
+        } catch (MissingResourceException e) {
+            GemLogger.log(e.getKey() + " : " + e.getMessage());
+            if (key.endsWith("label")) {
+                key = key.substring(0, key.lastIndexOf('.'));
+            } else {
+                key = "!" + key + "!";
+            }
+        }
+
+        return label == null ? key : label;
+    }
 
 }

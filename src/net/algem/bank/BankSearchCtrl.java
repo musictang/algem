@@ -21,6 +21,7 @@
 package net.algem.bank;
 
 import java.awt.CardLayout;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.ui.SearchCtrl;
@@ -86,5 +87,12 @@ public class BankSearchCtrl
       list.loadResult(v);
     }
   }
+  
+  @Override
+  public void mouseClicked(MouseEvent e) {
+      ((CardLayout) wCard.getLayout()).show(wCard, "masque");
+           
+      mask.loadCard(((BankListCtrl)list).getSelected());      
+  }  
 }
 

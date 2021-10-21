@@ -45,12 +45,12 @@ public class PostitCreateView
         extends GemBorderPanel
 {
 
-  private int userId;
-  private List<User> users;
-  private JComboBox type;
-  private JComboBox receiver;
-  private DateFrField term;
-  private GemTextArea textArea;
+  private final int userId;
+  private final List<User> users;
+  private final JComboBox type;
+  private final JComboBox receiver;
+  private final DateFrField term;
+  private final GemTextArea textArea;
 
   public PostitCreateView(int _userId, List<User> _users) {
     userId = _userId;

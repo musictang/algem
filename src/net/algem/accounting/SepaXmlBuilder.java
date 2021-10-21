@@ -141,7 +141,7 @@ public class SepaXmlBuilder
     int numberOfLocalTx = 0;
     String costAccount = null;
 
-    ResultSet rs = service.getDirectDebit(school, datePrl, seqType);
+    try (ResultSet rs = service.getDirectDebit(school, datePrl, seqType)) {
     while (rs.next()) {
       int payer = rs.getInt(1);
       int amount = rs.getInt(2);
@@ -174,7 +174,7 @@ public class SepaXmlBuilder
         totalDebit += total;
       }
     }
-    rs.close();
+    }
 
     if (numberOfLocalTx > 0) {
       sb.insert(0, getPaymentInformation(datePrl, seqType, batchNumber, totalPayment, numberOfLocalTx));
@@ -224,8 +224,8 @@ public class SepaXmlBuilder
 
   String getDirectDebitTransaction(int idper, int total, String analytique) throws SQLException {
 
-    ResultSet rs = service.getTransaction(idper);
     String tx = null;
+    try (ResultSet rs = service.getTransaction(idper)) {
 
     if (rs.next()) {
       DDMandate mandate = getMandate(rs);
@@ -241,7 +241,7 @@ public class SepaXmlBuilder
       addLogInfo(idper, null);
     }
 
-    rs.close();
+    }
 
     return tx;
 

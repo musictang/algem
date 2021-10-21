@@ -23,7 +23,6 @@ package net.algem.planning;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import net.algem.util.model.GemList;
@@ -58,7 +57,7 @@ public class ConflictView
 
   public void setConclusion(String s) {
     values.add(s);
-    list.setListData(new Vector(values));
+    list.setListData(values.toArray());
   }
 
   public void addScheduleRange(ScheduleRange p) {

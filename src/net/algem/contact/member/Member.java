@@ -86,9 +86,13 @@ public class Member
     if (this.family != other.family) {
       return false;
     }
+    /* ERIC 21/10/2021 Enregistrer modification sur close
     if (this.membershipCount != other.membershipCount) {
+            System.out.println("Member.false6");
+
       return false;
     }
+*/
     if (this.practice != other.practice) {
       return false;
     }
@@ -114,7 +118,7 @@ public class Member
     hash = 47 * hash + (this.birth != null ? this.birth.hashCode() : 0);
     hash = 47 * hash + this.payer;
     hash = 47 * hash + this.family;
-    hash = 47 * hash + this.membershipCount;
+//    hash = 47 * hash + this.membershipCount;
     hash = 47 * hash + this.practice;
     hash = 47 * hash + this.level;
     hash = 47 * hash + (this.instruments != null ? this.instruments.hashCode() : 0);

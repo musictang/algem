@@ -162,6 +162,8 @@ public class Algem {
             System.exit(2);
         }
         cache = DataCache.getInstance(dc, login);// !important before Logger
+        BundleUtil.loadFromBD(dc);
+//        try { BundleUtil.storeToBD(dc); } catch (SQLException ex) { MessagePopup.error(frame, ex.getMessage()); }
         /* -------------------------- */
  /* Logger initialisation      */
  /* -------------------------- */

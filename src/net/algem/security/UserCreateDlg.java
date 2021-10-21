@@ -52,6 +52,7 @@ public class UserCreateDlg
   private GemButton btValidation;
   private GemButton btCancel;
   private UserView userView;
+  private User oldU = null;
 
   public UserCreateDlg(Component c, String t, Person p, Rule validator) {
     this.person = p;
@@ -77,7 +78,7 @@ public class UserCreateDlg
     ct.add(buttons, BorderLayout.SOUTH);
 
     dlg.setTitle(BundleUtil.getLabel("Login.creation.label"));
-    dlg.setSize(440, 240);
+    dlg.setSize(440, 340);
     dlg.setLocationRelativeTo(c);
   }
 
@@ -91,9 +92,14 @@ public class UserCreateDlg
 
   public boolean isEntryValid() {
     User u = getUser();
-    if ("".equals(u.getLogin()) || "".equals(u.getPassword())) {
+    if ("".equals(u.getLogin())) {
+            return false;
+        }
+    if (oldU == null && "".equals(u.getPassword())) {
       return false;
-    }
+    } 
+        
+
     return true;
   }
 
@@ -107,6 +113,7 @@ public class UserCreateDlg
   }
 
   public void setUser(User u) {
+      oldU =u;
     userView.set(u);
   }
 
@@ -117,7 +124,7 @@ public class UserCreateDlg
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {
-      validation = isEntryValid();
+      validation = true;
     } else {
       validation = false;
     }

@@ -291,13 +291,11 @@ public class OrderLineIO
   public static TreeMap<DateFr, String> findPrl(String where, DataConnection dc) {
     TreeMap<DateFr, String> prl = new TreeMap<DateFr, String>();
     String query = "SELECT echeance, sum(montant) AS total FROM " + TABLE + " " + where;
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         prl.put(new DateFr(rs.getString(1)), rs.getString(2));
       }
 
-      rs.close();
     } catch (SQLException e) {
       GemLogger.logException(query, e);
     }
@@ -319,8 +317,7 @@ public class OrderLineIO
       + " AND e.analytique = a.code"
       + " AND e.echeance >= '" + dc.getStartOfPeriod() + "'";
     //String query = "SELECT analytique FROM " + TABLE + " WHERE echeance >= '" + dc.getStartOfPeriod() + "' AND adherent=" + adh;
-    try {
-      ResultSet rs = DataCache.getDataConnection().executeQuery(query);
+    try (ResultSet rs = DataCache.getDataConnection().executeQuery(query)) {
       while (rs.next()) {
         String code = rs.getString(1).toLowerCase();
         String label = rs.getString(2).toLowerCase();
@@ -328,7 +325,6 @@ public class OrderLineIO
           return true;
         }
       }
-      rs.close();
     } catch (SQLException e) {
       GemLogger.logException(query, e);
     }
@@ -400,7 +396,6 @@ public class OrderLineIO
   public static Account findAccount(int key, DataConnection dc) {
 
     Account c = null;
-    try {
       /* String num = code; if (code != null && code.matches("^[0-9].*$")) { num =
        * format(code);// problème pour la recherche de compte
       } */
@@ -410,9 +405,6 @@ public class OrderLineIO
         c.setLabel("INEXISTANT");
       }
 
-    } catch (SQLException ex) {
-      System.err.println(ex.getMessage());
-    }
     return c;
   }
 

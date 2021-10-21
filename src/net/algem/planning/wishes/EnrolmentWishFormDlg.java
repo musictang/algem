@@ -208,7 +208,7 @@ public class EnrolmentWishFormDlg
         } else {
             initPreferences();
             setPreferenceReserved(wishService.getWishesFromStudent(this.student.getKey()), 0);
-            if (preferences.getSize() > 0)
+            if (preference.getModel().getSize() > 0)
                 preference.setSelectedIndex(0);
         }
     }

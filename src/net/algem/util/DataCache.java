@@ -122,15 +122,15 @@ public class DataCache {
     private static RentableObjectIO RENTABLE_IO;
 
     // Cache data
-    private static Hashtable<Integer, List<Integer>> TEACHER_INSTRUMENT_CACHE = new Hashtable<Integer, List<Integer>>();
-    private static Hashtable<String, Param> COST_ACCOUNT_CACHE = new Hashtable<String, Param>();
-    private static Hashtable<Integer, User> USER_CACHE = new Hashtable<Integer, User>();
-    private static Hashtable<Integer, Person> PERSON_CACHE = new Hashtable<Integer, Person>();
-    private static Hashtable<Integer, Member> MEMBER_CACHE = new Hashtable<Integer, Member>();
-    private static Hashtable<Integer, Action> ACTION_CACHE = new Hashtable<Integer, Action>();
-    private static Hashtable<Integer, Item> ITEM_CACHE = new Hashtable<Integer, Item>();
-    private static Hashtable<Integer, OrderLine> ORDER_LINE_CACHE = new Hashtable<Integer, OrderLine>();
-    private static Hashtable<Integer, RehearsalPass> PASS_CARD = new Hashtable<Integer, RehearsalPass>();
+    private static Map<Integer, List<Integer>> TEACHER_INSTRUMENT_CACHE = new Hashtable<Integer, List<Integer>>();
+    private static Map<String, Param> COST_ACCOUNT_CACHE = new HashMap<String, Param>();
+    private static Map<Integer, User> USER_CACHE = new HashMap<Integer, User>();
+    private static Map<Integer, Person> PERSON_CACHE = new HashMap<Integer, Person>();
+    private static Map<Integer, Member> MEMBER_CACHE = new HashMap<Integer, Member>();
+    private static Map<Integer, Action> ACTION_CACHE = new HashMap<Integer, Action>();
+    private static Map<Integer, Item> ITEM_CACHE = new HashMap<Integer, Item>();
+    private static Map<Integer, OrderLine> ORDER_LINE_CACHE = new HashMap<Integer, OrderLine>();
+    private static Map<Integer, RehearsalPass> PASS_CARD = new HashMap<Integer, RehearsalPass>();
 
     public static int PERSON_CACHE_MIN_SIZE = 675; // ERIC 26/03/2019 à calculer suivant le nombre access'élèves ~675/800 pour polynotes
     private static Map<Integer, DailyTimes[]> roomsTimes = new HashMap<>(); //ERIC 2.17 27/03/2019
@@ -1292,12 +1292,10 @@ public class DataCache {
     public boolean checkAccess(String table, String operation) {
         boolean ret = false;
         String query = "SELECT " + operation + " FROM droits WHERE idper=" + user.getId() + " AND nomtable = '" + table + "'";
-        try {
-            ResultSet rs = DATA_CONNECTION.executeQuery(query);
+        try (ResultSet rs = DATA_CONNECTION.executeQuery(query)) {
             if (rs.next()) {
                 ret = rs.getBoolean(1);
             }
-            rs.close();
         } catch (SQLException e) {
             GemLogger.logException(e);
         }

@@ -265,23 +265,24 @@ public class EnrolmentService
                 + " AND pl.adherent = " + member
                 + " LIMIT 1";
 
-        ResultSet rs = dc.executeQuery(query);
-        if (rs.next()) {
-            d = new DateFr(rs.getString(1));
-        } else { // pour les anciennes commandes
-            query = "SELECT jour FROM " + ScheduleIO.TABLE + " p, "
-                    + ScheduleRangeIO.TABLE + " pl, action a"
-                    + " WHERE p.jour >= '" + dateStart + "' AND p.id = pl.idplanning"
-                    + " AND pl.adherent = " + member
-                    + " AND p.action = a.id"
-                    + " AND a.cours = " + course.getId()
-                    + " LIMIT 1";
-            rs = dc.executeQuery(query);
+        try (ResultSet rs = dc.executeQuery(query)) {
             if (rs.next()) {
                 d = new DateFr(rs.getString(1));
+            } else { // pour les anciennes commandes
+                query = "SELECT jour FROM " + ScheduleIO.TABLE + " p, "
+                        + ScheduleRangeIO.TABLE + " pl, action a"
+                        + " WHERE p.jour >= '" + dateStart + "' AND p.id = pl.idplanning"
+                        + " AND pl.adherent = " + member
+                        + " AND p.action = a.id"
+                        + " AND a.cours = " + course.getId()
+                        + " LIMIT 1";
+                try (ResultSet rs2 = dc.executeQuery(query)) {
+                    if (rs2.next()) {
+                        d = new DateFr(rs.getString(1));
+                    }
+                }
             }
         }
-        rs.close();
         if (d != null) {
             cal.setTime(d.getDate());
             j = cal.get(Calendar.DAY_OF_WEEK);
@@ -337,8 +338,7 @@ public class EnrolmentService
      */
     public List<HourRange> getPlageCours(Schedule p) throws EnrolmentException {
         List<HourRange> v = new ArrayList<>();
-        try {
-            ResultSet rs = ScheduleIO.getRSCourseRange(p, dc);
+        try (ResultSet rs = ScheduleIO.getRSCourseRange(p, dc)) {
 
             while (rs.next()) {
                 HourRange ph = new HourRange();
@@ -346,7 +346,7 @@ public class EnrolmentService
                 ph.setEnd(new Hour(rs.getString(2)));
                 v.add(ph);
             }
-            rs.close();
+
         } catch (SQLException e) {
             throw new EnrolmentException("Erreur recherche plage horaire " + " :\n" + e.getMessage());
         }
@@ -380,12 +380,11 @@ public class EnrolmentService
 
     List<ScheduleRange> getBusyTimeSlot2(int idAction, int idCourse, DateFr date) {
         List<ScheduleRange> ranges = new ArrayList<>();
-        try {
-            String query = "SELECT DISTINCT pg.debut, pg.fin, pg.adherent FROM plage pg, planning p WHERE pg.idplanning = p.id"
-                    + " AND p.action = " + idAction
-                    + " AND p.jour = '" + date + "'";
+        String query = "SELECT DISTINCT pg.debut, pg.fin, pg.adherent FROM plage pg, planning p WHERE pg.idplanning = p.id"
+                + " AND p.action = " + idAction
+                + " AND p.jour = '" + date + "'";
 
-            ResultSet rs = dc.executeQuery(query);
+        try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
                 ScheduleRange pg = new ScheduleRange();
                 pg.setCourseId(idCourse); //?
@@ -395,7 +394,7 @@ public class EnrolmentService
                 ranges.add(pg);
                 //plage.addItem(p.getStart()+" - "+p.getEnd());
             }
-            rs.close();
+
         } catch (SQLException ex) {
             GemLogger.logException(ex);
         }

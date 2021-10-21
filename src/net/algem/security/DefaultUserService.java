@@ -196,14 +196,12 @@ public class DefaultUserService
     List<MenuAccess> getMenuAccess(int userId) {
         List<MenuAccess> mal = new ArrayList<MenuAccess>();
         String query = "SELECT idmenu,label,autorisation FROM menu2, menuaccess WHERE menu2.id = menuaccess.idmenu AND idper = " + userId + " ORDER BY idmenu";
-        try {
-            ResultSet rs = dc.executeQuery(query);
+        try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
                 String label = BundleUtil.getLabel(rs.getString(2));
                 MenuAccess m = new MenuAccess(rs.getInt(1), label, rs.getBoolean(3));
                 mal.add(m);
             }
-            rs.close();
         } catch (SQLException ex) {
             GemLogger.logException(query, ex);
         }
@@ -224,8 +222,7 @@ public class DefaultUserService
     List<SQLRights> getTableRights(int userId) {
         List<SQLRights> rtl = new ArrayList<>();
         String query = "SELECT nomtable,lecture,insertion,modification,suppression FROM droits WHERE idper=" + userId + " ORDER BY nomtable";
-        try {
-            ResultSet rs = dc.executeQuery(query);
+        try (ResultSet rs = dc.executeQuery(query)) {
             while (rs.next()) {
                 SQLRights tr = new SQLRights();
                 tr.setName(rs.getString(1));
@@ -235,7 +232,6 @@ public class DefaultUserService
                 tr.setAuthDelete(rs.getBoolean(5));
                 rtl.add(tr);
             }
-            rs.close();
         } catch (SQLException ex) {
             GemLogger.logException(query, ex);
         }
@@ -346,12 +342,10 @@ public class DefaultUserService
                 + " WHERE m.label = '" + menu + "'"
                 + " AND a.idper = " + user.getId()
                 + " AND a.idmenu = m.id";
-        try {
-            ResultSet rs = dc.executeQuery(query);
+        try (ResultSet rs = dc.executeQuery(query)) {
             if (rs.next()) {
                 return (rs.getBoolean(1));
             }
-            rs.close();
         } catch (SQLException e) {
             GemLogger.logException(e);
         }
@@ -413,9 +407,13 @@ public class DefaultUserService
             throw new UserException(ex.getMessage(), "ENCRYPTION");
         }
 
-        if (!nu.equals(old)) {
+        if (!nu.equals(old) || nu.getPassword().length() > 0) {
             try {
+            if (nu.getPassword() == null || nu.getPassword().length() < 1) {
+                dao.update(nu, false);
+            } else {
                 dao.update(nu);
+            }                
                 return true;
             } catch (SQLException ex) {
                 throw new UserException(ex.getMessage(), "MODIFICATION");

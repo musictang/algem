@@ -100,8 +100,7 @@ public class VacationIO
   public static List<Vacation> find(String where, DataConnection dc) {
     List<Vacation> v = new ArrayList<>();
     String query = "SELECT * FROM " + TABLE + " " + where + " ORDER BY jour, vid";
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         Vacation j = new Vacation();
         j.setDay(new DateFr(rs.getString(1)));
@@ -111,7 +110,6 @@ public class VacationIO
 
         v.add(j);
       }
-      rs.close();
     } catch (SQLException e) {
       GemLogger.logException(query, e);
     }

@@ -30,7 +30,6 @@ import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
@@ -354,7 +353,7 @@ public class CourseEnrolmentDlg
         courseOrder.getDateEnd().toString()
     );
     // liste des plages occupées
-    range.setListData(new Vector(pl));
+    range.setListData(pl.toArray());
   }
 
   /**

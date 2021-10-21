@@ -66,7 +66,7 @@ public class WorkshopIO
         List<Workshop> v = new ArrayList<>();
         String query = "SELECT * FROM atelier " + where;
 
-        ResultSet rs = dc.executeQuery(query);
+        try (ResultSet rs = dc.executeQuery(query)) {
         while (rs.next()) {
             Workshop a = new Workshop();
             a.setId(rs.getInt(1));
@@ -75,7 +75,7 @@ public class WorkshopIO
 
             v.add(a);
         }
-        rs.close();
+        }
 
         return v;
     }

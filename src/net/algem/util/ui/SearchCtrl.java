@@ -95,7 +95,7 @@ public abstract class SearchCtrl
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    String cmd = evt.getActionCommand();
+      String cmd = evt.getActionCommand();
     if (GemCommand.SEARCH_CMD.equals(cmd)) {
       setWaitCursor();
       searchView.setStatus("");

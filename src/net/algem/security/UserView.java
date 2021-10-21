@@ -67,6 +67,11 @@ public class UserView
   private JLabel errorStatus;
   private JCheckBox echoPass;
   private Character echoChar;
+  private GemNumericField desktop;
+  private GemField emailAgent;
+  private GemField webAgent;
+  private GemField textAgent;
+  private GemField tableAgent;
 
   public UserView(final Rule validator) {
     super(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -136,6 +141,22 @@ public class UserView
 
     profile = new JComboBox(Profile.values());
 
+    desktop = new GemNumericField(6);
+    desktop.setMinimumSize(new Dimension(60, id.getPreferredSize().height));
+
+    emailAgent = new GemField(60);
+    emailAgent.setMinimumSize(new Dimension(250, name.getPreferredSize().height));
+    
+    webAgent = new GemField(60);
+    webAgent.setMinimumSize(new Dimension(250, name.getPreferredSize().height));
+    
+    textAgent = new GemField(60);
+    textAgent.setMinimumSize(new Dimension(250, name.getPreferredSize().height));
+    
+    tableAgent = new GemField(60);
+    tableAgent.setMinimumSize(new Dimension(250, name.getPreferredSize().height));
+    
+    
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 
@@ -166,6 +187,12 @@ public class UserView
     gb.add(p1Label, 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(p2Label, 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Profile.label")), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Desktop.label")), 0, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("EmailAgent.label")), 0, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("WebAgent.label")), 0, 8, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("TextAgent.label")), 0, 9, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("TableAgent.label")), 0, 10, 1, 1, GridBagHelper.WEST);
+    
     gb.add(name, 1, 0, 2, 1, GridBagHelper.WEST);
     gb.add(login, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(password1, 1, 2, 1, 1, GridBagHelper.WEST);
@@ -173,6 +200,11 @@ public class UserView
     gb.add(password2, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(profile, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(errorStatus, 0, 5, 3, 1, GridBagHelper.WEST);
+    gb.add(desktop, 1, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(emailAgent, 1, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(webAgent, 1, 8, 1, 1, GridBagHelper.WEST);
+    gb.add(textAgent, 1, 9, 1, 1, GridBagHelper.WEST);
+    gb.add(tableAgent, 1, 10, 1, 1, GridBagHelper.WEST);
   }
 
   public User get() {
@@ -181,14 +213,28 @@ public class UserView
     u.setLogin(login.getText());
     u.setPassword(String.valueOf(password1.getPassword()));
     u.setProfile(((Profile) profile.getSelectedItem()).getId());
+    try {
+    u.setDesktop(Integer.valueOf(desktop.getText()));
+    } catch (NumberFormatException ex) {
+        u.setDesktop(1);
+    }
+    u.setEmailAgent(emailAgent.getText());
+    u.setWebAgent(webAgent.getText());
+    u.setTextAgent(textAgent.getText());
+    u.setTableAgent(tableAgent.getText());
     return u;
   }
 
   public void set(User u) {
     name.setText(u.getFirstName() + " " + u.getName());
-    password1.setText(u.getPassword());
+//    password1.setText(u.getPassword());
     login.setText(u.getLogin());
     profile.setSelectedItem(Profile.get(u.getProfile()));
+    desktop.setText(String.valueOf(u.getDesktop()));
+    emailAgent.setText(u.getEmailAgent());
+    webAgent.setText(u.getWebAgent());
+    textAgent.setText(u.getTextAgent());
+    tableAgent.setText(u.getTableAgent());
   }
 
   public void clear() {
@@ -199,6 +245,11 @@ public class UserView
     echoPass.setSelected(false);
     login.setText(null);
     profile.setSelectedIndex(0);
+    desktop.setText(null);
+    emailAgent.setText(null);
+    webAgent.setText(null);
+    textAgent.setText(null);
+    tableAgent.setText(null);
   }
 
   private String getErrorKey(RuleResult result, int strength) {

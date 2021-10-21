@@ -19,9 +19,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
 import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
+import net.algem.util.model.GemList;
 
 public class ScheduleDispatchController implements SubscriptionPatternDialog.OnSubscriptionPatternListener {
     private JLabel coursLabel;
@@ -49,7 +49,7 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
             Course course = (Course) DataCache.findId(courseAction.getCourse(), Model.Course);
             coursLabel.setText(course.getLabel());
 
-            final JList<Person> rowHeader = new JList<>(new Vector(scheduleDispatch.getPersons()));
+            final JList<Person> rowHeader = new JList<>(new GemList(scheduleDispatch.getPersons()));
             rowHeader.addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent me) {
                     Point p = me.getPoint();

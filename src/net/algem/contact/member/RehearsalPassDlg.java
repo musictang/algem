@@ -23,7 +23,6 @@ package net.algem.contact.member;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JComboBox;
 import net.algem.util.ui.GemBorderPanel;
 import net.algem.util.ui.GemLabel;
@@ -48,7 +47,7 @@ public class RehearsalPassDlg
 	public RehearsalPassDlg(Component c, List<RehearsalPass> passList) {
 		super(c, "Choix abonnement", true);
 		background = new GemBorderPanel();
-		choice = new JComboBox(new Vector(passList));
+		choice = new JComboBox(passList.toArray());
 
 		background.setLayout(new BorderLayout());
 

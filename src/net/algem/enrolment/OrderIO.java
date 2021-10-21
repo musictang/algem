@@ -189,8 +189,7 @@ public class OrderIO
                 + " WHERE c.adh = p.id"
                 + " AND c.creation >= '" + start + "' AND c.creation <= '" + end + "'"
                 + " ORDER BY c.id DESC";
-        try {
-            ResultSet rs = dc.executeQuery(query);
+        try (ResultSet rs = dc.executeQuery(query))  {
             while (rs.next()) {
                 MemberOrder c = new MemberOrder();
                 c.setId(rs.getInt(1));
@@ -203,7 +202,6 @@ public class OrderIO
 
                 v.add(c);
             }
-            rs.close();
         } catch (SQLException e) {
             GemLogger.logException(query, e);
         }

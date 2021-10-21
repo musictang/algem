@@ -62,7 +62,7 @@ public class UserIO
 
   public void insert(User u) throws SQLException {
 
-    String query = "INSERT INTO " + TABLE + " (idper,login,profil,pass,clef) VALUES(?,?,?,?,?)";
+    String query = "INSERT INTO " + TABLE + " (idper,login,profil,pass,clef,desktop,agent_mail,agent_web,agent_texte,agent_tableur) VALUES(?,?,?,?,?,?,?,?,?,?)";
     PreparedStatement statement = dc.prepareStatement(query);
     statement.setInt(1, u.getId());
     statement.setString(2, u.getLogin());
@@ -71,27 +71,46 @@ public class UserIO
     statement.setString(4, b64pass);
     String b64salt = Base64.encodeBase64String(u.getPassInfo().getKey());
     statement.setString(5, b64salt);
+    statement.setInt(6, u.getDesktop());
+    statement.setString(7, u.getEmailAgent());
+    statement.setString(8, u.getWebAgent());
+    statement.setString(9, u.getTextAgent());
+    statement.setString(10, u.getTableAgent());
     statement.executeUpdate();
     statement.close();
 
   }
 
-  public void update(User u) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET login = ?, profil = ?, pass = ?, clef = ? WHERE idper = " + u.getId();
+public void update(User u) throws SQLException {
+    update(u, true);
+}
+
+public void update(User u, boolean withPass) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET login = ?, profil = ?";
+    if (withPass) 
+        query+= ", pass = ?, clef = ?";
+    query += ", desktop = ?, agent_mail = ?, agent_web = ?, agent_texte = ?, agent_tableur = ? WHERE idper = " + u.getId();
     UserPass pass = u.getPassInfo();
     String b64pass = null;
     String b64salt = null;
     try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setString(1, u.getLogin());
-      ps.setInt(2, u.getProfile());
+        int i=1;
+      ps.setString(i++, u.getLogin());
+      ps.setInt(i++, u.getProfile());
 
       if (pass != null) {
         b64pass = Base64.encodeBase64String(pass.getPass());
         b64salt = Base64.encodeBase64String(pass.getKey());
       }
-
-      ps.setString(3, pass == null ? null : b64pass);
-      ps.setString(4, pass == null ? null : b64salt);
+      if (withPass) {
+      ps.setString(i++, pass == null ? null : b64pass);
+      ps.setString(i++, pass == null ? null : b64salt);
+      }
+      ps.setInt(i++, u.getDesktop());
+      ps.setString(i++, u.getEmailAgent());
+      ps.setString(i++, u.getWebAgent());
+      ps.setString(i++, u.getTextAgent());
+      ps.setString(i++, u.getTableAgent());
       ps.executeUpdate();
     }
 
@@ -195,13 +214,13 @@ public class UserIO
 
   public List<User> find(String where) throws SQLException {
     List<User> v = new ArrayList<User>();
-    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef,u.desktop"
+    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef,u.desktop,u.agent_mail,u.agent_web,u.agent_texte,u.agent_tableur"
       + " FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " u ON (p.id = u.idper)";
     if (where != null) {
       query += " " + where;
     }
     query += " ORDER BY p.nom, p.prenom";
-    ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
 
     while (rs.next()) {
       User u = new User();
@@ -217,6 +236,10 @@ public class UserIO
       u.setLogin(l == null ? null : l.trim());
       u.setProfile(rs.getInt(7));
       u.setDesktop(rs.getInt(10));
+      u.setEmailAgent(rs.getString(11));
+      u.setWebAgent(rs.getString(12));
+      u.setTextAgent(rs.getString(13));
+      u.setTableAgent(rs.getString(14));
 
       byte[] b64pass = Base64.decodeBase64(rs.getString(8));
       byte[] b64salt = Base64.decodeBase64(rs.getString(9));
@@ -224,7 +247,7 @@ public class UserIO
       u.setPassInfo(new UserPass(b64pass, b64salt));
       v.add(u);
     }
-    rs.close();
+    }
     return v;
   }
 

@@ -22,7 +22,6 @@ package net.algem.util.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JList;
 import net.algem.util.DataCache;
 
@@ -52,7 +51,7 @@ public class SqlList
     //System.out.println(query);
     //removeAll();
     values = sqlist;
-    setListData(new Vector(values));
+    setListData(values.toArray());
 //    try {
 //      ResultSet rs = dc.executeQuery(query);
 //      while (rs.next()) {
@@ -69,7 +68,7 @@ public class SqlList
   @Override
   public void removeAll() {
     values = new ArrayList<>();
-    setListData(new Vector(values));
+    setListData(values.toArray());
   }
 
   public List<SQLkey> getValues() {

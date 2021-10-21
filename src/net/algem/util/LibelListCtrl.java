@@ -1,5 +1,5 @@
 /*
- * @(#)BankListCtrl.java	2.6.a 14/09/12
+ * @(#)LibelListCtrl.java	2.6.a 14/09/12
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,7 +18,7 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package net.algem.bank;
+package net.algem.util;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -32,29 +32,27 @@ import net.algem.util.ui.ListCtrl;
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
  * @version 2.6.a
  */
-public class BankListCtrl
-        extends ListCtrl
-{
+public class LibelListCtrl
+        extends ListCtrl {
 
-  public BankListCtrl() {
-    tableModel = new BankTableModel();
+    public LibelListCtrl() {
+        tableModel = new LibelTableModel();
 
-    table = new JTable(tableModel);
-    table.setAutoCreateRowSorter(true);
+        table = new JTable(tableModel);
+        table.setAutoCreateRowSorter(true);
 
-    TableColumnModel cm = table.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(50);
-    cm.getColumn(1).setPreferredWidth(250);
-    cm.getColumn(2).setPreferredWidth(100);
+        TableColumnModel cm = table.getColumnModel();
+        cm.getColumn(0).setPreferredWidth(100);
+        cm.getColumn(1).setPreferredWidth(350);
 
-    JScrollPane p = new JScrollPane(table);
-    p.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        JScrollPane p = new JScrollPane(table);
+        p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
-    add("Center", p);
-  }
-  
-  Bank getSelected() {
-      return ((BankTableModel) table.getModel()).getItem(table.convertRowIndexToModel(table.getSelectedRow()));
-  }
-  
+        add("Center", p);
+    }
+
+    Libel getSelected() {
+        return ((LibelTableModel) table.getModel()).getItem(table.convertRowIndexToModel(table.getSelectedRow()));
+    }
+
 }

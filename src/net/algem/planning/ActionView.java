@@ -72,7 +72,7 @@ public class ActionView
         implements GemEventListener
 {
 
-  private static String SESSIONS_MAX = ConfigUtil.getConf(ConfigKey.DEFAULT_NUMBER_OF_SESSIONS.getKey());
+  private static final String SESSIONS_MAX = ConfigUtil.getConf(ConfigKey.DEFAULT_NUMBER_OF_SESSIONS.getKey());
   protected DataCache dataCache;
   protected GemDesktop desktop;
   protected CourseChoice course;
@@ -119,7 +119,7 @@ public class ActionView
     vacancy = new ParamChoice(dataCache.getVacancyCat());
     courseLength = new HourField();
     intervall = new GemNumericField(2);
-    if (courseList.getSize() > 0) {
+    if (course.getModel().getSize() > 0) {
       load(((Course) course.getSelectedItem()));
     }
   }

@@ -98,8 +98,7 @@ public class TodoIO
 
 		String query = "SELECT * from afaire " + where;
 		query += " order by priorite,categorie";
-		try {
-			ResultSet rs = dc.executeQuery(query);
+		try (ResultSet rs = dc.executeQuery(query)) {
 			while (rs.next()) {
 				Todo a = new Todo();
 				a.setId(rs.getInt(1));
@@ -114,7 +113,6 @@ public class TodoIO
 
 				v.add(a);
 			}
-			rs.close();
 		} catch (Exception e) {
 			GemLogger.logException(query, e);
 		}

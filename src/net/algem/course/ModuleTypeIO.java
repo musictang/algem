@@ -106,7 +106,7 @@ public class ModuleTypeIO
   public static List<ModuleType> find(String where, DataConnection dc) throws SQLException {
     List<ModuleType> v = new ArrayList<>();
     String query = "SELECT * FROM " + TABLE + " " + where;
-    ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
     while (rs.next()) {
       ModuleType m = new ModuleType();
       m.setId(rs.getInt(1));
@@ -115,7 +115,7 @@ public class ModuleTypeIO
 
       v.add(m);
     }
-    rs.close();
+    }
     return v;
   }
 }

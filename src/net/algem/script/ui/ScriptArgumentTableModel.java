@@ -148,7 +148,7 @@ public class ScriptArgumentTableModel
           return new DatePickerCellEditor(new SimpleDateFormat("dd-MM-yyyy"));
         case TEACHER_LIST:
           List<Teacher> teachers = dataCache.getList(Model.Teacher).getData();
-          return new DefaultCellEditor(new JComboBox(new Vector<Teacher>(teachers)));
+          return new DefaultCellEditor(new JComboBox(teachers.toArray()));
       }
       return editor;
     }
