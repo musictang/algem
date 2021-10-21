@@ -62,7 +62,7 @@ public class UserIO
 
   public void insert(User u) throws SQLException {
 
-    String query = "INSERT INTO " + TABLE + " (idper,login,profil,pass,clef,desktop,agent_mail,agent_web,agent_texte,agent_tableur) VALUES(?,?,?,?,?,?,?,?,?,?)";
+    String query = "INSERT INTO " + TABLE + " (idper,login,profil,pass,clef,desktop,agent_mail,agent_web,agent_texte,agent_tableur,agent_pdf) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
     PreparedStatement statement = dc.prepareStatement(query);
     statement.setInt(1, u.getId());
     statement.setString(2, u.getLogin());
@@ -76,6 +76,7 @@ public class UserIO
     statement.setString(8, u.getWebAgent());
     statement.setString(9, u.getTextAgent());
     statement.setString(10, u.getTableAgent());
+    statement.setString(11, u.getPdfAgent());
     statement.executeUpdate();
     statement.close();
 
@@ -89,7 +90,7 @@ public void update(User u, boolean withPass) throws SQLException {
     String query = "UPDATE " + TABLE + " SET login = ?, profil = ?";
     if (withPass) 
         query+= ", pass = ?, clef = ?";
-    query += ", desktop = ?, agent_mail = ?, agent_web = ?, agent_texte = ?, agent_tableur = ? WHERE idper = " + u.getId();
+    query += ", desktop = ?, agent_mail = ?, agent_web = ?, agent_texte = ?, agent_tableur = ?, agent_pdf = ? WHERE idper = " + u.getId();
     UserPass pass = u.getPassInfo();
     String b64pass = null;
     String b64salt = null;
@@ -111,6 +112,7 @@ public void update(User u, boolean withPass) throws SQLException {
       ps.setString(i++, u.getWebAgent());
       ps.setString(i++, u.getTextAgent());
       ps.setString(i++, u.getTableAgent());
+      ps.setString(i++, u.getPdfAgent());
       ps.executeUpdate();
     }
 
@@ -214,7 +216,7 @@ public void update(User u, boolean withPass) throws SQLException {
 
   public List<User> find(String where) throws SQLException {
     List<User> v = new ArrayList<User>();
-    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef,u.desktop,u.agent_mail,u.agent_web,u.agent_texte,u.agent_tableur"
+    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef,u.desktop,u.agent_mail,u.agent_web,u.agent_texte,u.agent_tableur,agent_pdf"
       + " FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " u ON (p.id = u.idper)";
     if (where != null) {
       query += " " + where;
@@ -240,6 +242,7 @@ public void update(User u, boolean withPass) throws SQLException {
       u.setWebAgent(rs.getString(12));
       u.setTextAgent(rs.getString(13));
       u.setTableAgent(rs.getString(14));
+      u.setPdfAgent(rs.getString(15));
 
       byte[] b64pass = Base64.decodeBase64(rs.getString(8));
       byte[] b64salt = Base64.decodeBase64(rs.getString(9));

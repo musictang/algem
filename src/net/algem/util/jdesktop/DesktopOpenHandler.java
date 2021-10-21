@@ -23,6 +23,7 @@ package net.algem.util.jdesktop;
 import java.io.File;
 import java.io.IOException;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 
@@ -80,15 +81,30 @@ public class DesktopOpenHandler
       for (String p : paths) {
         //String mtype = mimeTypes.getContentType(p); // not used because application/octet-stream returned is too general
         if (p.endsWith("pdf")) {
-          prog = BundleUtil.getLabel("Pdf.client");
+            prog = DataCache.getInitializedInstance().getUser().getPdfAgent();
+            if (prog.length() < 1) {
+                prog = BundleUtil.getLabel("Pdf.client");
+            }            
         } else {
-          prog = BundleUtil.getLabel("Office.client");
+            prog = DataCache.getInitializedInstance().getUser().getTextAgent();
+            if (prog.length() < 1) {
+                prog = BundleUtil.getLabel("Office.client");
+            }            
         }
         if (prog == null) {
           prog = "oowriter";// default application as a last resort
         }
-        String[] command = {prog, p};
-        Runtime.getRuntime().exec(command);
+        String[] args = prog.split(" ");
+        if (args.length > 1) {
+            String[] command = new String[args.length+1];
+            for (int i=0; i < args.length; i++)
+                command[i]=args[i];
+            command[args.length]=p;
+            Runtime.getRuntime().exec(command);
+        } else {
+            String[] command = {prog, p};
+            Runtime.getRuntime().exec(command);
+        }
       }
     } catch (IOException ioe) {
       throw new DesktopHandlerException(ioe.getMessage());

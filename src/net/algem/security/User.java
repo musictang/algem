@@ -44,6 +44,7 @@ public class User
     private String webAgent;
     private String textAgent;
     private String tableAgent;
+    private String pdfAgent;
 
     public User() {
     }
@@ -102,6 +103,9 @@ public class User
         if (this.tableAgent != other.tableAgent && (this.tableAgent == null || !this.tableAgent.equals(other.tableAgent))) {
             return false;
         }
+        if (this.pdfAgent != other.pdfAgent && (this.pdfAgent == null || !this.pdfAgent.equals(other.pdfAgent))) {
+            return false;
+        }
 
         return true;
     }
@@ -117,6 +121,7 @@ public class User
         hash = 17 * hash + (this.webAgent != null ? this.webAgent.hashCode() : 0);
         hash = 17 * hash + (this.textAgent != null ? this.textAgent.hashCode() : 0);
         hash = 17 * hash + (this.tableAgent != null ? this.tableAgent.hashCode() : 0);
+        hash = 17 * hash + (this.pdfAgent != null ? this.pdfAgent.hashCode() : 0);
         return hash;
     }
 
@@ -187,6 +192,14 @@ public class User
 
     public void setTableAgent(String tableAgent) {
         this.tableAgent = tableAgent;
+    }
+
+    public String getPdfAgent() {
+        return pdfAgent;
+    }
+
+    public void setPdfAgent(String pdfAgent) {
+        this.pdfAgent = pdfAgent;
     }
 
 }

@@ -78,7 +78,7 @@ public class UserCreateDlg
     ct.add(buttons, BorderLayout.SOUTH);
 
     dlg.setTitle(BundleUtil.getLabel("Login.creation.label"));
-    dlg.setSize(440, 340);
+    dlg.setSize(420, 440);
     dlg.setLocationRelativeTo(c);
   }
 

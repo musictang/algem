@@ -72,6 +72,7 @@ public class UserView
   private GemField webAgent;
   private GemField textAgent;
   private GemField tableAgent;
+  private GemField pdfAgent;
 
   public UserView(final Rule validator) {
     super(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -156,6 +157,9 @@ public class UserView
     tableAgent = new GemField(60);
     tableAgent.setMinimumSize(new Dimension(250, name.getPreferredSize().height));
     
+    pdfAgent = new GemField(60);
+    pdfAgent.setMinimumSize(new Dimension(250, name.getPreferredSize().height));
+    
     
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -192,6 +196,7 @@ public class UserView
     gb.add(new GemLabel(BundleUtil.getLabel("WebAgent.label")), 0, 8, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("TextAgent.label")), 0, 9, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("TableAgent.label")), 0, 10, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("PdfAgent.label")), 0, 11, 1, 1, GridBagHelper.WEST);
     
     gb.add(name, 1, 0, 2, 1, GridBagHelper.WEST);
     gb.add(login, 1, 1, 1, 1, GridBagHelper.WEST);
@@ -205,6 +210,7 @@ public class UserView
     gb.add(webAgent, 1, 8, 1, 1, GridBagHelper.WEST);
     gb.add(textAgent, 1, 9, 1, 1, GridBagHelper.WEST);
     gb.add(tableAgent, 1, 10, 1, 1, GridBagHelper.WEST);
+    gb.add(pdfAgent, 1, 11, 1, 1, GridBagHelper.WEST);
   }
 
   public User get() {
@@ -222,6 +228,7 @@ public class UserView
     u.setWebAgent(webAgent.getText());
     u.setTextAgent(textAgent.getText());
     u.setTableAgent(tableAgent.getText());
+    u.setPdfAgent(pdfAgent.getText());
     return u;
   }
 
@@ -235,6 +242,7 @@ public class UserView
     webAgent.setText(u.getWebAgent());
     textAgent.setText(u.getTextAgent());
     tableAgent.setText(u.getTableAgent());
+    pdfAgent.setText(u.getPdfAgent());
   }
 
   public void clear() {
@@ -250,6 +258,7 @@ public class UserView
     webAgent.setText(null);
     textAgent.setText(null);
     tableAgent.setText(null);
+    pdfAgent.setText(null);
   }
 
   private String getErrorKey(RuleResult result, int strength) {
