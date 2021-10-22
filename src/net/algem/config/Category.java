@@ -31,8 +31,7 @@ public enum Category {
 
   SITEWEB ("categorie_siteweb", "libelle"),
   TELEPHONE ("typetel", "id"),
-  VACANCY("categorie_vacance", "id"),
-  EMPLOYEE("categorie_salarie", "id");
+  VACANCY("categorie_vacance", "id");
 
   private String table;
   private String column;

@@ -136,6 +136,7 @@ public class DataCache {
     private static Map<Integer, DailyTimes[]> roomsTimes = new HashMap<>(); //ERIC 2.17 27/03/2019
     private static Map<String, HashMap> authorizations = new HashMap<>(); //ERIC 2.17 30/03/2019
     private static Map<Integer, List> moduleCourses = new HashMap<>(); //ERIC 2.17 30/03/2019
+    private static Map<String, Config> config = new HashMap<>();        //ERIC 3.0 22/10/2021
 
     /**
      * Cached action memos. Key = action id, value = Note instance.
@@ -168,13 +169,15 @@ public class DataCache {
     private static GemList<RentableObject> RENTABLE_LIST;
 
     private static List<Instrument> instruments;//TODO manage list
-    private List<CategoryOccup> occupCat;
-    private List<Param> vacancyCat;
-    private List<Param> webSiteCat;
+    private static List<CategoryOccup> occupCat;
+    private static List<Param> vacancyCat;
+    private static List<Param> webSiteCat;
+    private static List<Param> telephoneCat;
+    
 
     private boolean cacheInit = false;
     public static boolean nameFirst = false;
-    
+
     private User user;
     private DateFr startOfPeriod;
     private DateFr startOfYear;
@@ -254,7 +257,6 @@ public class DataCache {
 
     loadDayStmt = dc.prepareStatement(loadDayQuery);//ORDER BY p.action,p.debut
     loadDayRangeStmt = dc.prepareStatement(ScheduleRangeIO.getDayRangeStmt());*/
-
         userService = new DefaultUserService(this);
 
         monthSchedule = new MonthSchedule();
@@ -287,11 +289,13 @@ public class DataCache {
      * @param dc
      * @param user
      * @return a cache instance
-     * @see   <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">"Double-Checked Locking Broken" Declaration</a>
+     * @see
+     *   <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">"Double-Checked
+     * Locking Broken" Declaration</a>
      */
     public static synchronized DataCache getInstance(DataConnection dc, String user) {
         if (INSTANCE == null) {
-                INSTANCE = new DataCache(dc, user);
+            INSTANCE = new DataCache(dc, user);
         }
         return INSTANCE;
     }
@@ -313,12 +317,14 @@ public class DataCache {
         }
         return DATA_CONNECTION;
     }
+
     public static boolean isDataConnected() {
         return DATA_CONNECTION != null;
     }
-  
+
     /**
      * Generic getter for GemList instances.
+     *
      * @param model enumeration model
      * @return an instance of GemList
      */
@@ -372,6 +378,7 @@ public class DataCache {
 
     /**
      * Gets the correct DAO instance for model {@literal m}.
+     *
      * @param m model type
      * @return an instance of {@link net.algem.util.model.Cacheable }
      */
@@ -418,6 +425,7 @@ public class DataCache {
 
     /**
      * Gets a model instance.
+     *
      * @param id
      * @param m model enumeration
      * @return an instance of {@link net.algem.util.model.GemModel }
@@ -539,6 +547,7 @@ public class DataCache {
 
     /**
      * Adds a new element to the list in dataCache.
+     *
      * @param <T>
      * @param m model
      */
@@ -611,6 +620,7 @@ public class DataCache {
 
     /**
      * Updates an element in the list in dataCache.
+     *
      * @param m
      */
     public synchronized void update(GemModel m) {
@@ -698,6 +708,7 @@ public class DataCache {
 
     /**
      * Removes an element from the list in dataCache.
+     *
      * @param m
      */
     public synchronized void remove(GemModel m) {
@@ -839,6 +850,7 @@ public class DataCache {
 
     /**
      * Initial loading.
+     *
      * @param frame (optional) to display messages
      */
     public void load(GemBoot frame) {
@@ -877,9 +889,11 @@ public class DataCache {
             showMessage(frame, BundleUtil.getLabel("Rentable.label"));
             RENTABLE_LIST = new GemList<RentableObject>(RENTABLE_IO.load());
 
+            showMessage(frame, BundleUtil.getLabel("Param.label"));
             occupCat = CategoryOccupIO.find("ORDER BY nom", DATA_CONNECTION);
             vacancyCat = ParamTableIO.find(Category.VACANCY.getTable(), Category.VACANCY.getCol(), DATA_CONNECTION);
             webSiteCat = ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), DATA_CONNECTION);
+            telephoneCat = ParamTableIO.find(Category.TELEPHONE.getTable(), Category.TELEPHONE.getCol(), DATA_CONNECTION);
 
             showMessage(frame, BundleUtil.getLabel("Scheduling.label"));
             loadScheduleCache();
@@ -895,7 +909,6 @@ public class DataCache {
 
 //      showMessage(frame, BundleUtil.getLabel("Billing.label"));
 //      loadBillingCache(); //FIXME ERIC voir findOrderLines() invoiceloader invoceio.find +findorderlines
-
             showMessage(frame, BundleUtil.getLabel("User.label"));
             for (User u : USER_IO.load()) {
                 USER_CACHE.put(u.getId(), u);
@@ -912,7 +925,7 @@ public class DataCache {
             for (RehearsalPass c : RehearsalPassIO.findAll("ORDER BY id", DATA_CONNECTION)) {
                 PASS_CARD.put(c.getId(), c);
             }
-            
+
             showMessage(frame, BundleUtil.getLabel("Authorization.label"));
             loadAuthorizationsCache(); //ERIC 27/03/2019
             //ERIC 12/10/2021
@@ -920,7 +933,7 @@ public class DataCache {
             // impossible d'instancier une Person sans DataConnection + appel dans ConfigUtil de getDataConnection()
             // avec IHM Swing MessagePopup 
             nameFirst = ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey()).equalsIgnoreCase("n");
-            
+
         } catch (SQLException ex) {
             String m = MessageUtil.getMessage("cache.loading.exception");
             GemLogger.logException(m, ex);
@@ -1084,7 +1097,7 @@ public class DataCache {
      * @return a string
      */
     public String getSchoolYearLabel() {    //ERIC 26/03/2019
-        return startOfYear.getYear()+"-"+endOfYear.getYear();
+        return startOfYear.getYear() + "-" + endOfYear.getYear();
 
     }
 
@@ -1094,7 +1107,7 @@ public class DataCache {
      * @return a string
      */
     public String getSchoolNextYearLabel() {     //ERIC 26/03/2019
-        return (startOfYear.getYear()+1)+"-"+(endOfYear.getYear()+1);
+        return (startOfYear.getYear() + 1) + "-" + (endOfYear.getYear() + 1);
 
     }
 
@@ -1113,14 +1126,13 @@ public class DataCache {
             try {
                 monthThread.join();
             } catch (InterruptedException ignore) {
-                    Thread.currentThread().interrupt();
+                Thread.currentThread().interrupt();
             }
         }
         final DateFr start = new DateFr(startDate);
         final DateFr end = new DateFr(endDate);
 
-    monthThread = new Thread(new Runnable()
-    {
+        monthThread = new Thread(new Runnable() {
 
             public void run() {
                 try {
@@ -1139,7 +1151,7 @@ public class DataCache {
                     loadMonthRangeStmt.setDate(2, new java.sql.Date(end.getTime()));
                     List<ScheduleRangeObject> vpg = ScheduleRangeIO.getLoadRS(loadMonthRangeStmt, DATA_CONNECTION);
                     //ERIC 2.17
-                     System.out.println("setMonthSchedule PersonCacheSize=" + DataCache.PERSON_CACHE.size());
+                    System.out.println("setMonthSchedule PersonCacheSize=" + DataCache.PERSON_CACHE.size());
                     //dump("plagemois.ser",vpg);
                     if (Thread.interrupted()) {
                         return;
@@ -1173,19 +1185,23 @@ public class DataCache {
         System.out.println("setDaySchedule PersonCacheSize=" + DataCache.PERSON_CACHE.size());
     }
 
-    public List<CategoryOccup> getOccupationalCat() {
+    public static List<CategoryOccup> getOccupationalCat() {
         return occupCat;
     }
 
-    public List<Param> getVacancyCat() {
+    public static List<Param> getVacancyCat() {
         return vacancyCat;
     }
 
-    public List<Param> getWebSiteCat() {
+    public static List<Param> getWebSiteCat() {
         return webSiteCat;
     }
 
-    public List<Instrument> getInstruments() {
+    public static List<Param> getTelephoneCat() {
+        return telephoneCat;
+    }
+
+   public static List<Instrument> getInstruments() {
         return instruments;
     }
 
@@ -1195,6 +1211,7 @@ public class DataCache {
 
     /**
      * Gets the name of an instrument from its {@literal id }.
+     *
      * @param id
      * @return a string, possibly empty
      */
@@ -1209,6 +1226,7 @@ public class DataCache {
 
     /**
      * Retrieves the cached color for this action {@code id}.
+     *
      * @param id action id
      * @return a color or null if no color was found
      */
@@ -1222,10 +1240,9 @@ public class DataCache {
         return c == 0 ? null : new Color(c);
     }
 
-
     /**
-   * Gets a menu item.
-   * If full is true, various parameters are also attached to the item (info, tooltip, mnemonic).
+     * Gets a menu item. If full is true, various parameters are also attached
+     * to the item (info, tooltip, mnemonic).
      *
      * @param menu prefix key in properties files
      * @param full with parameters
@@ -1253,11 +1270,14 @@ public class DataCache {
      *
      * @param menu2 menu key
      * @return true if menu is authorized for current user
-     * @see net.algem.security.DefaultUserService#authorize(java.lang.String, net.algem.security.User)
+     * @see net.algem.security.DefaultUserService#authorize(java.lang.String,
+     * net.algem.security.User)
      */
     public boolean authorize(String menu2) {
         Map<Integer, Boolean> access = authorizations.get(menu2);
-        if (access == null) return true;
+        if (access == null) {
+            return true;
+        }
         return Optional.ofNullable(access.get(getUser().getId())).orElse(true); // authorize by default
     }
 
@@ -1276,6 +1296,7 @@ public class DataCache {
 
     /**
      * Checks the rights for a table in database.
+     *
      * @param table
      * @param operation
      * @return true if access authorized
@@ -1298,6 +1319,10 @@ public class DataCache {
      * General configuration.
      */
     public void setConfig() {
+        try {
+            ConfigIO.find(null, DATA_CONNECTION); //ERIC 3.0 22/10/2021 preload cache config
+        } catch (SQLException ex) {
+        }
         try {
             setDates();
         } catch (ConfigException ex) {
@@ -1344,8 +1369,8 @@ public class DataCache {
 
     <T extends Object> void dump(String p, List<T> v) {
         try (
-            FileOutputStream fic = new FileOutputStream(p);
-            ObjectOutputStream out = new ObjectOutputStream(fic)) {
+                FileOutputStream fic = new FileOutputStream(p);
+                ObjectOutputStream out = new ObjectOutputStream(fic)) {
             out.writeObject(v);
         } catch (IOException e) {
             GemLogger.log("serializ err :" + e);

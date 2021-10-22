@@ -156,7 +156,7 @@ public class PersonFileSearchCtrl
             case 1:
                 ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
                 currentContact = ContactIO.findId(query, dc);
-                ContactIO.complete(currentContact, dc);
+                //ContactIO.complete(currentContact, dc); ERIC 3.0 22/10/2021 doublon avec le find dessus
                 createModule();
                 break;
             default:

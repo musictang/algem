@@ -73,10 +73,10 @@ public class ContactFileEditor
     infosView = new GemPanel();
 
     infosView.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.lightGray));
-    teleView = new TelView(ParamTableIO.find(Category.TELEPHONE.getTable(), Category.TELEPHONE.getCol(), dc));
+    teleView = new TelView(dataCache.getTelephoneCat());
 
     emailView = new EmailView();
-    websiteView = new WebSiteView(ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), dc));
+    websiteView = new WebSiteView(dataCache.getWebSiteCat());
 
     infosView.setLayout(new BoxLayout(infosView, BoxLayout.Y_AXIS));
     infosView.add(teleView);

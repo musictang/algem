@@ -206,7 +206,7 @@ public class GemGroupService
   }
 
   List<Param> getCategoriesSite() {
-    return ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), dc);
+    return DataCache.getWebSiteCat();
   }
 
   List<Schedule> getRehearsalHisto(int g, DateFr start, DateFr end) {
