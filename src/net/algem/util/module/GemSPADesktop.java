@@ -118,7 +118,7 @@ public class GemSPADesktop extends AbstractDesktopCtrl {
 
         initMenuBar();
 
-        addPostit();
+        addPostitModule();
 
         planningNode = new GemTreeNode("Planning");
         root.add(planningNode);
@@ -234,14 +234,15 @@ public class GemSPADesktop extends AbstractDesktopCtrl {
     }
 
     @Override
-    protected void addPostit() {
-//        GemLogger.info("GemDesltop2Ctrl.addPostit");
-        postitModule = new PostitModule2(userService); // postit windows
-        addPostitModule((PostitModule2) postitModule);
+    protected void addPostitModule() {
+        if (postitModule != null) {
+//        GemLogger.info("GemDesltop2Ctrl.addPostitModule");
+            postitModule = new PostitModule2(userService); // postit windows
+            addPostitModule((PostitModule2) postitModule);
 
-        postitScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
-        postitScheduledExecutor.scheduleAtFixedRate(this::loadPostits, 0, 5, TimeUnit.MINUTES);
-
+            postitScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+            postitScheduledExecutor.scheduleAtFixedRate(this::loadPostits, 0, 5, TimeUnit.MINUTES);
+        }
     }
 
     @Override
@@ -250,7 +251,6 @@ public class GemSPADesktop extends AbstractDesktopCtrl {
         Object src = evt.getSource();
 
         //System.out.println("GemSPADesktop.actionPerformed:" + evt);
-
         setWaitCursor();
 
         if (BundleUtil.getLabel(GemCommand.CLOSE_CMD).equals(arg)
@@ -394,7 +394,6 @@ public class GemSPADesktop extends AbstractDesktopCtrl {
         tree.setSelectionPath(path);
     }
 
-    
     public void addModuleSPA(GemTreeNode treeNode, GemModule module, boolean withNode) {
 
         String labKey = module.getLabel().startsWith("Fiche:") ? module.getLabel() : BundleUtil.getLabel(module.getLabel() + ".label");
@@ -424,7 +423,6 @@ public class GemSPADesktop extends AbstractDesktopCtrl {
         }
         currentModule = module;
         //System.out.println("addModuleSPA currentModule="+currentModule);
-
 
     }
 

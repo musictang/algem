@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.util.model;
 
 import java.util.*;
@@ -26,137 +25,146 @@ import javax.swing.AbstractListModel;
 
 /**
  * Base class for list of GemModel objects.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.14.0
  * @param <T>
  * @since 2.5.a 28/06/12
  */
 public class GemList<T extends GemModel>
-  extends AbstractListModel
-{
+        extends AbstractListModel {
 
-  protected List<T> list;
+    protected List<T> list;
 
-  public GemList() {
-    this.list = new ArrayList<T>();
-  }
-
-  public GemList(List<T> list) {
-    this.list = list;//new ArrayList<T>(list);
-  }
-
-  @Override
-  public int getSize() {
-    return list.size();
-  }
-
-  /**
-   * Gets element at {@code index}.
-   * @param index
-   * @return an object
-   */
-  @Override
-  public Object getElementAt(int index) {
-    return list.get(index);
-  }
-
-  /**
-   * Gets {@code obj} id.
-   * @param obj
-   * @return an integer
-   */
-  public int getId(T obj) {
-    int index = list.indexOf(obj);
-    if (index < 0) {
-      index = 0;
+    public GemList() {
+        this.list = new ArrayList<T>();
     }
-    return list.get(index).getId();
-  }
 
-  /**
-   * Gets {@code obj} index in the list.
-   * @param obj
-   * @return an integer
-   */
-  public int indexOf(Object obj) {
-    if (obj instanceof GemModel) {
-      for (int i = 0 ; i < list.size(); i++) {
-        GemModel m = list.get(i);
-        if (m.getId() == ((GemModel) obj).getId()) {
-          return i;
+    public GemList(List<T> list) {
+        this.list = list;//new ArrayList<T>(list);
+    }
+
+    @Override
+    public synchronized int getSize() {
+        return list.size();
+    }
+
+    /**
+     * Gets element at {@code index}.
+     *
+     * @param index
+     * @return an object
+     */
+    @Override
+    public Object getElementAt(int index) {
+        return list.get(index);
+    }
+
+    /**
+     * Gets {@code obj} id.
+     *
+     * @param obj
+     * @return an integer
+     */
+    public synchronized int getId(T obj) {
+        int index = list.indexOf(obj);
+        if (index < 0) {
+            index = 0;
         }
-      }
+        return list.get(index).getId();
     }
-    return -1;
-    // the result of List.indexOf may be not valid if object's properties have been updated
-    // it is preferable to check only the id as above
-    // return list.indexOf(obj);
-  }
 
-  /**
-   * Gets element in the list which id is {@code id}.
-   * @param id
-   * @return an object of type GemModel
-   */
-  public GemModel getItem(int id) {
-    for (Iterator<T> it = list.iterator(); it.hasNext();) {
-      T m = it.next();
-      if (m.getId() == id) {
-        return m;
-      }
+    /**
+     * Gets {@code obj} index in the list.
+     *
+     * @param obj
+     * @return an integer
+     */
+    public synchronized int indexOf(Object obj) {
+        if (obj instanceof GemModel) {
+            for (int i = 0; i < list.size(); i++) {
+                GemModel m = list.get(i);
+                if (m.getId() == ((GemModel) obj).getId()) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+        // the result of List.indexOf may be not valid if object's properties have been updated
+        // it is preferable to check only the id as above
+        // return list.indexOf(obj);
     }
-    return null;
-  }
 
-  /**
-   * Gets the list of elements.
-   * @return a list
-   */
-  public List<T> getData() {
-    return list;
-  }
-
-  /**
-   * Sets the element {@code obj} at position {@code index}.
-   * @param obj
-   * @param index
-   */
-  public void setElementAt(T obj, int index) {
-    list.set(index, obj);
-    fireContentsChanged(this, index, index);
-  }
-
-  public void update(T obj, Comparator<T> comp) {
-
-    int idx = indexOf(obj);
-    if (idx > -1) {
-      setElementAt(obj, idx);
-      if (comp != null) {
-        Collections.sort(list, comp);
-      }
+    /**
+     * Gets element in the list which id is {@code id}.
+     *
+     * @param id
+     * @return an object of type GemModel
+     */
+    public synchronized GemModel getItem(int id) {
+        for (Iterator<T> it = list.iterator(); it.hasNext();) {
+            T m = it.next();
+            if (m.getId() == id) {
+                return m;
+            }
+        }
+        return null;
     }
-  }
 
-  /**
-   * Adds element {@code obj} at end of list.
-   * @param obj
-   */
-  public void addElement(T obj) {
-    int index = list.size();
-    list.add(obj);
-    fireIntervalAdded(this, index, index);
-  }
-
-  /**
-   * Deletes the element {@code obj} from the list.
-   * @param obj
-   */
-  public void removeElement(T obj) {
-    int index = list.indexOf(obj);
-    if (index > -1) {
-      list.remove(obj);
-      fireIntervalRemoved(obj, index, index);
+    /**
+     * Gets the list of elements.
+     *
+     * @return a list
+     */
+    public synchronized List<T> getData() {
+        return list;
     }
-  }
+
+    /**
+     * Sets the element {@code obj} at position {@code index}.
+     *
+     * @param obj
+     * @param index
+     */
+    public synchronized void setElementAt(T obj, int index) {
+        list.set(index, obj);
+        fireContentsChanged(this, index, index);
+    }
+
+    public synchronized void update(T obj, Comparator<T> comp) {
+
+        int idx = indexOf(obj);
+        if (idx > -1) {
+            list.set(idx, obj);
+            if (comp != null) {
+                Collections.sort(list, comp);
+            }
+        }
+        fireContentsChanged(this, 0, getSize());
+    }
+
+    /**
+     * Adds element {@code obj} at end of list.
+     *
+     * @param obj
+     */
+    public synchronized void addElement(T obj) {
+        int index = list.size();
+        list.add(obj);
+        fireIntervalAdded(this, index, index);
+    }
+
+    /**
+     * Deletes the element {@code obj} from the list.
+     *
+     * @param obj
+     */
+    public synchronized void removeElement(T obj) {
+        int index = list.indexOf(obj);
+        if (index > -1) {
+            list.remove(obj);
+            fireIntervalRemoved(obj, index, index);
+        }
+    }
 
 }

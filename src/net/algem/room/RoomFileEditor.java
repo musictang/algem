@@ -368,11 +368,11 @@ public class RoomFileEditor
         service.create(r);
         roomView.completeTabs(r);
         //dataCache.add(r);
-        desktop.postEvent(new RoomCreateEvent(this, r));
+        desktop.postEvent(new RoomEvent(this, GemEvent.CREATION, r));
       } else {
         service.update(room, r);
         //dataCache.update(r);
-        desktop.postEvent(new RoomUpdateEvent(this, r, date));
+        desktop.postEvent(new RoomEvent(this, GemEvent.MODIFICATION, r, date));
       }
       this.room = r;
       backup();

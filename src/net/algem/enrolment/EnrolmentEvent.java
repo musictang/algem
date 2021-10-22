@@ -1,6 +1,6 @@
 
 /*
- * @(#)EnrolmentEvent.java 2.6.a 17/09/12
+ * @(#)EnrolmentEvent   3.0.0 22/10/2021
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,20 +27,18 @@ import net.algem.util.event.GemEvent;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @author <a href="mailto:eric@productionlibre.fr">Eric</a>
+ * @version 3.0.0
  */
-public abstract class EnrolmentEvent
+public class EnrolmentEvent
         extends GemEvent
 {
 
-  protected int id;
+  private final int id;
 
-  public EnrolmentEvent(Object _source) {
-    super(_source);
-  }
-
-  public EnrolmentEvent(Object _source, int operation, int type) {
-    super(_source, operation, type);
+  public EnrolmentEvent(Object source, int type, int id) {
+    super(source, type, ENROLMENT);
+    this.id = id;
   }
 
   public int getDossierId() {

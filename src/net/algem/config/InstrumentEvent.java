@@ -1,5 +1,5 @@
 /*
- * @(#)RoomUpdateEvent.java	2.6.a 24/09/12
+ * @(#)InstrumentEvent      3.0.0 22/10/2021
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,50 +18,29 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package net.algem.config;
 
-package net.algem.room;
-
-import java.util.Date;
 import net.algem.util.event.GemEvent;
 
 /**
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
- * @since 2.1a
+ * @author <a href="mailto:eric@productionlibre.fr">Eric</a>
+ * @version 3.0.0
  */
-public class RoomUpdateEvent
-  extends GemEvent
+public class InstrumentEvent
+        extends GemEvent
 {
-  private Room room;
-  private Date date;
 
-  public RoomUpdateEvent(Object _source, Room _room)
-	{
-		super(_source, MODIFICATION, ROOM); // source, operation, type event
-		room = _room;
-	}
+  private final Instrument instrument;
 
-  public RoomUpdateEvent(Object _source, Room	_room, Date d) {
-    this(_source, _room);
-    this.date = d;
+  public InstrumentEvent(Object source, int type, Instrument instrument) {
+    super(source, type, INSTRUMENT); // source, operation, type event
+    this.instrument = instrument;
   }
 
-	public Room getRoom()
-	{
-		return room;
-	}
-
-  @Override
-	public String toString() {
-		return "RoomUpdateEvent:"+type+","+operation+" "+room;
-	}
-
-  /**
-   * @return the date
-   */
-  public Date getDate() {
-    return date;
+  public Instrument getInstrument() {
+    return instrument;
   }
 
 }

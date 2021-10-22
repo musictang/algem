@@ -170,14 +170,17 @@ public abstract class AbstractDesktopCtrl
         frame.getContentPane().add(pane, BorderLayout.CENTER);
     }
 
-    protected void addPostit() {
-        postitModule = new PostitModule(userService); // postit windows
-        addModule(postitModule);
-        postitModule.getView().setLocation(new java.awt.Point(0, 0));
+    protected void addPostitModule() {
+        if (postitModule == null) {
+            synchronized (POSTIT_LOCK) {
+                postitModule = new PostitModule(userService); // postit windows
+                addModule(postitModule);
+                postitModule.getView().setLocation(new java.awt.Point(0, 0));
 
-        postitScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
-        postitScheduledExecutor.scheduleAtFixedRate(this::loadPostits, 0, 5, TimeUnit.MINUTES);
-
+                postitScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+                postitScheduledExecutor.scheduleAtFixedRate(this::loadPostits, 0, 5, TimeUnit.MINUTES);
+            }
+        }
     }
 
     @Override
@@ -217,6 +220,7 @@ public abstract class AbstractDesktopCtrl
                         if (++nerr > 2) {
                             System.err.println("thread exception " + e);
                             System.err.println("DECONNECTION DISPATCHER");
+                            JournalIO.log(JournalIO.ERROR, "DECONNECTION DISPATCHER:" + e);
                             Thread.currentThread().interrupt();
                             return;
                         }
@@ -371,14 +375,16 @@ public abstract class AbstractDesktopCtrl
             JOptionPane.showMessageDialog(frame, ((MessageEvent) evt).getMessage(), "Message RMI", JOptionPane.INFORMATION_MESSAGE);
             return;
         } else if (evt instanceof CreatePostitEvent) {
-            Postit p = ((CreatePostitEvent) evt).getPostit();
-            if (p.getReceiver() > 0) {
-                if (dataCache.getUser().getId() == p.getReceiver()) {
+            SwingUtilities.invokeLater(() -> {
+                Postit p = ((CreatePostitEvent) evt).getPostit();
+                if (p.getReceiver() > 0) {
+                    if (dataCache.getUser().getId() == p.getReceiver()) {
+                        postitModule.addPostit(((CreatePostitEvent) evt).getPostit());
+                    }
+                } else {
                     postitModule.addPostit(((CreatePostitEvent) evt).getPostit());
                 }
-            } else {
-                postitModule.addPostit(((CreatePostitEvent) evt).getPostit());
-            }
+            });
             return;
         }
         // envoi vers le cache
@@ -545,19 +551,19 @@ public abstract class AbstractDesktopCtrl
      * @throws IOException
      */
     protected void initDispatcher() throws UnknownHostException, IOException {
-       String[] args = props.getProperty("hostdispatcher").split(":");
+        String[] args = props.getProperty("hostdispatcher").split(":");
 
         int port = args.length > 1 ? Integer.parseInt(args[1]) : DesktopDispatcher.DEFAULT_SOCKET_PORT;
 
         dispatcher = new Socket(args[0], port);
         InetAddress ia = dispatcher.getLocalAddress();
         remoteId = dataCache.getUser().getLogin() + "/" + ia;
-       
+
         remoteId = dataCache.getUser().getLogin() + "/" + dispatcher.toString();
         GemLogger.log(Level.INFO, "remoteId " + remoteId);
         iDispatcher = new ObjectInputStream(dispatcher.getInputStream());
         oDispatcher = new ObjectOutputStream(dispatcher.getOutputStream());
-        oDispatcher.writeObject(new GemRemoteEvent(new LoginEvent(this, "connexion"), remoteId));        
+        oDispatcher.writeObject(new GemRemoteEvent(new LoginEvent(this, "connexion"), remoteId));
         GemLogger.log(Level.INFO, "Connexion dispatcher ok");
     }
 

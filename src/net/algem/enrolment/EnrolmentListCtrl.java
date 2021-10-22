@@ -38,6 +38,7 @@ import net.algem.contact.PersonIO;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.security.Profile;
 import net.algem.util.*;
+import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
@@ -197,7 +198,7 @@ public class EnrolmentListCtrl
       }
       service.delete(cmd);
       orderTableModel.deleteItem(n);
-      desktop.postEvent(new EnrolmentDeleteEvent(this, cmd));
+      desktop.postEvent(new EnrolmentEvent(this, GemEvent.SUPPRESSION, cmd.getMember()));
       desktop.postEvent(new ModifPlanEvent(this, cmd.getCreation(), dataCache.getEndOfYear()));//XXX dlg.getStart/Fin
     } catch (Exception e) {
       GemLogger.logException("Insertion inscription", e, this);

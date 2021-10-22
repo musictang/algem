@@ -58,7 +58,7 @@ public class GemDesktopCtrl extends AbstractDesktopCtrl {
         desktop.setBackground(net.algem.Algem.BGCOLOR_DESKTOP);
         setContentPane(desktop);
         initMenuBar();
-        addPostit();
+        addPostitModule();
 
         try {
             loadModules();

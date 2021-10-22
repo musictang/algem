@@ -329,11 +329,11 @@ public class GroupFileEditor
       if (group.getId() == 0) {
         create();
         dataCache.add(group);
-        desktop.postEvent(new GroupCreateEvent(this, group));
+        desktop.postEvent(new GroupEvent(this, GemEvent.CREATION, group));
       } else {
         update();
         dataCache.update(group);
-        desktop.postEvent(new GroupUpdateEvent(this, group));
+        desktop.postEvent(new GroupEvent(this, GemEvent.MODIFICATION, group));
         if (plan != null) {
           desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
         }
@@ -375,7 +375,7 @@ public class GroupFileEditor
       if (dataCache.authorize("Group.suppression.auth")) {
         service.delete(group);
         dataCache.remove(group);
-        desktop.postEvent(new GroupDeleteEvent(this, group));
+        desktop.postEvent(new GroupEvent(this, GemEvent.SUPPRESSION, group));
         super.close();
       } else {
         String msg = MessageUtil.getMessage("delete.exception") + MessageUtil.getMessage("rights.exception");

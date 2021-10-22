@@ -1,5 +1,5 @@
 /*
- * @(#)GroupCreateEvent.java 2.6.a 31/07/12
+ * @(#)GroupEvent.java 3.0.0 22/10/2021
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,20 +26,21 @@ import net.algem.util.event.GemEvent;
  * comment
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @author <a href="mailto:eric@productionlibre.fr">Eric</a>
+ * @version 3.0.0
  */
-public class GroupCreateEvent
-	extends GemEvent {
+public class GroupEvent
+        extends GemEvent {
 
-	private Group group;
+    private final Group group;
 
-	public GroupCreateEvent(Object src, Group group) {
-		super(src, CREATION, GROUP); // source, operation, type event
-		this.group = group;
-	}
+    public GroupEvent(Object src, int type, Group group) {
+        super(src, type, GROUP); // source, operation, type event
+        this.group = group;
+    }
 
-	public Group getGroup() {
-		return group;
-	}
+    public Group getGroup() {
+        return group;
+    }
 
 }

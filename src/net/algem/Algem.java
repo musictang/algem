@@ -70,7 +70,7 @@ import org.apache.commons.codec.binary.Base64;
  */
 public class Algem {
 
-    public static final String APP_VERSION = "3.0.0";
+    public static final String APP_VERSION = "2.17.6a";
     private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
     private static final int DEF_HEIGHT = 780;
     private static final int BOOT_ICON_MAX_WIDTH = 128;
@@ -116,7 +116,7 @@ public class Algem {
     public static List<LookAndFeelInfo> getAlternativeLaf() {
         return alternativeLaf;
     }
-    
+
     public static File getScriptsPath() {
         Preferences prefs = Preferences.userRoot().node("/algem/paths");
         String path = prefs.get("scripts.path", ConfigUtil.getConf(ConfigKey.SCRIPTS_PATH.getKey()));
@@ -233,8 +233,8 @@ public class Algem {
         } while (!success && trials <= 3);
         if (success) {
             cache.setUser(login);
-            String platform = System.getProperty("os.name")+" "+System.getProperty("os.version")+" JRE:"+System.getProperty("java.runtime.version");
-            JournalIO.log(JournalIO.LOGIN, "connexion "+platform);
+            String platform = System.getProperty("os.name") + " " + System.getProperty("os.version") + " JRE:" + System.getProperty("java.runtime.version");
+            JournalIO.log(JournalIO.LOGIN, "connexion " + platform);
 
         } else {
             MessagePopup.error(parent, MessageUtil.getMessage("unknown.login", login));
@@ -552,38 +552,41 @@ public class Algem {
     }
 
     public static void main(String[] args) {
+//        SwingUtilities.invokeLater(new Runnable() { //pas de refresh de GemBoot
+//            public void run() {
 
-        String userArg = null;
-        String hostArg = null;
-        String baseArg = null;
-        String confArg = null;
+                String userArg = null;
+                String hostArg = null;
+                String baseArg = null;
+                String confArg = null;
 
-        if (args.length > 0) {
-            confArg = args[0];
-        }
-        if (args.length > 1) {
-            userArg = args[1];
-        }
-        if (args.length > 2) {
-            hostArg = args[2];
-        }
-        if (args.length > 3) {
-            baseArg = args[3];
-        }
+                if (args.length > 0) {
+                    confArg = args[0];
+                }
+                if (args.length > 1) {
+                    userArg = args[1];
+                }
+                if (args.length > 2) {
+                    hostArg = args[2];
+                }
+                if (args.length > 3) {
+                    baseArg = args[3];
+                }
 
-        try {
-            Algem appli = new Algem();
-            appli.init(confArg, hostArg, baseArg, userArg);
-        } catch (Exception ex) {
-            StackTraceElement[] trace = ex.getStackTrace();
-            String st = trace.length == 0 ? "" : trace[0].toString();
-            String msg = ex.getMessage();
-            JOptionPane.showMessageDialog(null,
-                    MessageUtil.getMessage("application.create.error") + " :\n" + ex.getClass().getName() + "\n" + st + (msg == null ? "" : "\n" + msg),
-                    "Erreur",
-                    JOptionPane.ERROR_MESSAGE);
-            System.exit(7);
-        }
+                try {
+                    Algem appli = new Algem();
+                    appli.init(confArg, hostArg, baseArg, userArg);
+                } catch (Exception ex) {
+                    StackTraceElement[] trace = ex.getStackTrace();
+                    String st = trace.length == 0 ? "" : trace[0].toString();
+                    String msg = ex.getMessage();
+                    JOptionPane.showMessageDialog(null,
+                            MessageUtil.getMessage("application.create.error") + " :\n" + ex.getClass().getName() + "\n" + st + (msg == null ? "" : "\n" + msg),
+                            "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
+                    System.exit(7);
+                }
+  //      }});
     }
 
     /**

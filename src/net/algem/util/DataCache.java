@@ -613,7 +613,7 @@ public class DataCache {
      * Updates an element in the list in dataCache.
      * @param m
      */
-    public void update(GemModel m) {
+    public synchronized void update(GemModel m) {
         if (m instanceof Room) {
             ROOM_LIST.update((Room) m, new RoomComparator());
             Person c = ((Room) m).getContact();
@@ -700,7 +700,7 @@ public class DataCache {
      * Removes an element from the list in dataCache.
      * @param m
      */
-    public void remove(GemModel m) {
+    public synchronized void remove(GemModel m) {
         if (m instanceof Room) {
             ROOM_LIST.removeElement((Room) m);
         } else if (m instanceof Establishment) {
@@ -756,54 +756,35 @@ public class DataCache {
         System.out.println("DataCache.remoteEvent:" + _evt);
         switch (_evt.getType()) {
             case GemEvent.COURSE:
-                Course c = ((CourseEvent) _evt).getCourse();
-                if (_evt.getOperation() == GemEvent.CREATION) {
-                    add(c);
-                } else if (_evt.getOperation() == GemEvent.MODIFICATION) {
-                    update(c);
-                } else if (_evt.getOperation() == GemEvent.SUPPRESSION) {
-                    remove(c);
-                }
+                sync(_evt, ((CourseEvent) _evt).getCourse());
                 break;
+
             case GemEvent.CONTACT:
                 sync(_evt, (Person) _evt.getObject());
                 break;
+
             case GemEvent.MEMBER:
                 sync(_evt, (Member) _evt.getObject());
                 break;
+
             case GemEvent.TEACHER:
-                Teacher t = ((TeacherEvent) _evt).getTeacher();
-                if (_evt.getOperation() == GemEvent.CREATION) {
-                    add(t);
-                } else if (_evt.getOperation() == GemEvent.MODIFICATION) {
-                    update(t);
-                }
+                sync(_evt, ((TeacherEvent) _evt).getTeacher());
                 break;
 
             case GemEvent.ROOM:
-                if (_evt.getOperation() == GemEvent.CREATION) {
-                    add(((RoomCreateEvent) _evt).getRoom());
-                } else if (_evt.getOperation() == GemEvent.MODIFICATION) {
-                    update(((RoomUpdateEvent) _evt).getRoom());
-                } else if (_evt.getOperation() == GemEvent.SUPPRESSION) {
-                    remove(((RoomDeleteEvent) _evt).getRoom());
-                }
+                sync(_evt, ((RoomEvent) _evt).getRoom());
                 break;
+
             case GemEvent.ROOM_RATE:
                 sync(_evt, (RoomRate) _evt.getObject());
                 break;
+
             case GemEvent.ESTABLISHMENT:
                 sync(_evt, (Establishment) _evt.getObject());
                 break;
 
             case GemEvent.GROUP:
-                if (_evt.getOperation() == GemEvent.CREATION) {
-                    add(((GroupCreateEvent) _evt).getGroup());
-                } else if (_evt.getOperation() == GemEvent.MODIFICATION) {
-                    update(((GroupUpdateEvent) _evt).getGroup());
-                } else if (_evt.getOperation() == GemEvent.SUPPRESSION) {
-                    remove(((GroupDeleteEvent) _evt).getGroup());
-                }
+                sync(_evt, ((GroupEvent) _evt).getGroup());
                 break;
 
             case GemEvent.MUSIC_STYLE:
@@ -839,6 +820,9 @@ public class DataCache {
                 break;
             case GemEvent.VAT:
                 sync(_evt, (Vat) _evt.getObject());
+                break;
+            case GemEvent.INSTRUMENT:
+                sync(_evt, ((InstrumentEvent) _evt).getInstrument());
                 break;
         }
     }
@@ -912,19 +896,24 @@ public class DataCache {
 //      showMessage(frame, BundleUtil.getLabel("Billing.label"));
 //      loadBillingCache(); //FIXME ERIC voir findOrderLines() invoiceloader invoceio.find +findorderlines
 
+            showMessage(frame, BundleUtil.getLabel("User.label"));
             for (User u : USER_IO.load()) {
                 USER_CACHE.put(u.getId(), u);
             }
 
+            showMessage(frame, BundleUtil.getLabel("Param.label"));
             EMPLOYEE_TYPE_LIST = new GemList<GemParam>(EMPLOYEE_TYPE_IO.load());
             MARITAL_STATUS_LIST = new GemList<>(MARITAL_STATUS_IO.find());
-
             STUDIO_TYPE_LIST = new GemList<GemParam>(STUDIO_TYPE_IO.load());
+            loadDailyTimesCache(); //ERIC 27/03/2019
+
+            showMessage(frame, BundleUtil.getLabel("Rehearsal.pass.label"));
             PASS_CARD = new Hashtable<Integer, RehearsalPass>();
             for (RehearsalPass c : RehearsalPassIO.findAll("ORDER BY id", DATA_CONNECTION)) {
                 PASS_CARD.put(c.getId(), c);
             }
-            loadDailyTimesCache(); //ERIC 27/03/2019
+            
+            showMessage(frame, BundleUtil.getLabel("Authorization.label"));
             loadAuthorizationsCache(); //ERIC 27/03/2019
             //ERIC 12/10/2021
             //plus en static dans la classe Person => génére une exception dans DesktopDispatcher,

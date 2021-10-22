@@ -30,10 +30,11 @@ import net.algem.course.Course;
 import net.algem.enrolment.CourseOrder;
 import net.algem.enrolment.EnrolmentException;
 import net.algem.enrolment.EnrolmentService;
-import net.algem.enrolment.EnrolmentUpdateEvent;
+import net.algem.enrolment.EnrolmentEvent;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.event.GemEvent;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
@@ -109,7 +110,7 @@ public class StopCourseDlg
     try {
       service.stopCourse(member, courseOrder, course, start, true);
       desktop.postEvent(new ModifPlanEvent(this, start, courseOrder.getDateEnd()));
-      desktop.postEvent(new EnrolmentUpdateEvent(this, member));
+      desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, member));
     } catch (EnrolmentException ex) {
       MessagePopup.warning(view, ex.getMessage());
     } finally {

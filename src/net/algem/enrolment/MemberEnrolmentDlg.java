@@ -53,6 +53,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
+import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTabDialog;
@@ -217,7 +218,7 @@ public class MemberEnrolmentDlg
             }
             dc.commit();
             desktop.postEvent(new ModifPlanEvent(this, m.getStart(), m.getEnd()));
-            desktop.postEvent(new EnrolmentCreateEvent(this, dossier.getId()));
+            desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, dossier.getId()));
             clear();
         } catch (SQLException e1) {
             dc.rollback();

@@ -35,8 +35,8 @@ public class MusicStyleEvent
 
   protected MusicStyle style;
 
-  public MusicStyleEvent(Object _source, int type, MusicStyle style) {
-    super(_source, type, MUSIC_STYLE); // source, operation, type event
+  public MusicStyleEvent(Object source, int type, MusicStyle style) {
+    super(source, type, MUSIC_STYLE); // source, operation, type event
     this.style = style;
   }
 

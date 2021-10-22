@@ -63,6 +63,7 @@ import net.algem.util.FileUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
+import net.algem.util.event.GemEvent;
 import net.algem.util.jdesktop.DesktopBrowseHandler;
 import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.menu.MenuPopupListener;
@@ -470,7 +471,7 @@ public class MemberEnrolmentEditor
                 modifyCourseOrder(co, courseDlg);
                 service.createCourse(co, dossier.getId());
                 desktop.postEvent(new ModifPlanEvent(this, co.getDateStart(), co.getDateEnd()));
-                desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+                desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, dossier.getId()));
             }
         } catch (EnrolmentException ex) {
             MessagePopup.warning(this, ex.getMessage());
@@ -505,7 +506,7 @@ public class MemberEnrolmentEditor
         if (cc.getAction() == 0) {
             if (MessagePopup.confirm(this, MessageUtil.getMessage("course.suppression.confirmation"))) {
                 service.stopCourse(cc.getId());
-                desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+                desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, dossier.getId()));
             }
             return;
         }
@@ -592,7 +593,7 @@ public class MemberEnrolmentEditor
                 }
             });
             desktop.postEvent(new ModifPlanEvent(this, now, co.getDateEnd()));
-            desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+            desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, dossier.getId()));
         } catch (SQLException ex) {
             GemLogger.logException(ex);
         } catch (Exception ex) {
@@ -641,7 +642,7 @@ public class MemberEnrolmentEditor
             order.setCreation(dlg.getDate());
             try {
                 service.updateOrderDate(order);
-                desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+                desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, dossier.getId()));
             } catch (SQLException ex) {
                 MessagePopup.warning(this, ex.getMessage());
             }
@@ -692,10 +693,10 @@ public class MemberEnrolmentEditor
                 service.modifyCourse(co, dossier.getId());
                 desktop.postEvent(new ModifPlanEvent(this, co.getDateStart(), co.getDateEnd()));
                 // Rafraichissement de la vue inscription
-                desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+                desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, dossier.getId()));
             }
         } catch (EnrolmentException e) {
-            desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));// possibly refresh view
+            desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, dossier.getId()));// possibly refresh view
             MessagePopup.warning(view, e.getMessage());
         } finally {
             view.setCursor(Cursor.getDefaultCursor());
@@ -764,7 +765,7 @@ public class MemberEnrolmentEditor
             } catch (NullAccountException ex) {
                 GemLogger.logException(ex);
             }
-            desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+            desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, dossier.getId()));
         } catch (SQLException ex) {
             MessagePopup.warning(this, "#addModule " + ex.getMessage());
         }
@@ -826,7 +827,7 @@ public class MemberEnrolmentEditor
         if (MessagePopup.confirm(this, MessageUtil.getMessage("module.delete.confirmation", mo.getTitle()))) {
             try {
                 service.delete(mo, dossier.getId());
-                desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+                desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, dossier.getId()));
             } catch (EnrolmentException ex) {
                 MessagePopup.warning(this, ex.getMessage());
             }
@@ -863,7 +864,7 @@ public class MemberEnrolmentEditor
         moduleOrder.setStopped(true);
         try {
             service.stopModule(moduleOrder, orders, dossier.getId(), stop);
-            desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+            desktop.postEvent(new EnrolmentEvent(this, GemEvent.MODIFICATION, dossier.getId()));
             desktop.postEvent(new ModifPlanEvent(this, stop, dataCache.getEndOfYear()));
             //TODO service.pauseModule(moduleOrder);
         } catch (EnrolmentException ex) {

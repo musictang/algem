@@ -143,10 +143,10 @@ public class GroupSearchCtrl
   @Override
   public void postEvent(GemEvent evt) {
     if (list != null && !list.getData().isEmpty()) {
-      if (evt instanceof GroupDeleteEvent) {
-        list.deleteRow(((GroupDeleteEvent) evt).getGroup());
-      } else if (evt instanceof GroupUpdateEvent) {
-        list.updateRow(((GroupUpdateEvent) evt).getGroup());
+      if (evt instanceof GroupEvent && evt.getType() == GemEvent.SUPPRESSION) {
+        list.deleteRow(((GroupEvent ) evt).getGroup());
+      } else if (evt instanceof GroupEvent && evt.getType() == GemEvent.MODIFICATION) {
+        list.updateRow(((GroupEvent) evt).getGroup());
       }
     }
   }

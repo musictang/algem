@@ -45,7 +45,7 @@ import net.algem.planning.*;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.export.PlanningExportService;
 import net.algem.room.Establishment;
-import net.algem.room.RoomUpdateEvent;
+import net.algem.room.RoomEvent;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.FileUtil;
@@ -314,8 +314,8 @@ public class DayScheduleCtrl
           }
         });
       }
-    } else if (_evt instanceof RoomUpdateEvent) {
-      final Date d = ((RoomUpdateEvent) _evt).getDate();
+    } else if (_evt instanceof RoomEvent && _evt.getType() == GemEvent.MODIFICATION) {
+      final Date d = ((RoomEvent) _evt).getDate();
       if (d != null) {
         EventQueue.invokeLater(new Runnable() {
           public void run() {
