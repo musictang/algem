@@ -48,6 +48,7 @@ import net.algem.course.CourseCodeType;
 import net.algem.planning.day.DayChoice;
 import net.algem.room.Room;
 import net.algem.room.RoomChoice;
+import net.algem.room.RoomEvent;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
@@ -312,6 +313,10 @@ public class ActionView
   public void postEvent(GemEvent evt) {
     if (evt instanceof TeacherEvent && evt.getOperation() == GemEvent.CREATION) {
       ((GemChoiceFilterModel) teacher.getModel()).load(dataCache.getList(Model.Teacher));
+    }
+    //ERIC 3.0 22/10/2021
+    if (evt instanceof RoomEvent && evt.getOperation() == GemEvent.CREATION) {
+      ((GemChoiceFilterModel) room.getModel()).load(dataCache.getList(Model.Room));
     }
   }
 

@@ -348,6 +348,8 @@ public class RoomFileEditor
    */
   private void save(Room r) {
     if (hasChanged(r)) {
+            String msg = MessageUtil.getMessage("update.warning");
+            if (MessagePopup.confirm(roomView, msg, "Création nouvelle salle")) {
       updateRoom(r);
       if (hasOtherPayer()) {
         addPayerFile(r.getPayer().getId());
@@ -356,7 +358,7 @@ public class RoomFileEditor
         btPayer.setEnabled(false);
       }
     }
-
+  }
   }
 
   /**
@@ -367,11 +369,11 @@ public class RoomFileEditor
       if (r.getId() == 0) {
         service.create(r);
         roomView.completeTabs(r);
-        //dataCache.add(r);
+        dataCache.add(r);
         desktop.postEvent(new RoomEvent(this, GemEvent.CREATION, r));
       } else {
         service.update(room, r);
-        //dataCache.update(r);
+        dataCache.update(r);
         desktop.postEvent(new RoomEvent(this, GemEvent.MODIFICATION, r, date));
       }
       this.room = r;
