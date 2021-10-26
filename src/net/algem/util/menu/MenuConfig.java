@@ -134,6 +134,7 @@ public class MenuConfig
     mAdmin.add(miRightsBrowse);
     mAdmin.addSeparator();
     mAdmin.add(new JMenuItem(menus.get("Menu.cache.label")));
+    mAdmin.add(new JMenuItem(menus.get("Menu.cachedump.label")));
     mAdmin.add(new JMenuItem(menus.get("Menu.libel.label")));
     /* mSauve = new JMenu("Base de donnée"); mSauve.getItem(new JMenuItem("Sauvegarde
      * (dump de la base)")); mSauve.getItem(new JMenuItem("Restauration depuis
@@ -262,6 +263,9 @@ public class MenuConfig
       libelCtrl.addActionListener(this);
       libelCtrl.init();
       desktop.addPanel("Menu.libel", libelCtrl, new Dimension(680,460));
+    } else if (menus.get("Menu.cachedump.label").equals(arg)) {
+      dataCache.dump(System.out);
+      dataCache.dumpPersonFile(System.out);
     } else if (menus.get("Menu.cache.label").equals(arg)) {
       dataCache.load(null);
     }
@@ -301,6 +305,7 @@ public class MenuConfig
     menus.put("Menu.color.label", BundleUtil.getLabel("Menu.color.label"));
     menus.put("Menu.admin.label", BundleUtil.getLabel("Menu.administration.label"));
     menus.put("Menu.cache.label", BundleUtil.getLabel("Menu.cache.label"));
+    menus.put("Menu.cachedump.label", BundleUtil.getLabel("Menu.cachedump.label"));
     menus.put("Menu.course.codes.label", BundleUtil.getLabel("Menu.course.codes.label"));
     menus.put("Theme.label", BundleUtil.getLabel("Theme.label"));
     menus.put("Menu.libel.label", BundleUtil.getLabel("Menu.libel.label"));

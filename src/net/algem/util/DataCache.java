@@ -78,6 +78,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1456,7 +1457,7 @@ public class DataCache {
     }
 
     //ERIC 3.0 24/10/2021
-    private static void loadPreference() { 
+    private static void loadPreference() {
         preference = new HashMap<String, Preference>();
         for (Preference p : AccountPrefIO.findAll(DATA_CONNECTION)) {
             preference.put(p.getKey(), p);
@@ -1467,6 +1468,57 @@ public class DataCache {
         return preference.get(k);
     }
 
-}
-//ERIC END
+    public void dump(PrintStream out) {
+        out.println("Taille cache personnes:" + PERSON_CACHE.size());
+        out.println("Taille cache dossiers personnes:" + PERSON_FILE_CACHE.size());
+        out.println("Taille cache utilisateurs:" + USER_CACHE.size());
+        out.println("Taille cache adhérents (member):" + MEMBER_CACHE.size());
+        out.println("Taille cache cartes abonnements:" + PASS_CARD.size());
+        out.println("Taille cache orderlines:" + ORDER_LINE_CACHE.size());
 
+        /* autres hashmap        
+        TEACHER_INSTRUMENT_CACHE
+        COST_ACCOUNT_CACHE
+        ACTION_CACHE
+        ITEM_CACHE
+         */
+        out.println("Taille cache cours:" + COURSE_LIST.getSize());
+        out.println("Taille cache salles:" + ROOM_LIST.getSize());
+        out.println("Taille cache teachers:" + TEACHER_LIST.getSize());
+        out.println("Taille cache groupes:" + GROUP_LIST.getSize());
+
+        /* autres gemlist        
+        WORKSHOP_LIST
+        ROOM_RATE_LIST
+        MODULE_LIST
+        AGE_RANGE_LIST
+        LEVEL_LIST
+        STATUS_LIST
+        STYLE_LIST
+        ESTAB_LIST
+        SCHOOL_LIST
+        ACCOUNT_LIST
+        VAT_LIST
+        COURSE_CODE_LIST
+        EMPLOYEE_TYPE_LIST
+        STUDIO_TYPE_LIST
+        MARITAL_STATUS_LIST
+        RENTABLE_LIST
+         */
+    }
+
+    public void dumpPersonFile(PrintStream out) {
+        out.println("Dump cache Dossier Personne:");
+        PERSON_FILE_CACHE.forEach((id, pf) -> {
+            out.println("Dossier Personne:" + id);
+            out.println("Contact:" + pf.getContact());
+            out.println("Member:" + pf.getMember());
+            out.println("Note:" + pf.getNote());
+            out.println("Rib:" + pf.getRib());
+            out.println("Teacher:" + pf.getTeacher());
+            out.println("SubscriptionCardTeacher:" + pf.getSubscriptionCard());
+            out.println("Photo:" + (pf.getPhoto() != null ? "OUI" : "NON"));
+        });
+        out.println();
+    }
+}

@@ -678,4 +678,15 @@ public abstract class AbstractDesktopCtrl
         sb.append("</html>");
         return sb.toString();
     }
+    
+    public void dump(PrintStream out) {
+        out.println("GemDesktop Dump");
+        out.println("modules");
+        for (GemModule m : modules.values()) {
+            out.println(m);
+        }        
+        out.println("Taille cache du DataCache");
+        dataCache.dump(out);
+        dataCache.dumpPersonFile(out);
+    }
 }
