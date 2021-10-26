@@ -56,7 +56,6 @@ import net.algem.security.AuthDlg;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.module.GemSPADesktop;
-import net.algem.util.module.GemDesktop;
 import net.algem.util.module.JournalIO;
 import net.algem.util.ui.MessagePopup;
 import org.apache.commons.codec.binary.Base64;

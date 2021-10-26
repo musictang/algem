@@ -784,7 +784,7 @@ public class DataCache {
 
     }
 
-    public void remoteEvent(GemEvent _evt) {
+    public void remoteEvent(GemEvent _evt) { // for thread dispatcher
         System.out.println("DataCache.remoteEvent:" + _evt);
         switch (_evt.getType()) {
             case GemEvent.COURSE:

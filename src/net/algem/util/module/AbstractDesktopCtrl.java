@@ -32,7 +32,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -57,8 +56,6 @@ import net.algem.util.event.GemRemoteEvent;
 import net.algem.util.event.LoginEvent;
 import net.algem.util.event.MessageEvent;
 import net.algem.util.model.GemCloseVetoException;
-import net.algem.util.model.GemMap;
-import net.algem.util.model.Model;
 import net.algem.util.postit.CreatePostitEvent;
 import net.algem.util.postit.Postit;
 import net.algem.util.postit.PostitCreateCtrl;
@@ -330,30 +327,32 @@ public abstract class AbstractDesktopCtrl
     @Override
     public void postEvent(GemEvent evt) {
         System.out.println("GemDesktopCtrl.postEvent:" + evt);
-
-        if (evt instanceof ScheduleDetailEvent) {
-            ScheduleDetailEvent pde = (ScheduleDetailEvent) evt;
-            setWaitCursor();
-            detailCtrl.loadSchedule(pde);
-            setDefaultCursor();
-        } else if (evt instanceof SelectDateEvent) {
-        } else if (evt instanceof ReloadDetailEvent) {
-            detailCtrl.reloadFromLastEvent();
-        } else {
-            if (evt instanceof ModifPlanEvent) {
-                detailCtrl.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CloseLink"));
-            }
-            if (dispatcher != null) {
-                try {
-                    GemRemoteEvent e = new GemRemoteEvent(evt, remoteId);
-                    System.out.println("GemDesktopCtrl.postEvent remoteId :" + remoteId + " e:" + e);
-                    oDispatcher.writeObject(e);
-                } catch (Exception ex) {
-                    GemLogger.logException("erreur dispatch postEvent :", ex);
+        
+        SwingUtilities.invokeLater(() -> {
+            if (evt instanceof ScheduleDetailEvent) {
+                ScheduleDetailEvent pde = (ScheduleDetailEvent) evt;
+                setWaitCursor();
+                detailCtrl.loadSchedule(pde);
+                setDefaultCursor();
+            } else if (evt instanceof SelectDateEvent) {
+            } else if (evt instanceof ReloadDetailEvent) {
+                detailCtrl.reloadFromLastEvent();
+            } else {
+                if (evt instanceof ModifPlanEvent) {
+                    detailCtrl.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CloseLink"));
+                }
+                if (dispatcher != null) {
+                    try {
+                        GemRemoteEvent e = new GemRemoteEvent(evt, remoteId);
+                        System.out.println("GemDesktopCtrl.postEvent remoteId :" + remoteId + " e:" + e);
+                        oDispatcher.writeObject(e);
+                    } catch (Exception ex) {
+                        GemLogger.logException("erreur dispatch postEvent :", ex);
+                    }
                 }
             }
-        }
-        forwardEvent(evt);
+            forwardEvent(evt);
+        });
     }
 
     /**
@@ -361,12 +360,9 @@ public abstract class AbstractDesktopCtrl
      *
      * @param evt
      */
-    public void forwardEvent(GemEvent evt) {
-//        System.out.println("AbstractDesktopCtrl.forwardEvent:"+evt);
+    public void forwardEvent(GemEvent evt) { // for thread dispatcher
         Object[] listeners = listenerList.getListenerList();
-
-        for (int i = listeners.length - 2; i >= 0; i
-                -= 2) {
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == GemEventListener.class) {
                 GemEventListener l = (GemEventListener) listeners[i + 1];
                 if (l != evt.getSource()) {
@@ -383,14 +379,15 @@ public abstract class AbstractDesktopCtrl
      * @param _evt
      */
     @Override
-    public void remoteEvent(GemRemoteEvent _evt) {
+    public void remoteEvent(GemRemoteEvent _evt) { // pour Thread dispatcher
         GemEvent evt = _evt.getEvent();
         System.out.println("GemDesktopCtrl.remoteEvent:" + _evt);
-        if (evt instanceof MessageEvent) {
-            JOptionPane.showMessageDialog(frame, ((MessageEvent) evt).getMessage(), "Message RMI", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        } else if (evt instanceof CreatePostitEvent) {
-            SwingUtilities.invokeLater(() -> {
+
+        SwingUtilities.invokeLater(() -> {
+            if (evt instanceof MessageEvent) {
+                JOptionPane.showMessageDialog(frame, ((MessageEvent) evt).getMessage(), "Message RMI", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            } else if (evt instanceof CreatePostitEvent) {
                 Postit p = ((CreatePostitEvent) evt).getPostit();
                 if (p.getReceiver() > 0) {
                     if (dataCache.getUser().getId() == p.getReceiver()) {
@@ -399,12 +396,12 @@ public abstract class AbstractDesktopCtrl
                 } else {
                     postitModule.addPostit(((CreatePostitEvent) evt).getPostit());
                 }
-            });
-            return;
-        }
-        // envoi vers le cache
-        dataCache.remoteEvent(evt);
-        forwardEvent(evt);
+                return;
+            }
+            // envoi vers le cache
+            dataCache.remoteEvent(evt);
+            forwardEvent(evt);
+        });
     }
 
     @Override
@@ -678,13 +675,13 @@ public abstract class AbstractDesktopCtrl
         sb.append("</html>");
         return sb.toString();
     }
-    
+
     public void dump(PrintStream out) {
         out.println("GemDesktop Dump");
         out.println("modules");
         for (GemModule m : modules.values()) {
             out.println(m);
-        }        
+        }
         out.println("Taille cache du DataCache");
         dataCache.dump(out);
         dataCache.dumpPersonFile(out);

@@ -23,7 +23,6 @@ package net.algem.util.module;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.beans.PropertyVetoException;
 import java.io.*;
 import java.util.*;

@@ -45,7 +45,6 @@ import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
-import net.algem.util.LibelCtrl;
 import net.algem.util.LibelSearchCtrl;
 import net.algem.util.module.DefaultGemModule;
 import net.algem.util.module.GemDesktop;
@@ -66,15 +65,15 @@ public class MenuConfig
     initLabels();
   }
 
-  private JMenu mEstab;
-  private JMenuItem miEstabBrowse;
-  private JMenuItem msEstabCreate;
-  private JMenuItem mBankBranchBrowse;
-  private JMenuItem mBankBranchCreate;
-  private JMenuItem mVacancy;
-  private JMenu mParameters;
-  private JMenu mAdmin;
-  private JMenuItem miRightsBrowse;
+  private final JMenu mEstab;
+  private final JMenuItem miEstabBrowse;
+  private final JMenuItem msEstabCreate;
+  private final JMenuItem mBankBranchBrowse;
+  private final JMenuItem mBankBranchCreate;
+  private final JMenuItem mVacancy;
+  private final JMenu mParameters;
+  private final JMenu mAdmin;
+  private final JMenuItem miRightsBrowse;
 
   public MenuConfig(GemDesktop _desktop) {
     super(menus.get("Menu.configuration.label"), _desktop);

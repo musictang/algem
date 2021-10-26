@@ -67,7 +67,6 @@ import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.jdesktop.DesktopOpenHandler;
 import net.algem.util.menu.PersonFileMenuItem;
 import net.algem.util.model.GemCloseVetoException;
-import net.algem.util.model.GemModel;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 import net.algem.util.module.FileEditor;
