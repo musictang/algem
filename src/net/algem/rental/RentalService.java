@@ -114,7 +114,7 @@ public class RentalService
    */
   public void saveRentalOrderLine(RentableObject r, PersonFile pFile, DateFr date, double amount) throws SQLException {
 
-    Preference p = AccountPrefIO.find(AccountPrefIO.LEISURE, dc);
+      Preference p = DataCache.getPreference(AccountPrefIO.LEISURE);
     OrderLine e = new OrderLine();
     e.setMember(pFile.getId());
     int payer;

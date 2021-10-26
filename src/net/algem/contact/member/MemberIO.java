@@ -188,6 +188,17 @@ public class MemberIO
     return m;
   }
 
+  public boolean isPayeur(int n) {
+    String query = "SELECT COUNT(idper) FROM " + TABLE+" WHERE payeur='"+n+"'";
+    try (ResultSet rs = dc.executeQuery(query)) {
+    if (rs.next()) {
+        return rs.getInt(1) > 0;
+    }
+    } catch (SQLException ex) {
+    }
+        return false;
+  }
+
   public List<Member> find(String where) throws SQLException {
     List<Member> v = new ArrayList<>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE;

@@ -55,97 +55,97 @@ import net.algem.util.ui.ListCtrl;
  */
 public class AccountPrefListCtrl
         extends ListCtrl
-        implements ActionListener
-{
+        implements ActionListener {
 
-  private static final String DEFAULT_ACCOUNT_KEY = "Menu.default.account";
-  private GemDesktop desktop;
-  private AccountingServiceImpl service;
-  private GemButton btValidate;
-  
-  public AccountPrefListCtrl(GemDesktop desktop, AccountingServiceImpl service, List<Account> accounts, List<Param> costAccounts) {
-    super(false);
-    this.desktop = desktop;
-    this.service = service;
-    this.tableModel = new AccountPrefTableModel();
-    
-    table = new JTable(tableModel);
-    table.setAutoCreateRowSorter(true);
-    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    table.setRowHeight(table.getRowHeight() + 3);
-    TableColumnModel cm = table.getColumnModel();
-    GemChoice accountSelector = new AccountChoice(accounts);
-    GemChoice costAccountSelector = new ParamChoice(costAccounts);
-    TableColumn accountCol = cm.getColumn(1);
-    TableColumn costAccountCol = cm.getColumn(2);
-    accountCol.setCellEditor(new DefaultCellEditor(accountSelector));
-    costAccountCol.setCellEditor(new DefaultCellEditor(costAccountSelector));
+    private static final String DEFAULT_ACCOUNT_KEY = "Menu.default.account";
+    private GemDesktop desktop;
+    private AccountingServiceImpl service;
+    private GemButton btValidate;
 
-    JScrollPane p = new JScrollPane(table);
-    p.setBorder(new BevelBorder(BevelBorder.LOWERED));
-    
-    add(p, BorderLayout.CENTER);
-    btValidate = new GemButton(GemCommand.VALIDATION_CMD);
-    btValidate.addActionListener(this);
-    
-    GemButton btCancel = new GemButton(GemCommand.CANCEL_CMD);
-    btCancel.addActionListener(this);
-    GemPanel buttons = new GemPanel(new GridLayout(1, 2));
-    buttons.add(btValidate);
-    buttons.add(btCancel);
-    add(buttons, BorderLayout.SOUTH);
-    
-  }
-  
-  public void load(String[] keys) {
-    try {
-      
-      List<AccountPref> prefs = new ArrayList<AccountPref>();
-      if (keys != null && keys.length > 0) {
-        for (int i = 0, max = keys.length; i < max; i++) {
-          Preference pref = AccountPrefIO.find(keys[i], DataCache.getDataConnection());
-          Object[] values = pref.getValues();
-          
-          AccountPref p = new AccountPref();
-          
-          p.setKey(keys[i]);
-          if ((int) values[0] > 0) {
-            p.setAccount((Account) DataCache.findId((int) values[0], Model.Account));
-          }
-          if (values[1] != null) {
-            p.setCostAccount(DataCache.getCostAccount((String) values[1]));
-          }
-          prefs.add(p);
-        }
-      }
-      loadResult(prefs);
-    } catch (SQLException ex) {
-      GemLogger.log(getClass().getName(), "ComptesPrefsCtrl", ex);
+    public AccountPrefListCtrl(GemDesktop desktop, AccountingServiceImpl service, List<Account> accounts, List<Param> costAccounts) {
+        super(false);
+        this.desktop = desktop;
+        this.service = service;
+        this.tableModel = new AccountPrefTableModel();
+
+        table = new JTable(tableModel);
+        table.setAutoCreateRowSorter(true);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setRowHeight(table.getRowHeight() + 3);
+        TableColumnModel cm = table.getColumnModel();
+        GemChoice accountSelector = new AccountChoice(accounts);
+        GemChoice costAccountSelector = new ParamChoice(costAccounts);
+        TableColumn accountCol = cm.getColumn(1);
+        TableColumn costAccountCol = cm.getColumn(2);
+        accountCol.setCellEditor(new DefaultCellEditor(accountSelector));
+        costAccountCol.setCellEditor(new DefaultCellEditor(costAccountSelector));
+
+        JScrollPane p = new JScrollPane(table);
+        p.setBorder(new BevelBorder(BevelBorder.LOWERED));
+
+        add(p, BorderLayout.CENTER);
+        btValidate = new GemButton(GemCommand.VALIDATION_CMD);
+        btValidate.addActionListener(this);
+
+        GemButton btCancel = new GemButton(GemCommand.CANCEL_CMD);
+        btCancel.addActionListener(this);
+        GemPanel buttons = new GemPanel(new GridLayout(1, 2));
+        buttons.add(btValidate);
+        buttons.add(btCancel);
+        add(buttons, BorderLayout.SOUTH);
+
     }
-  }
 
-  @Override
-  public void actionPerformed(ActionEvent evt) {
-    if (evt.getSource() == btValidate) {
-      stopCellEditing();
-      List<AccountPref> prefs = tableModel.getData();
-      for (AccountPref p : prefs) {
+    public void load(String[] keys) {
         try {
-          Account c = p.getAccount();
-          Param ca = p.getCostAccount();
-          if (c != null && ca != null) {
-            Preference pref = new Preference(p.getKey(), new String[]{String.valueOf(c.getId()), ca.getKey()});
-            service.updateAccountPref(pref);
-          }
+
+            List<AccountPref> prefs = new ArrayList<AccountPref>();
+            if (keys != null && keys.length > 0) {
+                for (int i = 0, max = keys.length; i < max; i++) {
+                    Preference pref = DataCache.getPreference(keys[i]);
+
+                    Object[] values = pref.getValues();
+
+                    AccountPref p = new AccountPref();
+
+                    p.setKey(keys[i]);
+                    if ((int) values[0] > 0) {
+                        p.setAccount((Account) DataCache.findId((int) values[0], Model.Account));
+                    }
+                    if (values[1] != null) {
+                        p.setCostAccount(DataCache.getCostAccount((String) values[1]));
+                    }
+                    prefs.add(p);
+                }
+            }
+            loadResult(prefs);
         } catch (SQLException ex) {
-          GemLogger.log(getClass().getName(), "actionPerformed", ex);
+            GemLogger.log(getClass().getName(), "ComptesPrefsCtrl", ex);
         }
-      }
     }
-    close();
-  }
-  
-  protected void close() {
-    desktop.removeModule(DEFAULT_ACCOUNT_KEY);
-  }
+
+    @Override
+    public void actionPerformed(ActionEvent evt) {
+        if (evt.getSource() == btValidate) {
+            stopCellEditing();
+            List<AccountPref> prefs = tableModel.getData();
+            for (AccountPref p : prefs) {
+                try {
+                    Account c = p.getAccount();
+                    Param ca = p.getCostAccount();
+                    if (c != null && ca != null) {
+                        Preference pref = new Preference(p.getKey(), new String[]{String.valueOf(c.getId()), ca.getKey()});
+                        service.updateAccountPref(pref);
+                    }
+                } catch (SQLException ex) {
+                    GemLogger.log(getClass().getName(), "actionPerformed", ex);
+                }
+            }
+        }
+        close();
+    }
+
+    protected void close() {
+        desktop.removeModule(DEFAULT_ACCOUNT_KEY);
+    }
 }

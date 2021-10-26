@@ -559,12 +559,12 @@ public class ScheduleDetailCtrl
         }
 
         Person p = range.getMember();
-        PersonFileEditor editor = desktop.getPersonFileEditor(p.getId());
+        PersonFileEditor editor = desktop.getModuleFileEditor(p.getId());
         if (editor != null) {
           desktop.setSelectedModule(editor);
         } else {
           setWaitCursor();
-          PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
+          PersonFile pf = DataCache.getPersonFile(p.getId());
           loadPersonFile(pf);
         }
 
@@ -584,7 +584,7 @@ public class ScheduleDetailCtrl
         } else {
           return;
         }
-        PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
+        PersonFile pf = DataCache.getPersonFile(p.getId());
         loadPersonFile(pf);
       } else if ("TeacherLink".equals(arg)) {
           if ((evt.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
@@ -599,7 +599,7 @@ public class ScheduleDetailCtrl
         }
         setWaitCursor();
         Person p = (Person) ((GemMenuButton) evt.getSource()).getObject();
-        PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
+        PersonFile pf = DataCache.getPersonFile(p.getId());
         loadPersonFile(pf);
       } else if ("GroupLink".equals(arg)) {// ouverture fiche groupe
         setWaitCursor();
@@ -730,6 +730,12 @@ public class ScheduleDetailCtrl
    * @param dossier
    */
   private void loadPersonFile(PersonFile dossier) {
+      if (dossier == null) {
+        MessagePopup.warning(frame, MessageUtil.getMessage("load.fiche.error", dossier.getId()));
+        GemLogger.log("Error PersonFileSearchCtrl.createModule ID NOT FOUND:" + dossier.getId());
+        return;
+      }
+      
     PersonFileEditor editor = new PersonFileEditor(dossier);
     desktop.addModule(editor);
     if (editor.getView() != null) { //GemSPADesktop sans JInternalFrame

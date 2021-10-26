@@ -192,7 +192,7 @@ public class RoomFileEditor
         } else if ("Room.suppression".equals(arg)) {
             delete();
         } else if ("PayerLink".equals(arg)) {
-            PersonFileEditor m = desktop.getPersonFileEditor(room.getPayer().getId());
+            PersonFileEditor m = desktop.getModuleFileEditor(room.getPayer().getId());
             if (m == null) {
                 PersonFileEditor editor = new PersonFileEditor(payerFile);
                 desktop.addModule(editor);

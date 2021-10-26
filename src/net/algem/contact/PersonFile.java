@@ -22,12 +22,19 @@ package net.algem.contact;
 
 import java.util.Collection;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.event.EventListenerList;
 import net.algem.bank.BankUtil;
 import net.algem.bank.Rib;
+import net.algem.bank.RibView;
 import net.algem.contact.member.Member;
+import net.algem.contact.member.MemberEditor;
+import net.algem.contact.member.MemberFollowUpEditor;
 import net.algem.contact.member.PersonSubscriptionCard;
 import net.algem.contact.teacher.Teacher;
+import net.algem.contact.teacher.TeacherEditor;
+import net.algem.contact.teacher.TeacherFollowUpEditor;
+import net.algem.enrolment.MemberEnrolmentEditor;
 import net.algem.group.Group;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.GemModel;
@@ -51,7 +58,9 @@ public class PersonFile
   private Rib rib, oldRib;
   private PersonSubscriptionCard subscriptionCard;
   private Collection<Group> groups;
-
+  private Note note;
+  private ImageIcon photo;
+  
   public PersonFile() {
   }
 
@@ -168,6 +177,31 @@ public class PersonFile
     return subscriptionCard;
   }
 
+    public Note getNote() {
+        return note;
+    }
+
+    public void setNote(Note note) {
+        this.note = note;
+    }
+
+    public ImageIcon getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(ImageIcon photo) {
+        this.photo = photo;
+    }
+
+    public EventListenerList getListenerList() {
+        return listenerList;
+    }
+
+    public void setListenerList(EventListenerList listenerList) {
+        this.listenerList = listenerList;
+    }
+ 
+  
   public boolean hasChanged() {
     if (contact.getId() == 0 && (contact.getName().length() > 0 || contact.getOrganization() != null && contact.getOrganization().getId() > 0)) {
       return true;

@@ -427,7 +427,7 @@ public class GroupView
    * @param id contact id
    */
   private void viewCard(int id) {
-    PersonFileEditor m = desktop.getPersonFileEditor(id);
+    PersonFileEditor m = desktop.getModuleFileEditor(id);
     if (m == null) {
       PersonFile dossier = new PersonFile(service.getContact(id));
       try {

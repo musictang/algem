@@ -84,8 +84,10 @@ import java.sql.SQLException;
 import java.util.*;
 import net.algem.billing.VatIO;
 import net.algem.contact.Note;
+import net.algem.contact.PersonFile;
 import net.algem.rental.RentableObject;
 import net.algem.rental.RentableObjectIO;
+import static net.algem.util.model.Model.PersonFile;
 import net.algem.util.ui.MessagePopup;
 
 /**
@@ -122,21 +124,21 @@ public class DataCache {
     private static RentableObjectIO RENTABLE_IO;
 
     // Cache data
-    private static Map<Integer, List<Integer>> TEACHER_INSTRUMENT_CACHE = new Hashtable<Integer, List<Integer>>();
-    private static Map<String, Param> COST_ACCOUNT_CACHE = new HashMap<String, Param>();
-    private static Map<Integer, User> USER_CACHE = new HashMap<Integer, User>();
-    private static Map<Integer, Person> PERSON_CACHE = new HashMap<Integer, Person>();
-    private static Map<Integer, Member> MEMBER_CACHE = new HashMap<Integer, Member>();
-    private static Map<Integer, Action> ACTION_CACHE = new HashMap<Integer, Action>();
-    private static Map<Integer, Item> ITEM_CACHE = new HashMap<Integer, Item>();
-    private static Map<Integer, OrderLine> ORDER_LINE_CACHE = new HashMap<Integer, OrderLine>();
-    private static Map<Integer, RehearsalPass> PASS_CARD = new HashMap<Integer, RehearsalPass>();
+    private static Map<Integer, List<Integer>> TEACHER_INSTRUMENT_CACHE = new Hashtable<>();
+    private static Map<String, Param> COST_ACCOUNT_CACHE = new HashMap<>();
+    private static Map<Integer, User> USER_CACHE = new HashMap<>();
+    private static Map<Integer, Person> PERSON_CACHE = new HashMap<>();
+    private static Map<Integer, PersonFile> PERSON_FILE_CACHE = new HashMap<>(); //ERIC 3.0 22/10/2021
+    private static Map<Integer, Member> MEMBER_CACHE = new HashMap<>();
+    private static Map<Integer, Action> ACTION_CACHE = new HashMap<>();
+    private static Map<Integer, Item> ITEM_CACHE = new HashMap<>();
+    private static Map<Integer, OrderLine> ORDER_LINE_CACHE = new HashMap<>();
+    private static Map<Integer, RehearsalPass> PASS_CARD = new HashMap<>();
 
     public static int PERSON_CACHE_MIN_SIZE = 675; // ERIC 26/03/2019 à calculer suivant le nombre access'élèves ~675/800 pour polynotes
     private static Map<Integer, DailyTimes[]> roomsTimes = new HashMap<>(); //ERIC 2.17 27/03/2019
     private static Map<String, HashMap> authorizations = new HashMap<>(); //ERIC 2.17 30/03/2019
     private static Map<Integer, List> moduleCourses = new HashMap<>(); //ERIC 2.17 30/03/2019
-    private static Map<String, Config> config = new HashMap<>();        //ERIC 3.0 22/10/2021
 
     /**
      * Cached action memos. Key = action id, value = Note instance.
@@ -173,7 +175,8 @@ public class DataCache {
     private static List<Param> vacancyCat;
     private static List<Param> webSiteCat;
     private static List<Param> telephoneCat;
-    
+    private static Map<String, Preference> preference;        //ERIC 3.0 22/10/2021
+    //private static Map<String, HashMap> config = new HashMap<>();        //ERIC 3.0 22/10/2021
 
     private boolean cacheInit = false;
     public static boolean nameFirst = false;
@@ -290,7 +293,7 @@ public class DataCache {
      * @param user
      * @return a cache instance
      * @see
-     *   <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">"Double-Checked
+     * <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">"Double-Checked
      * Locking Broken" Declaration</a>
      */
     public static synchronized DataCache getInstance(DataConnection dc, String user) {
@@ -423,6 +426,17 @@ public class DataCache {
         }
     }
 
+    public static PersonFile getPersonFile(int id) {
+        PersonFile pf = (PersonFile) PERSON_FILE_CACHE.get(id);  //ERIC 3.0 22/10/2021
+        if (pf == null) {
+            pf = PERSON_FILE_IO.findId(id);
+            if (pf != null) {
+                PERSON_FILE_CACHE.put(id, pf);
+            }
+        }
+        return pf;
+    }
+
     /**
      * Gets a model instance.
      *
@@ -480,6 +494,10 @@ public class DataCache {
                 MusicStyle ms = (MusicStyle) STYLE_LIST.getItem(id);
                 return ms != null ? ms : MUSIC_STYLE_IO.findId(id);
             case Person:
+                PersonFile pfi = (PersonFile) PERSON_FILE_CACHE.get(id); //ERIC 3.0 22/10/2021
+                if (pfi != null) {
+                    return (Person) pfi.getContact();
+                }
                 Person pi = PERSON_CACHE.get(id);
                 if (pi == null) {
                     pi = PERSON_IO.findById(id);
@@ -491,7 +509,7 @@ public class DataCache {
             case OrderLine:
                 return (OrderLine) ORDER_LINE_CACHE.get(id);
             case PersonFile:
-                return PERSON_FILE_IO.findId(id);
+                throw new SQLException("NOT IMPLEMENTED use datacache.getPersonFile()");
             case Room:
                 Room r = (Room) ROOM_LIST.getItem(id);
                 return r != null ? r : ROOM_IO.findId(id);
@@ -615,6 +633,8 @@ public class DataCache {
         } else if (m instanceof RentableObject) {
             RENTABLE_LIST.addElement((RentableObject) m);
             //Collections.sort(RENTABLE_LIST.getData(), new RentableComparator());
+        } else if (m instanceof PersonFile) {
+            PERSON_FILE_CACHE.put(m.getId(), (PersonFile) m);
         }
     }
 
@@ -623,7 +643,7 @@ public class DataCache {
      *
      * @param m
      */
-    public synchronized void update(GemModel m) {
+    public void update(GemModel m) {
         if (m instanceof Room) {
             ROOM_LIST.update((Room) m, new RoomComparator());
             Person c = ((Room) m).getContact();
@@ -644,7 +664,7 @@ public class DataCache {
                 TEACHER_INSTRUMENT_CACHE.put(t.getId(), t.getInstruments());
             }
         } else if (m instanceof Member) {
-            MEMBER_CACHE.put(m.getId(), (Member) m);
+            MEMBER_CACHE.put(m.getId(), (Member) m);    //TODOERIC 
         } else if (m instanceof Group) {
             GROUP_LIST.update((Group) m, new GroupComparator());
         } else if (m instanceof Module) {
@@ -711,7 +731,7 @@ public class DataCache {
      *
      * @param m
      */
-    public synchronized void remove(GemModel m) {
+    public void remove(GemModel m) {
         if (m instanceof Room) {
             ROOM_LIST.removeElement((Room) m);
         } else if (m instanceof Establishment) {
@@ -909,7 +929,7 @@ public class DataCache {
 
 //      showMessage(frame, BundleUtil.getLabel("Billing.label"));
 //      loadBillingCache(); //FIXME ERIC voir findOrderLines() invoiceloader invoceio.find +findorderlines
-            showMessage(frame, BundleUtil.getLabel("User.label"));
+            showMessage(frame, BundleUtil.getLabel("Users.list.label"));
             for (User u : USER_IO.load()) {
                 USER_CACHE.put(u.getId(), u);
             }
@@ -919,6 +939,7 @@ public class DataCache {
             MARITAL_STATUS_LIST = new GemList<>(MARITAL_STATUS_IO.find());
             STUDIO_TYPE_LIST = new GemList<GemParam>(STUDIO_TYPE_IO.load());
             loadDailyTimesCache(); //ERIC 27/03/2019
+            loadPreference();
 
             showMessage(frame, BundleUtil.getLabel("Rehearsal.pass.label"));
             PASS_CARD = new Hashtable<Integer, RehearsalPass>();
@@ -928,6 +949,7 @@ public class DataCache {
 
             showMessage(frame, BundleUtil.getLabel("Authorization.label"));
             loadAuthorizationsCache(); //ERIC 27/03/2019
+
             //ERIC 12/10/2021
             //plus en static dans la classe Person => génére une exception dans DesktopDispatcher,
             // impossible d'instancier une Person sans DataConnection + appel dans ConfigUtil de getDataConnection()
@@ -1201,7 +1223,7 @@ public class DataCache {
         return telephoneCat;
     }
 
-   public static List<Instrument> getInstruments() {
+    public static List<Instrument> getInstruments() {
         return instruments;
     }
 
@@ -1431,6 +1453,18 @@ public class DataCache {
 
     private static void loadAuthorizationsCache() {
         authorizations = USER_IO.loadAuthorizations();
+    }
+
+    //ERIC 3.0 24/10/2021
+    private static void loadPreference() { 
+        preference = new HashMap<String, Preference>();
+        for (Preference p : AccountPrefIO.findAll(DATA_CONNECTION)) {
+            preference.put(p.getKey(), p);
+        }
+    }
+
+    public static Preference getPreference(String k) {
+        return preference.get(k);
     }
 
 }

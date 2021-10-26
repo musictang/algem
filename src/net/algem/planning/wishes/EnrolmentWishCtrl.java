@@ -104,7 +104,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
     private List<? extends ScheduleObject> teacherCurrentPlanning = new ArrayList<>();
     private boolean teacherLoad;
     private boolean dayLoad;
-    
+
     private EnrolmentWishParticularCourseTableModel particularCourseModel;
     private EnrolmentWishGroupCourseTableModel groupCourseModel;
 
@@ -125,9 +125,9 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
             particularCourses.add(new EnrolmentWishParticularCourseLine(new Hour(hour)));
         }
         particularCourseModel = new EnrolmentWishParticularCourseTableModel(particularCourses);
-        
+
         view.initTableModel(particularCourseModel);
-        
+
         groupCourses = new ArrayList();
         groupCourseModel = new EnrolmentWishGroupCourseTableModel(groupCourses);
         groupCourseModel.addTableModelListener(this);
@@ -168,22 +168,22 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                 dayReload(false);
                 tableReload();
             } else if (evt.getActionCommand().equals("teacherChoice")) {
-                teacherLoad=true;
+                teacherLoad = true;
                 wishService.setCurrentTeacher(view.getTeacherChoice()); //voir
                 tableInit();
                 teacherReload();
                 dayReload(true);
                 courseReload();
                 tableReload();
-                teacherLoad=false;
+                teacherLoad = false;
             } else if (evt.getActionCommand().equals("dayChoice")) {
-                if (!teacherLoad) { 
-                    dayLoad=true;
+                if (!teacherLoad) {
+                    dayLoad = true;
                     courseReload();
                     tableInit();
                     dayReload(true);
                     tableReload();
-                    dayLoad=false;
+                    dayLoad = false;
                 }
             } else if (evt.getActionCommand().equals("particularCourseChoice")) {
                 if (!teacherLoad && !dayLoad) {
@@ -333,7 +333,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                         if (cell.getChoice().isMailConfirmSended()) {
 //demande du 9/7/2019       throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.maildone"));
                             MessagePopup.information(cell, MessageUtil.getMessage("enrolment.wish.error.maildone"));
-                            
+
                         }
                         wishService.selectParticularWish(cell.getChoice(), false);
                         EnrolmentSelected val = new EnrolmentSelected();
@@ -376,30 +376,35 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                     boolean sended = false;
                     LocalDateTime mailDate;
                     int line;
+
                     @Override
                     protected Object doInBackground() throws Exception {
                         try {
                             EnrolmentWish cell = (EnrolmentWish) particularCourseModel.getValueAt(view.getSelectedRow(), colChecked);
-                            PersonFile pf = (PersonFile) DataCache.findId(cell.getStudentId(), Model.PersonFile);
+                            PersonFile pf = DataCache.getPersonFile(cell.getStudentId());
+                            if (pf == null) {
+                                GemLogger.log("Error EnrolmentWishCtrl.showContactFile ID NOT FOUND:" + cell.getStudentId());
+                            } else {
+                                mailDate = LocalDateTime.now();
+                                line = view.getSelectedRow();
+                                List<Email> emails = pf.getContact().getEmail();
 
-                            mailDate = LocalDateTime.now();
-                            line = view.getSelectedRow();
-                            List<Email> emails = pf.getContact().getEmail();
+                                String f = createMailConfirmPdf(cell.getStudent());
+                                sendConfirmMail(f, emails.get(0).getEmail());
 
-                            String f = createMailConfirmPdf(cell.getStudent());
-                            sendConfirmMail(f, emails.get(0).getEmail());
+                                wishService.setMailConfirmDate(cell, mailDate);
+                                sended = true;
 
-                            wishService.setMailConfirmDate(cell, mailDate);
-                            sended = true;
-
-                            //String saveFileName = "lettre-confirmation-" + cell.getStudent().getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
-                            //Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
+                                //String saveFileName = "lettre-confirmation-" + cell.getStudent().getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
+                                //Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
+                            }
                         } catch (Exception e) {
                             MessagePopup.warning(view, e.getMessage());
                             GemLogger.logException("EnrolmentWishCtrl WishPanelMailButton", e);
                         }
                         return null;
                     }
+
                     public void done() {
                         if (sended) {
                             particularCourseModel.setValueAt(mailDate, line, EnrolmentWishParticularCourseTableModel.COLUMN_MAILDATE);
@@ -421,13 +426,13 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                     return;
                 }
                 range.setStart(new net.algem.planning.Hour(wishes.get(0).getHour().toString()));
-                int end = wishes.get(wishes.size()-1).getHour().toMinutes() + wishes.get(wishes.size()-1).getDuration().toMinutes(); 
+                int end = wishes.get(wishes.size() - 1).getHour().toMinutes() + wishes.get(wishes.size() - 1).getDuration().toMinutes();
                 range.setEnd(new net.algem.planning.Hour(end));
-                if (!range.isValid()) { 
-                    MessagePopup.warning(view, MessageUtil.getMessage("enrolment.wish.plagerange.invalid", new Object[] { range.getStart(), range.getEnd()}));
+                if (!range.isValid()) {
+                    MessagePopup.warning(view, MessageUtil.getMessage("enrolment.wish.plagerange.invalid", new Object[]{range.getStart(), range.getEnd()}));
                     return;
                 }
-                if (MessagePopup.confirm(view, MessageUtil.getMessage("enrolment.wish.schedule.confirmation", new Object[] { view.getCurrentCourseLabel()+"/"+view.getCurrentTeacherLabel()+"/"+view.getDayChoiceLabel(), range.getStart(), range.getEnd()}))) {
+                if (MessagePopup.confirm(view, MessageUtil.getMessage("enrolment.wish.schedule.confirmation", new Object[]{view.getCurrentCourseLabel() + "/" + view.getCurrentTeacherLabel() + "/" + view.getDayChoiceLabel(), range.getStart(), range.getEnd()}))) {
                     try {
                         showScheduleCtrl(view.getCurrentParticularCourse(), view.getCurrentTeacher(), view.getDayChoice(), range);
                     } catch (Exception ex) {
@@ -444,12 +449,14 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                     return;
                 }
                 CourseSchedulePrintDetail csp = view.getGroupCourseChoice();
-                if (csp == null) return;
+                if (csp == null) {
+                    return;
+                }
 
                 int student = view.getStudentChoice();
                 try {
-                    Person p = (Person)dataCache.findId(student, Model.Person);
-                    Member m = (Member)dataCache.findId(student, Model.Member);
+                    Person p = (Person) dataCache.findId(student, Model.Person);
+                    Member m = (Member) dataCache.findId(student, Model.Member);
 
                     if (wishService.countStudentWishes(student, csp.getAction().getId()) > 0) {
                         MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.group.addstudent.duplicate", p));
@@ -459,12 +466,12 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                     EnrolmentWish w = new EnrolmentWish();
                     w.setStudent(p);
                     w.setCourse(csp.getCourse().getId());
-                    w.setDay((short)EnrolmentWishIO.isodow2dow(csp.getDow()));
+                    w.setDay((short) EnrolmentWishIO.isodow2dow(csp.getDow()));
                     w.setAction(csp.getAction().getId()); //getIdAction()); //getCourse().getId());
                     w.setHour(new Hour(csp.getStart().toString()));
-                    w.setDuration(new Hour(csp.getEnd().toMinutes()-csp.getStart().toMinutes()));
+                    w.setDuration(new Hour(csp.getEnd().toMinutes() - csp.getStart().toMinutes()));
                     w.setTeacher(csp.getIdPerson());
-                    w.setPreference((short)(wishService.countStudentGroupWishes(student)+1));
+                    w.setPreference((short) (wishService.countStudentGroupWishes(student) + 1));
                     wishService.insertGroupWish(w);
 
                     EnrolmentWishGroupCourseLine line = new EnrolmentWishGroupCourseLine(p);
@@ -489,10 +496,10 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
 
     @Override
     public void tableChanged(TableModelEvent evt) {
-        if (evt.getSource() == groupCourseModel 
-            && evt.getType() == TableModelEvent.UPDATE
-            && evt.getFirstRow() == evt.getLastRow()
-            && evt.getColumn() == EnrolmentWishGroupCourseTableModel.COLUMN_SELECTED) {
+        if (evt.getSource() == groupCourseModel
+                && evt.getType() == TableModelEvent.UPDATE
+                && evt.getFirstRow() == evt.getLastRow()
+                && evt.getColumn() == EnrolmentWishGroupCourseTableModel.COLUMN_SELECTED) {
             int row = evt.getFirstRow();
 
             try {
@@ -502,7 +509,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
             }
         }
     }
-     
+
     public void groupCourseReload(CourseSchedulePrintDetail csp) {
 
         groupCourseWishes = wishService.getWishesFromCourse(csp.getAction().getId());   //getIdAction()); //.getCourse().getId());
@@ -510,9 +517,9 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
 
         for (EnrolmentWish w : groupCourseWishes) {
             try {
-                Person p = (Person)dataCache.findId(w.getStudentId(), Model.Person);
-                Member m = (Member)dataCache.findId(w.getStudentId(), Model.Member);
-                
+                Person p = (Person) dataCache.findId(w.getStudentId(), Model.Person);
+                Member m = (Member) dataCache.findId(w.getStudentId(), Model.Member);
+
                 EnrolmentWishGroupCourseLine line = new EnrolmentWishGroupCourseLine(p);
                 line.setBirthDate(m.getBirth());
                 line.setPractice(m.getPractice());
@@ -556,26 +563,26 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
     public int courseReload() {
         CourseChoiceTeacherModel m = wishService.getCourseByTeacher(view.getTeacherChoice(), EnrolmentWishIO.dow2isodow(view.getDayChoice()));
         view.setParticularCourseChoiceModel(m);
-        
+
         return m.getSize();
     }
-    
+
     public void tableInit() {
         particularCourses = new ArrayList();
         int minutesPerRow = view.getTableIncrement();
         Hour hour = new Hour("09:00"); //TODO ERIC (23:00 - start)*(60/MPR)
-        for (int i = 0; i <= (60 / minutesPerRow) * 14; i++, hour.incMinute(minutesPerRow)) { 
+        for (int i = 0; i <= (60 / minutesPerRow) * 14; i++, hour.incMinute(minutesPerRow)) {
             particularCourses.add(new EnrolmentWishParticularCourseLine(new Hour(hour)));
         }
     }
-    
+
     public void tableReload() {
         for (EnrolmentWish w : teacherWishes) {
             if (w.getDay() != view.getDayChoice() || w.getCourse() != view.getParticularCourseChoice()) {
                 continue;
             }
             try {
-                Person p = (Person)dataCache.findId(w.getStudentId(), Model.Person);
+                Person p = (Person) dataCache.findId(w.getStudentId(), Model.Person);
                 EnrolmentWishParticularCourseLine line = particularCourses.get(particularCourseModel.getRowFromHour(w.getHour(), view.getTableIncrement()));
                 if (w.isSelected()) {
                     EnrolmentSelected evt = new EnrolmentSelected(w.getDuration(), p);
@@ -624,11 +631,11 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
         }
     }
 
-    public static boolean sendInfoMail(String file, String dest, String periode) throws MessagingException, IOException { 
+    public static boolean sendInfoMail(String file, String dest, String periode) throws MessagingException, IOException {
 
-        System.out.println("MemberEnrolmentWishEditor.sendMail f="+file+" dest="+dest);
+        System.out.println("MemberEnrolmentWishEditor.sendMail f=" + file + " dest=" + dest);
         Session session = MailUtil.SmtpInitSession();
-        
+
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_SENDER.getKey())));
         //2.17 TEST
@@ -636,7 +643,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
         //2.17 PROD
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(dest));
         message.addRecipient(Message.RecipientType.CC, new InternetAddress("accueil@polynotes.org"));
-        
+
         message.setSubject(MessageUtil.getMessage("enrolment.wish.mail.info.subject"));
 
         String msg = MessageUtil.getMessage("enrolment.wish.mail.info.text", periode);
@@ -651,19 +658,18 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(mimeBodyPart);
         multipart.addBodyPart(attachmentBodyPart);
-        
+
         message.setContent(multipart);
 
         Transport.send(message);
-        
+
         return true;
     }
 
-
     public static boolean sendConfirmMail(String fichier, String dest) throws MessagingException, IOException {
-        
+
         Session session = MailUtil.SmtpInitSession();
-        
+
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_SENDER.getKey())));
         //2.17 TEST
@@ -683,29 +689,28 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(mimeBodyPart);
         multipart.addBodyPart(attachmentBodyPart);
-        
+
         message.setContent(multipart);
 
         Transport.send(message);
-        
+
         return true;
     }
 
     private void showContactFile(int id) {
 
-        PersonFileEditor editor = desktop.getPersonFileEditor(id);
+        PersonFileEditor editor = desktop.getModuleFileEditor(id);
         if (editor != null) {
             desktop.setSelectedModule(editor);
         } else {
-            try {
-                desktop.setWaitCursor();
-                PersonFile pf = (PersonFile) DataCache.findId(id, Model.PersonFile);
+            desktop.setWaitCursor();
+            PersonFile pf = DataCache.getPersonFile(id);
+            if (pf == null) {
+                MessagePopup.warning(view, MessageUtil.getMessage("load.fiche.error", id));
+                GemLogger.log("Error EnrolmentWishCtrl.showContactFile ID NOT FOUND:" + id);
+            } else {
                 editor = new PersonFileEditor(pf);
                 desktop.addModule(editor);
-            } catch (SQLException ex) {
-                GemLogger.logException("EnrolmentWishCtrl.showContactFile", ex);
-                MessagePopup.warning(view, ex.getMessage());
-            } finally {
                 desktop.setDefaultCursor();
             }
         }
@@ -730,9 +735,9 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
     public void setVisible(boolean b) {
         view.setVisible(b);
     }
-    
+
     private String createMailConfirmPdf(Person student) throws IOException, DocumentException, SQLException {
-        
+
         PageTemplateIO ptio = new PageTemplateIO(dataCache.getDataConnection());
 
         String periode = dataCache.getSchoolNextYearLabel();

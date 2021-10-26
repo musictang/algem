@@ -482,8 +482,8 @@ public class EnrolmentService
         return CourseOrderIO.find("WHERE cc.idcmd = " + i + " AND cc.module = " + m + " ORDER BY cc.idaction, cc.datedebut", dc);
     }
 
-    PersonFile getMemberFile(int idMember) throws SQLException {
-        return (PersonFile) DataCache.findId(idMember, Model.PersonFile);
+    PersonFile getMemberFile(int idMember) {
+        return DataCache.getPersonFile(idMember);
     }
 
     /**

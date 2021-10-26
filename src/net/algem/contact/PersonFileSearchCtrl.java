@@ -33,9 +33,11 @@ import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEventListener;
+import net.algem.util.model.GemModel;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.MessagePopup;
 import net.algem.util.ui.SearchCtrl;
 
 /**
@@ -155,9 +157,17 @@ public class PersonFileSearchCtrl
                 break;
             case 1:
                 ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
-                currentContact = ContactIO.findId(query, dc);
-                //ContactIO.complete(currentContact, dc); ERIC 3.0 22/10/2021 doublon avec le find dessus
-                createModule();
+                PersonFile pf = null;
+                if (id > 0) {
+                    pf = DataCache.getPersonFile(id);
+                }
+                if (pf == null) {
+                    MessagePopup.warning(this, MessageUtil.getMessage("load.fiche.error", id));
+                    GemLogger.log("Error ConfigOrganization.showContactFile ID NOT FOUND:" + id);
+                } else {
+                    currentContact = pf.getContact();
+                    createModule(pf);
+                }
                 break;
             default:
                 setStatus(MessageUtil.getMessage("search.list.status", nb));
@@ -168,7 +178,8 @@ public class PersonFileSearchCtrl
                     } catch (InterruptedException ignore) {
                         Thread.currentThread().interrupt();
                     }
-                }   abort = false;
+                }
+                abort = false;
                 thread = new Thread(this, "select");
                 list.clear();
                 thread.start();
@@ -220,8 +231,20 @@ public class PersonFileSearchCtrl
 
     @Override
     public void load(int id) {
-        currentContact = ContactIO.findId(id, dc);
-        createModule();
+        PersonFile pf = DataCache.getPersonFile(id);
+        if (pf == null) {
+            MessagePopup.warning(this, MessageUtil.getMessage("load.fiche.error", id));
+            GemLogger.log("Error PersonFileSearchCtrl.load ID NOT FOUND:" + id);
+        } else {
+            currentContact = pf.getContact();
+            createModule(pf);
+        }
+    }
+
+    public void createModule(PersonFile p) {
+        PersonFileEditor editor = new PersonFileEditor(p);
+        desktop.addModule(editor);
+
     }
 
     public void createModule() {
@@ -232,22 +255,20 @@ public class PersonFileSearchCtrl
             return;
         }
         // Recherche si un module correspondant au contact est déjà ouvert.
-        PersonFileEditor m = desktop.getPersonFileEditor(currentContact.getId());
+        PersonFileEditor m = desktop.getModuleFileEditor(currentContact.getId());
 
         if (m == null) {
-            PersonFile pFile = new PersonFile(currentContact);
-            try {
-                // On complète le dossier avec les informations prof, adherent, banque/rib s'il y a lieu
-                ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(pFile);
-            } catch (SQLException ex) {
-                GemLogger.logException("complete dossier browser", ex);
+            PersonFile pf = DataCache.getPersonFile(currentContact.getId());
+            if (pf == null) {
+                MessagePopup.warning(this, MessageUtil.getMessage("load.fiche.error", currentContact.getId()));
+                GemLogger.log("Error PersonFileSearchCtrl.createModule ID NOT FOUND:" + currentContact.getId());
+            } else {
+                PersonFileEditor editor = new PersonFileEditor(pf);
+                desktop.addModule(editor);
             }
-            PersonFileEditor editor = new PersonFileEditor(pFile);
-            desktop.addModule(editor);
         } else {
             desktop.setSelectedModule(m);
         }
-
     }
 
     @Override

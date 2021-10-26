@@ -279,8 +279,12 @@ public class ContactIO
    * @return a contact or null
    */
   public static Contact findId(int n, DataConnection dc) {
+    return findId(n, true, dc);
+  }
+
+  public static Contact findId(int n, boolean complete, DataConnection dc) {
     String query = "WHERE p.id = " + n;
-    List<Contact> v = find(query, true, dc);
+    List<Contact> v = find(query, complete, dc);
     if (v.size() > 0) {
       return v.get(0);
     }
@@ -296,6 +300,14 @@ public class ContactIO
    */
   public static Contact findId(String query, DataConnection dc) {
     List<Contact> v = find(query, true, dc);
+    if (v.size() > 0) {
+      return v.get(0);
+    }
+    return null;
+  }
+
+  public static Contact findId(String query, boolean complete, DataConnection dc) {
+    List<Contact> v = find(query, complete, dc);
     if (v.size() > 0) {
       return v.get(0);
     }

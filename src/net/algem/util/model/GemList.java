@@ -66,6 +66,7 @@ public class GemList<T extends GemModel>
      * @param obj
      * @return an integer
      */
+    /*
     public synchronized int getId(T obj) {
         int index = list.indexOf(obj);
         if (index < 0) {
@@ -73,7 +74,7 @@ public class GemList<T extends GemModel>
         }
         return list.get(index).getId();
     }
-
+*/
     /**
      * Gets {@code obj} index in the list.
      *

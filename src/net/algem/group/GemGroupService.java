@@ -231,7 +231,7 @@ public class GemGroupService
     List<Musician> lm = g.getMusicians();
     if (lm != null) {
       try {
-        Preference p = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
+        Preference p = DataCache.getPreference(AccountPrefIO.MEMBERSHIP);
         Account a = AccountPrefIO.getAccount(p, dc);
         membershipAccount = a.getId();
       } catch (SQLException ex) {
@@ -495,7 +495,7 @@ public class GemGroupService
    * @throws SQLException
    */
   private Preference getAccount(String key) throws SQLException {
-    return AccountPrefIO.find(key, dc);
+    return DataCache.getPreference(key);
   }
 
   @Override

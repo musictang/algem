@@ -223,7 +223,7 @@ public class PersonView
     return orgName.getText();
   }
 
-  void set(Person p, String dir) {
+  void set(Person p) {
     this.person = new Contact(p);
     no.setText(String.valueOf(p.getId()));
     if (p.getType() == Person.ROOM) {
@@ -240,7 +240,6 @@ public class PersonView
       orgName.setEditable(false);
     }
     ptype = p.getType();
-    loadPhoto(p);
   }
 
   private void setUpOrganization() {
@@ -248,14 +247,12 @@ public class PersonView
     orgCtrl.createUI();
   }
 
-  private void loadPhoto(Person p) {
+  private void setPhoto(PersonFile p) {
     if (p.getId() == 0) {
       return;
     }
-    if (Person.PERSON == p.getType() || Person.ROOM == p.getType()) {
-      BufferedImage img = ImageUtil.getPhoto(p.getId());
-      ImageIcon icon = (img == null ? null : new ImageIcon(img));
-      photoField.setIcon(icon);
+    if (Person.PERSON == p.getContact().getType() || Person.ROOM == p.getContact().getType()) {
+      photoField.setIcon(p.getPhoto());
     }
   }
 

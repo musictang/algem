@@ -54,7 +54,7 @@ public class MemberListTab
       public void mouseClicked(MouseEvent e) {
         int id = _list.getSelectedID();
         if (id > 0) {
-          PersonFileEditor m = desktop.getPersonFileEditor(id);
+          PersonFileEditor m = desktop.getModuleFileEditor(id);
           if (m == null) {
             PersonFile pf = ((PersonFileListCtrl) _list).getPersonFile();
               PersonFileEditor editor = new PersonFileEditor(pf);

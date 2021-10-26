@@ -173,8 +173,8 @@ public class StatsExportDlg
       progressBar.setStringPainted(true);
       progressBar.setString(MessageUtil.getMessage("statistics.active.operation"));
       Preference [] prefs = {
-        AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, DataCache.getDataConnection()),
-        AccountPrefIO.find(AccountPrefIO.PRO_MEMBERSHIP, DataCache.getDataConnection())
+                DataCache.getPreference(AccountPrefIO.MEMBERSHIP),
+                DataCache.getPreference(AccountPrefIO.PRO_MEMBERSHIP)
       };
       st.setConfig(
               filePathField.getText(),
@@ -188,8 +188,6 @@ public class StatsExportDlg
     } catch (IOException ex) {
       GemLogger.logException(ex);
       MessagePopup.warning(desktop.getFrame(), MessageUtil.getMessage("file.path.exception", filePathField.getText()));
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
     } catch (Exception ex) {
       GemLogger.logException(ex);
     }

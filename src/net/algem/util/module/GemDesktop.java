@@ -110,7 +110,7 @@ public interface GemDesktop
 
     public void removeGemEventListener(GemEventListener l);
 
-    public PersonFileEditor getPersonFileEditor(int idper);
+    public PersonFileEditor getModuleFileEditor(int idper);
 
     public GroupFileEditor getGroupFileEditor(int id);
     

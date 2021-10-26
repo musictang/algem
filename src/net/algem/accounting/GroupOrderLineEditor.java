@@ -32,6 +32,7 @@ import net.algem.group.GemGroupService;
 import net.algem.group.GroupService;
 import net.algem.planning.DateRangePanel;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -62,8 +63,8 @@ public class GroupOrderLineEditor
     super(desktop, tableModel);
     this.service = service;
     try {
-      Preference p1 = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
-      Preference p2 = AccountPrefIO.find(AccountPrefIO.PRO_MEMBERSHIP, dc);
+      Preference p1 = DataCache.getPreference(AccountPrefIO.MEMBERSHIP);
+      Preference p2 = DataCache.getPreference(AccountPrefIO.PRO_MEMBERSHIP);
       Account a1 = AccountPrefIO.getAccount(p1, dc);
       Account a2 = AccountPrefIO.getAccount(p2, dc);
       tableView.setMemberShipFilter(a1 == null ? null : a1.getLabel(), a2 == null ? null : a2.getLabel());

@@ -226,7 +226,8 @@ public class MemberService {
     //TODO : maybe put card and orderline creation in the same transaction ?
     create(card);
     RehearsalPass abo = RehearsalPassIO.find(card.getPassId(), dc);
-    Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL, dc);
+          Preference p = DataCache.getPreference(AccountPrefIO.REHEARSAL);
+
     OrderLine e = AccountUtil.createRehearsalOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount(), card.getId());
     AccountUtil.createEntry(e, dc);
   }
@@ -471,7 +472,7 @@ public class MemberService {
    */
   public void saveRehearsalOrderLine(PersonFile pFile, DateFr date, double amount, int linkId) throws SQLException {
 
-    Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL, dc);
+          Preference p = DataCache.getPreference(AccountPrefIO.REHEARSAL);
     OrderLine ol = AccountUtil.createRehearsalOrderLine(pFile, date, p, amount, linkId);
     AccountUtil.createEntry(ol, dc);
     Account prefAccount = AccountIO.find(ol.getAccount().getId(), dc);
@@ -523,7 +524,7 @@ public class MemberService {
    * @throws SQLException
    */
   private Preference getPrefAccount(String key) throws SQLException {
-    return AccountPrefIO.find(key, dc);
+          return DataCache.getPreference(key);
   }
 
   private void sendPersonFileEvent(PersonSubscriptionCard card) {

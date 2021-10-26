@@ -170,14 +170,19 @@ public class EnrolmentListCtrl
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
     MemberOrder mo = (MemberOrder) orderTableModel.getItem(n);
-    PersonFileEditor editor = desktop.getPersonFileEditor(mo.getMember());
+    PersonFileEditor editor = desktop.getModuleFileEditor(mo.getMember());
     if (editor != null) {
       desktop.setSelectedModule(editor);
     } else {
       PersonFile dossier = service.getMemberFile(mo.getMember());
-      editor = new PersonFileEditor(dossier);
-      desktop.addModule(editor);
-      editor.getPersonView().setSelectedTab(2);//supposed always to be index 2
+      if (dossier == null) {
+        MessagePopup.warning(this, MessageUtil.getMessage("load.fiche.error", dossier.getId()));
+        GemLogger.log("Error PersonFileSearchCtrl.createModule ID NOT FOUND:" + dossier.getId());
+      } else {
+        editor = new PersonFileEditor(dossier);
+        desktop.addModule(editor);
+        editor.getPersonView().setSelectedTab(2);//supposed always to be index 2
+      }
     }
 
     setCursor(Cursor.getDefaultCursor());

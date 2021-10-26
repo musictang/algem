@@ -36,6 +36,7 @@ import net.algem.contact.PersonIO;
 import net.algem.planning.DateFr;
 import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRangeIO;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -134,7 +135,7 @@ public class OrderIO
             // suppression des échéances
             int memberAccount = 0;
             // on ne supprime pas les échéances correspondant à des adhésions
-            Preference p = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
+              Preference p = DataCache.getPreference(AccountPrefIO.MEMBERSHIP);
             if (p != null && p.getValues() != null && p.getValues().length > 0) {
                 memberAccount = (Integer) p.getValues()[0];
             }

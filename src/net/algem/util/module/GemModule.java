@@ -35,6 +35,7 @@ import net.algem.util.DataCache;
 import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
 import net.algem.util.model.GemCloseVetoException;
+import net.algem.util.model.GemModel;
 import net.algem.util.ui.GemTreeNode;
 
 /**
@@ -46,7 +47,7 @@ import net.algem.util.ui.GemTreeNode;
  * @since 1.0a 06/07/2002
  */
 public abstract class GemModule
-        implements GemEventListener, ActionListener
+        implements GemModel, GemEventListener, ActionListener
 {
 
   public static final Dimension DEFAULT_SIZE = new Dimension(650, 450);
@@ -58,6 +59,7 @@ public abstract class GemModule
   public static final Dimension XL_SIZE = new Dimension(870, 500);
   public static final Dimension XXL_SIZE = new Dimension(905, 540);
 
+  protected int id;
   protected String label;
   protected DefaultGemView view;
   protected GemDesktop desktop;
@@ -180,6 +182,16 @@ public abstract class GemModule
   @Override
   public String toString() {
     return label;
+  }
+  
+  @Override
+  public int getId() {
+      return id;
+  }
+  
+  @Override
+  public void setId(int id) {
+      this.id=id;
   }
 
   /**

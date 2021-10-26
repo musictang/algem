@@ -41,6 +41,7 @@ import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
 import net.algem.contact.Person;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -78,7 +79,7 @@ public abstract class CommonAccountExportService
    */
   @Override
   public Account getAccount(String key) throws SQLException {
-    Preference p = AccountPrefIO.find(String.valueOf(key), dbx);
+      Preference p = DataCache.getPreference(key);
     return AccountIO.find((Integer) p.getValues()[0], dbx);
 //    return c == null ? null : c.getId();
   }

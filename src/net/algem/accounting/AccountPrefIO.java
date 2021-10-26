@@ -73,6 +73,7 @@ public class AccountPrefIO
      * @return a preference
      * @throws SQLException
      */
+/*
     public static Preference find(String key, DataConnection dc) throws SQLException {
         String query = "SELECT * FROM " + TABLE + " WHERE " + COLUMNS[0] + " = '" + key + "'";
         ResultSet rs = dc.executeQuery(query);
@@ -84,7 +85,7 @@ public class AccountPrefIO
         p.setValues(new Object[]{rs.getInt(2), rs.getString(3)});
         return p;
     }
-
+*/
     /**
      * Gets the account instance corresponding to preference value (account id).
      *
@@ -197,6 +198,7 @@ public class AccountPrefIO
         return null;
     }
 
+      
     public static void delete(Preference p, DataConnection dc) throws SQLException {
         String query = "DELETE FROM " + TABLE + " WHERE " + COLUMNS[0] + " = '" + p.getKey() + "')";
         dc.executeQuery(query);

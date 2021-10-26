@@ -32,6 +32,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -56,6 +57,8 @@ import net.algem.util.event.GemRemoteEvent;
 import net.algem.util.event.LoginEvent;
 import net.algem.util.event.MessageEvent;
 import net.algem.util.model.GemCloseVetoException;
+import net.algem.util.model.GemMap;
+import net.algem.util.model.Model;
 import net.algem.util.postit.CreatePostitEvent;
 import net.algem.util.postit.Postit;
 import net.algem.util.postit.PostitCreateCtrl;
@@ -128,8 +131,8 @@ public abstract class AbstractDesktopCtrl
         this.props = props;
         prefs = Preferences.userRoot().node("/algem/ui");
 
-        modules = new Hashtable<String, GemModule>();
-        menus = new Hashtable<String, JMenuItem>();
+        modules = new Hashtable<>();
+        menus = new Hashtable<>();
         mbar = createMenuBar();
 
         modifCtrl = new PlanModifCtrl(this);
@@ -252,24 +255,36 @@ public abstract class AbstractDesktopCtrl
         if (savePrefs) {
             storeUISettings();
         }
+        ObjectOutputStream out = null;
         String path = System.getProperty("user.home") + FileUtil.FILE_SEPARATOR;
-        try (
-                ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + ".gemdesktop"))) {
-            // test ferme tous les modules
-            Enumeration enu = modules.elements();
-            // Sérialisation des modules ouverts dans une liste
-            java.util.List<GemModuleSID> lm = new ArrayList<GemModuleSID>();
-            while (enu.hasMoreElements()) {
-                GemModule m = (GemModule) enu.nextElement();
-                GemModuleSID moduleSID = new GemModuleSID(m.getClass().getSimpleName(), m.getSID(), m.getLabel());
-                // save optional state
-                moduleSID.setState(m.getState());
-                lm.add(moduleSID);
-                m.close();
-            }
-            out.writeObject(lm);
+
+        try {
+            out = new ObjectOutputStream(new FileOutputStream(path + ".gemdesktop"));
         } catch (IOException e) {
             GemLogger.logException(e);
+        }
+        // test ferme tous les modules
+        // Sérialisation des modules ouverts dans une liste
+        java.util.List<GemModuleSID> lm = new ArrayList<GemModuleSID>();
+
+//        for (GemModule m : modules.values()) {  //ConcurrentModificationException
+//        Iterator it = modules.entrySet().iterator();
+        Enumeration enu = modules.elements();
+        while (enu.hasMoreElements()) {
+            GemModule m = (GemModule) enu.nextElement();
+            GemModuleSID moduleSID = new GemModuleSID(m.getClass().getSimpleName(), m.getSID(), m.getLabel());
+            // save optional state
+            moduleSID.setState(m.getState());
+            lm.add(moduleSID);
+            m.close();
+        }
+        if (out != null) {
+            try {
+                out.writeObject(lm);
+                out.close();
+            } catch (IOException e) {
+                GemLogger.logException(e);
+            }
         }
 
         if (postitScheduledExecutor != null) {
@@ -466,10 +481,8 @@ public abstract class AbstractDesktopCtrl
     }
 
     @Override
-    public PersonFileEditor getPersonFileEditor(int idper) {
-        Enumeration<GemModule> mods = modules.elements();
-        while (mods.hasMoreElements()) {
-            GemModule m = mods.nextElement();
+    public PersonFileEditor getModuleFileEditor(int idper) {
+        for (GemModule m : modules.values()) {
             if (m instanceof PersonFileEditor) {
                 PersonFileEditor e = (PersonFileEditor) m;
                 if (e.getDossierID() == idper) {
@@ -488,9 +501,7 @@ public abstract class AbstractDesktopCtrl
      */
     @Override
     public GroupFileEditor getGroupFileEditor(int id) {
-        Enumeration<GemModule> mods = modules.elements();
-        while (mods.hasMoreElements()) {
-            GemModule m = mods.nextElement();
+        for (GemModule m : modules.values()) {
             if (m instanceof GroupFileEditor) {
                 GroupFileEditor e = (GroupFileEditor) m;
                 if (e.getId() == id) {

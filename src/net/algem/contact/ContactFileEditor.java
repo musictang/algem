@@ -52,6 +52,7 @@ public class ContactFileEditor
         implements ItemListener, Reloadable {
 
   private Contact contact;
+  private PersonFile personFile;
   private GemLabel note;
   private PersonView personView;
   private TelView teleView;
@@ -154,18 +155,23 @@ public class ContactFileEditor
     }
   }
 
+  public void set(PersonFile pf) {
+      personFile = pf;
+      set(pf.getContact());
+  }
   /**
    * Load infos from contact in the corresponding views.
    * @param c contact
    */
   public void set(Contact c) {
     contact = c;
-    setPerson(c);
     if (c != null) {
       setAddress(c.getAddress());
       setTele(c.getTele());
       setEmail(c.getEmail());
       websiteView.setSites(c.getSites());
+      personView.set(c);
+      
     }
   }
 
@@ -189,8 +195,7 @@ public class ContactFileEditor
 
   public void setPerson(Person p) {
     if (p != null) {
-      String configDir = ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey());
-      personView.set(p, configDir);
+      personView.set(p);
     }
   }
 

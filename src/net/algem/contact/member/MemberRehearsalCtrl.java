@@ -326,8 +326,10 @@ public class MemberRehearsalCtrl
   public void order(boolean subscription, Schedule schedule) throws MemberException {
 
     try {
-      PersonFile pf = (PersonFile) DataCache.findId(schedule.getIdPerson(), Model.PersonFile);
+      PersonFile pf = DataCache.getPersonFile(schedule.getIdPerson());
       if (pf == null) {
+        MessagePopup.warning(this, MessageUtil.getMessage("load.fiche.error", schedule.getIdPerson()));
+        GemLogger.log("Error PersonFileSearchCtrl.createModule ID NOT FOUND:" + schedule.getIdPerson());
         return;
       }
       // don't forget to set the card before searching a new one

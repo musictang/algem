@@ -387,11 +387,11 @@ public class EnrolmentOrderUtil {
     int key = 0;
     String analytics = "";
     if (m.isLeisure()) {
-      Preference p = AccountPrefIO.find(AccountPrefIO.LEISURE, dc);
+      Preference p = DataCache.getPreference(AccountPrefIO.LEISURE);
       key = (Integer) p.getValues()[0];
       analytics = (String) p.getValues()[1];
     } else if (m.isProfessional()) {
-      Preference p = AccountPrefIO.find(AccountPrefIO.PRO, dc);
+      Preference p = DataCache.getPreference(AccountPrefIO.PRO);
       key = (Integer) p.getValues()[0];
       analytics = (String) p.getValues()[1];
     }

@@ -67,6 +67,7 @@ import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.jdesktop.DesktopOpenHandler;
 import net.algem.util.menu.PersonFileMenuItem;
 import net.algem.util.model.GemCloseVetoException;
+import net.algem.util.model.GemModel;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 import net.algem.util.module.FileEditor;
@@ -162,7 +163,8 @@ public class PersonFileEditor
     }
 
     /**
-   * Called by {@link net.algem.util.module.GemDesktop#addModule(net.algem.util.module.GemModule) }.
+     * Called by {@link net.algem.util.module.GemDesktop#addModule(net.algem.util.module.GemModule)
+     * }.
      */
     @Override
     public void init() {
@@ -187,15 +189,16 @@ public class PersonFileEditor
         // search for payer
         checkPayer();
 
-        // search for family linked members
-        checkFamilyMembers();
+        if (Algem.isFeatureEnabled("cc-mdl")) {
+            // search for family linked members
+            checkFamilyMembers();
 
-        // search for family
-        Member m = personFileView.getMemberFile();
-        if (m != null && m.getFamily() != m.getPayer()) {
-            checkFamily();
+            // search for family
+            Member m = personFileView.getMemberFile();
+            if (m != null && m.getFamily() != m.getPayer()) {
+                checkFamily();
+            }
         }
-
         // search for groups
         if (personFileView.addGroupsTab(false)) {
             miGroups.setEnabled(false);
@@ -212,7 +215,6 @@ public class PersonFileEditor
      */
     @Override
     public void contentsChanged(PersonFileEvent evt) {
-        System.out.println("PersonFileEditor.contentChanged:" + evt);
         if (PersonFileEvent.MEMBER_ADDED == evt.getType()) {
             PersonFile d = ((PersonFile) evt.getSource());
             addMenuDossier("Adhérent", d);
@@ -332,11 +334,14 @@ public class PersonFileEditor
         } else if ("Login.creation".equals(arg)) {
             loginDialog();
         } else if ("Lié".equals(arg)) {
-            Person p = new Person(dossier.getContact().getName());
-            PersonFile d = new PersonFile(new Contact(p));
-            PersonFileEditor ed = new PersonFileEditor(d, dossier);
-            d.addPersonFileListener(this);
-            desktop.addModule(ed);
+
+            PersonFile d = DataCache.getPersonFile(dossier.getId()); //Eric 3.0 
+            if (d == null) {
+                MessagePopup.warning(view, MessageUtil.getMessage("not.existing.link"));
+                GemLogger.log("Error link fiche:" + dossier.getId());
+            } else {
+                desktop.addModule(new PersonFileEditor(d, dossier));
+            }
         } else if ("Teacher.break".equals(arg)) {
             TeacherBreakDlg dlg = new TeacherBreakDlg(desktop, dossier.getId());
             dlg.entry();
@@ -357,7 +362,7 @@ public class PersonFileEditor
             try {
                 close();
             } catch (GemCloseVetoException i) {
-                System.err.println("GemCloseVetoException");
+                GemLogger.log("GemCloseVetoException");
             }
         } // clic sur le bouton Enregistrer
         else if (GemCommand.SAVE_CMD.equals(arg)) {
@@ -490,8 +495,8 @@ public class PersonFileEditor
     }
 
     /**
-   * Deletes this contact as a teacher.
-   * Only teachers who have had no course should be removed.
+     * Deletes this contact as a teacher. Only teachers who have had no course
+     * should be removed.
      *
      * @throws SQLException
      */
@@ -733,11 +738,13 @@ public class PersonFileEditor
         if (dossier.getMember() != null) {
             // si l'adhérent n'est pas son propre payeur
             if (dossier.getMember().getPayer() != dossier.getId()) {
-                p = ((PersonIO) DataCache.getDao(Model.Person)).findById(dossier.getMember().getPayer());// le payeur de l'adherent
-                if (p == null) {
-                    p = dossier.getContact();
+                PersonFile pf = DataCache.getPersonFile(dossier.getMember().getPayer());
+                if (pf == null) {
+                    MessagePopup.warning(view, MessageUtil.getMessage("not.existing.payer.link"));
+                    GemLogger.log("Error link payer fiche:" + dossier.getId());
+                } else {
+                    orderTableModel.load(OrderLineIO.findByMember(dossier.getId(), pf.getContact().getId(), dc));
                 }
-                orderTableModel.load(OrderLineIO.findByMember(dossier.getId(), p.getId(), dc));
             } else {
                 orderTableModel.load(OrderLineIO.findByMemberOrPayer(dossier.getId(), p.getId(), dc));
             }
@@ -763,7 +770,7 @@ public class PersonFileEditor
 
             public void actionPerformed(ActionEvent evt) {
                 PersonFile d = ((PersonFileMenuItem) evt.getSource()).getPersonFile();
-                PersonFileEditor m = desktop.getPersonFileEditor(d.getId());
+                PersonFileEditor m = desktop.getModuleFileEditor(d.getId());
                 if (m == null) {
                     PersonFileEditor editeur = new PersonFileEditor(d);
                     desktop.addModule(editeur);
@@ -782,10 +789,10 @@ public class PersonFileEditor
             @Override
             public void actionPerformed(ActionEvent evt) {
                 desktop.setWaitCursor();
-                PersonFileEditor m = desktop.getPersonFileEditor(_dossier.getId());
+                PersonFileEditor m = desktop.getModuleFileEditor(_dossier.getId());
                 if (m == null) {
-                    PersonFileEditor editor = new PersonFileEditor(_dossier);
-                    desktop.addModule(editor);
+                    m = new PersonFileEditor(_dossier);
+                    desktop.addModule(m);
                 } else {
                     desktop.setSelectedModule(m);
                 }
@@ -801,10 +808,10 @@ public class PersonFileEditor
             @Override
             public void actionPerformed(ActionEvent evt) {
                 desktop.setWaitCursor();
-                PersonFileEditor m = desktop.getPersonFileEditor(_dossier.getId());
+                PersonFileEditor m = desktop.getModuleFileEditor(_dossier.getId());
                 if (m == null) {
-                    PersonFileEditor editor = new PersonFileEditor(_dossier);
-                    desktop.addModule(editor);
+                    m = new PersonFileEditor(_dossier);
+                    desktop.addModule(m);
                 } else {
                     desktop.setSelectedModule(m);
                 }
@@ -951,20 +958,14 @@ public class PersonFileEditor
      */
     private void checkPayer() {
         if (dossier.getMember() != null && dossier.getMember().getPayer() != dossier.getId()) {
-            Contact c = ContactIO.findId(dossier.getMember().getPayer(), dc);
-            if (c != null) {
-                PersonFile d = new PersonFile(c);
-                try {
-                    ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(d);
-                } catch (SQLException ex) {
-                    GemLogger.logException(MessageUtil.getMessage("record.completion.exception"), ex);
-                }
-                //addMenuDossier("payeur", d);
-                addPayerFile("Payeur", d);// ajout jm 2.0ma
-            } else { //Attention aux cas où le payeur auquel est lié l'adhérent n'existe pas
-                MessagePopup.information(personFileView,
-                        MessageUtil.getMessage("not.existing.payer.link", dossier.getMember().getPayer()));
+            PersonFile pf = DataCache.getPersonFile(dossier.getMember().getPayer());//ERIC 3.0 22/10/2021
+            if (pf == null) {
+                MessagePopup.warning(view, MessageUtil.getMessage("not.existing.payer.link"));
+                GemLogger.log("Error link payer fiche:" + dossier.getId());
                 personFileView.setParent(dossier);
+            } else {
+                //addMenuDossier("payeur", d);
+                addPayerFile("Payeur", pf);// ajout jm 2.0ma
             }
         }
     }
@@ -976,20 +977,18 @@ public class PersonFileEditor
         if (dossier.getMember() != null
                 && dossier.getMember().getFamily() != 0
                 && dossier.getMember().getFamily() != dossier.getId()) {
-            Contact c = ContactIO.findId(dossier.getMember().getFamily(), dc);
-            if (c != null) {
-                PersonFile d = new PersonFile(c);
-                try {
-                    ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(d);
-                } catch (SQLException ex) {
-                    GemLogger.logException(MessageUtil.getMessage("record.completion.exception"), ex);
-                }
-                addFamilyFile("Famille", d);
-            } else { //Attention aux cas où le payeur auquel est lié l'adhérent n'existe pas
-                MessagePopup.information(personFileView,
-                        MessageUtil.getMessage("not.existing.family.link", dossier.getMember().getFamily()));
+            PersonFile pf = DataCache.getPersonFile(dossier.getMember().getFamily());//ERIC 3.0 22/10/2021
+            if (pf == null) {
+                MessagePopup.warning(view, MessageUtil.getMessage("not.existing.family.link"));
+                GemLogger.log("Error link family fiche:" + dossier.getId());
                 personFileView.setFamily(0, "");
+            } else {
+                addFamilyFile("Famille", pf);
             }
+        } else { //Attention aux cas où le payeur auquel est lié l'adhérent n'existe pas
+            MessagePopup.information(personFileView,
+                    MessageUtil.getMessage("not.existing.family.link", dossier.getMember().getFamily()));
+            personFileView.setFamily(0, "");
         }
     }
 
@@ -1016,13 +1015,22 @@ public class PersonFileEditor
      * Gets the number of linked members.
      */
     private int setMemberList() {
+        if (!((MemberIO) DataCache.getDao(Model.Member)).isPayeur(dossier.getId())) {
+            return 0;
+        }
+
         List<PersonFile> v = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE payeur = " + dossier.getId() + " AND p.id != payeur");
 
         memberList = new PersonFileListCtrl();
 
         for (int i = 0; i < v.size(); i++) {
-            PersonFile d = v.get(i);
-            ContactIO.complete(d.getContact(), dc);
+            PersonFile pf = v.get(i);
+            try {
+                ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(pf);
+            } catch (SQLException ex) {
+                GemLogger.logException("PersonFileEditor complete error:", ex);
+            }
+            DataCache.getInitializedInstance().add(pf);
         }
         if (v != null && v.size() > 0) {
             memberList.addBlock(v);
@@ -1041,8 +1049,7 @@ public class PersonFileEditor
     }
 
     /**
-   * Opens a tab for family linked members.
-   * ERIC 2.17 04/06/2019
+     * Opens a tab for family linked members. ERIC 2.17 04/06/2019
      */
     private void checkFamilyMembers() {
         if (setFamilyList() > 0) {
@@ -1070,8 +1077,9 @@ public class PersonFileEditor
         familyList = new PersonFileListCtrl();
 
         for (int i = 0; i < v.size(); i++) {
-            PersonFile d = v.get(i);
-            ContactIO.complete(d.getContact(), dc);
+            PersonFile pf = v.get(i);
+            ContactIO.complete(pf.getContact(), dc);
+            DataCache.getInitializedInstance().add(pf);
         }
         if (v != null && v.size() > 0) {
             familyList.addBlock(v);
@@ -1116,8 +1124,8 @@ public class PersonFileEditor
     }
 
     /**
-   * Checks if a contact exists.
-   * If he is new, we should check that it does not already exist.
+     * Checks if a contact exists. If he is new, we should check that it does
+     * not already exist.
      *
      * @return a message
      */
@@ -1187,8 +1195,7 @@ public class PersonFileEditor
     }
 
     /**
-   * Contact suppression.
-   * Suppression is checked {@link ContactIO#checkDelete(net.algem.ctrl.DataCache, net.algem.modele.contact.Contact) }
+     * Contact suppression. Suppression is checked {@link ContactIO#checkDelete(net.algem.ctrl.DataCache, net.algem.modele.contact.Contact) }
      * }
      */
     private void suppressPerson() {
@@ -1222,8 +1229,7 @@ public class PersonFileEditor
     }
 
     /**
-   * Closes the module.
-   * Click on closing icon.
+     * Closes the module. Click on closing icon.
      *
      * @throws net.algem.util.model.GemCloseVetoException
      */
@@ -1239,7 +1245,7 @@ public class PersonFileEditor
                 save();
             }
         } else {
-            System.out.println(MessageUtil.getMessage("no.update.info"));
+            GemLogger.log("PersonFileEditor.close "+MessageUtil.getMessage("no.update.info"));
         }
         if (savePrefs) {
             storeUISettings();
@@ -1258,56 +1264,76 @@ public class PersonFileEditor
             return;
         }
 
-        if (RibView.class.getSimpleName().equals(classname)) {
+        if (RibView.class
+                .getSimpleName().equals(classname)) {
             savePersonFile();// on enregistre (le rib) par précaution
             personFileView.clearRib();
             miBank.setEnabled(true);
-        } else if (MonthScheduleTab.class.getSimpleName().equals(classname)) {
+        } else if (MonthScheduleTab.class
+                .getSimpleName().equals(classname)) {
             miMonthPlanning.setEnabled(true);
-        } else if (TeacherEditor.class.getSimpleName().equals(classname)) {
+        } else if (TeacherEditor.class
+                .getSimpleName().equals(classname)) {
             personFileView.closeTeacher();
             miTeacher.setEnabled(true);
-        } else if (MemberEditor.class.getSimpleName().equals(classname)) {
+        } else if (MemberEditor.class
+                .getSimpleName().equals(classname)) {
             personFileView.removeTab(personFileView.getEnrolmentView());
             personFileView.removeTab(personFileView.getMemberFollowUp());
             personFileView.removeMemberIcons();
             miMember.setEnabled(true);
-        } else if (OrderLineEditor.class.getSimpleName().equals(classname)) {
+        } else if (OrderLineEditor.class
+                .getSimpleName().equals(classname)) {
             personFileView.activate(true, "Member.schedule.payment");
             desktop.removeGemEventListener(orderLineEditor); //XXX unused
-        } else if (HistoRehearsalView.class.getSimpleName().equals(classname)) {
+        } else if (HistoRehearsalView.class
+                .getSimpleName().equals(classname)) {
             miHistoRehearsal.setEnabled(true);
-        } else if (HistoMemberRentalView.class.getSimpleName().equals(classname)) {
+        } else if (HistoMemberRentalView.class
+                .getSimpleName().equals(classname)) {
             miHistoRental.setEnabled(true);
-        } else if (PersonFileGroupView.class.getSimpleName().equals(classname)) {
+        } else if (PersonFileGroupView.class
+                .getSimpleName().equals(classname)) {
             miGroups.setEnabled(true);
-        } else if (MemberEnrolmentDlg.class.getSimpleName().equals(classname)) {
+        } else if (MemberEnrolmentDlg.class
+                .getSimpleName().equals(classname)) {
             personFileView.activateEnrolment(true);
-        } else if (MemberRehearsalCtrl.class.getSimpleName().equals(classname)) {
+        } else if (MemberRehearsalCtrl.class
+                .getSimpleName().equals(classname)) {
             miRehearsal.setEnabled(true);
             personFileView.activate(true, "Person.rehearsal.scheduling");
-        } else if (MemberRentalCtrl.class.getSimpleName().equals(classname)) {
+        } else if (MemberRentalCtrl.class
+                .getSimpleName().equals(classname)) {
             miRental.setEnabled(true);
             personFileView.activate(true, "Rental.menu");
-        } else if (MemberRehearsalPassCtrl.class.getSimpleName().equals(classname)) {
+        } else if (MemberRehearsalPassCtrl.class
+                .getSimpleName().equals(classname)) {
             miPassRehearsal.setEnabled(true);
-        } else if (HistoInvoice.class.getSimpleName().equals(classname)) {
+        } else if (HistoInvoice.class
+                .getSimpleName().equals(classname)) {
             miHistoInvoice.setEnabled(true);
-        } else if (HistoQuote.class.getSimpleName().equals(classname)) {
+        } else if (HistoQuote.class
+                .getSimpleName().equals(classname)) {
             miHistoQuote.setEnabled(true);
-        } else if (FamilyListTab.class.getSimpleName().equals(classname)) {
+        } else if (FamilyListTab.class
+                .getSimpleName().equals(classname)) {
             personFileView.activate(true, "Family.members");
-        } else if (MemberListTab.class.getSimpleName().equals(classname)) {
+        } else if (MemberListTab.class
+                .getSimpleName().equals(classname)) {
             personFileView.activate(true, "Payer.members");
-        } else if (EmployeeEditor.class.getSimpleName().equals(classname)) {
+        } else if (EmployeeEditor.class
+                .getSimpleName().equals(classname)) {
             miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
         } else if ("net.algem.contact.PersonFileTabView$1".equals(classname)) {
             personFileView.activate(true, "Payer.debiting");
-        } else if (HistoSubscriptionCard.class.getSimpleName().equals(classname)) {
+        } else if (HistoSubscriptionCard.class
+                .getSimpleName().equals(classname)) {
             miHistoPass.setEnabled(true);
-        } else if (TrainingContractHistory.class.getSimpleName().equals(classname)) {
+        } else if (TrainingContractHistory.class
+                .getSimpleName().equals(classname)) {
             miContracts.setEnabled(true);
-        } else if (TrainingAgreementHistory.class.getSimpleName().equals(classname)) {
+        } else if (TrainingAgreementHistory.class
+                .getSimpleName().equals(classname)) {
             miAgreements.setEnabled(true);
         }
     }
@@ -1321,9 +1347,9 @@ public class PersonFileEditor
         if (desktop.getDataCache().getUser().getDesktop() == 1) {
             desktop.removeModule(this);
         } else {
-        JFrame frame = (JFrame)SwingUtilities.getRoot(view.getContentPane());
+            JFrame frame = (JFrame) SwingUtilities.getRoot(view.getContentPane());
             if (frame instanceof FrameDetach) {
-                ((FrameDetach)frame).close();
+                ((FrameDetach) frame).close();
             } else {
                 desktop.removeModule(this);
             }

@@ -113,8 +113,8 @@ public abstract class Statistics
     this.end = end;
     path = ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + "stats.html";
     out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
-    Preference p1 = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
-    Preference p2 = AccountPrefIO.find(AccountPrefIO.PRO_MEMBERSHIP, dc);
+      Preference p1 = DataCache.getPreference(AccountPrefIO.MEMBERSHIP);
+      Preference p2 = DataCache.getPreference(AccountPrefIO.PRO_MEMBERSHIP);
     MEMBERSHIP_ACCOUNT = (Integer) p1.getValues()[0];
     PRO_MEMBERSHIP_ACCOUNT = (Integer) p2.getValues()[0];
   }
