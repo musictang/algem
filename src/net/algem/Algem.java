@@ -34,6 +34,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -340,6 +343,8 @@ public class Algem {
 
         String port = props.getProperty("port");
         int dbport = (port != null) ? Integer.parseInt(port) : 0;
+        
+        initDispatcher(hostName);
 
         dc = new DataConnection(hostName, dbport, baseName, dbPass);
 
@@ -501,6 +506,24 @@ public class Algem {
             UIManager.put("RadioButton.font", bold);
             UIManager.put("List.font", bold);
         }
+    }
+    
+    private static void initDispatcher(String host) {
+        try {
+        int i=7500;
+        InetAddress srv = InetAddress.getByName(host);
+        DatagramSocket s = new DatagramSocket();
+        DatagramPacket pkt = new DatagramPacket("Algem".getBytes(), 5,srv,i);
+        s.send(pkt);Thread.sleep(300);
+        pkt.setPort(i+400);
+        s.send(pkt);Thread.sleep(300);
+        pkt.setPort(i-400);
+        s.send(pkt);
+        } catch (Exception ex) {
+        //System.out.println("initDispatcher EX:"+ex);
+            
+        }
+        
     }
 
     public class GemBoot {

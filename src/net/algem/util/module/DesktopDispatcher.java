@@ -20,13 +20,17 @@
  */
 package net.algem.util.module;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import net.algem.util.GemLogger;
 
 /**
@@ -41,41 +45,60 @@ public class DesktopDispatcher {
     static final int DEFAULT_SOCKET_PORT = 5433;
 
     ServerSocket serverSocket;
-    int port;
-    
+
     List<ObjectInputStream> ins = new ArrayList<>();
     List<ObjectOutputStream> outs = new ArrayList<>();
 
-    public DesktopDispatcher(int _port) {
-        port = _port;
+    public DesktopDispatcher(int port) {
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
             GemLogger.logException(e);
         }
     }
-    
-    public void start() {
-        System.out.println("dispatcher started port:"+port);
-        while (true) {
-            try {
-                Socket client = serverSocket.accept();
-                if (client.getInetAddress().isLoopbackAddress())
-                    break;
-                ThreadDispatcher t = new ThreadDispatcher(client, this);
-                t.start();
-            } catch (IOException e) {
-                GemLogger.logException(e);
-            }
-        }
-        
-    }
-            
-    public static void main(String[] argv) {
-        int port = argv.length > 0 ? Integer.parseInt(argv[0]) : DesktopDispatcher.DEFAULT_SOCKET_PORT;
 
-        DesktopDispatcher dispatcher = new DesktopDispatcher(port);
-        dispatcher.start();
+    public void start() {
+        DesktopDispatcher dd = this;
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Socket client = serverSocket.accept();
+                    
+                    if (client.getInetAddress().isLoopbackAddress()) {
+                        System.out.println("arret dispatcher port:" + serverSocket.getLocalPort());
+                        serverSocket.close();
+                        break;
+                    }
+                    ThreadDispatcher t = new ThreadDispatcher(client, dd);
+                    t.start();
+                } catch (IOException e) {
+                    GemLogger.logException(e);
+                }
+            }
+        }).start();
+
+    }
+
+    public static void main(String[] argv) {
+        //int port = argv.length > 0 ? Integer.parseInt(argv[0]) : DesktopDispatcher.DEFAULT_SOCKET_PORT;
+
+        Map<String, DesktopDispatcher> clients = new HashMap<>();
+        Properties props = new Properties();
+
+        try {
+            System.out.println("DesktopDispatcher load properties:" + argv[0]);
+            props.load(new FileInputStream(argv[0])); //clients.properties
+            for (String key : props.stringPropertyNames()) {
+                System.out.println("start dispatcher pour " + key + " port:" + props.getProperty(key));
+
+                int port = Integer.valueOf(props.getProperty(key));
+                DesktopDispatcher dispatcher = new DesktopDispatcher(port);
+                dispatcher.start();
+                clients.put(key, dispatcher);
+            }
+        } catch (Exception ex) {
+            System.out.println("ERROR:" + ex);
+        }
 
     }
 }

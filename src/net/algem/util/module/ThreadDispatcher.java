@@ -42,6 +42,7 @@ public class ThreadDispatcher
   private final DesktopDispatcher dispatcher;
   private ObjectOutputStream out;
   private ObjectInputStream in;
+  private boolean stopped;
 
   public ThreadDispatcher(Socket s, DesktopDispatcher d)
           throws IOException {
@@ -58,7 +59,7 @@ public class ThreadDispatcher
 
   @Override
   public void run() {
-    for (;;) {
+    while (!stopped) {
       GemRemoteEvent evt = null;
       try {
         evt = (GemRemoteEvent) in.readObject();
@@ -97,4 +98,9 @@ public class ThreadDispatcher
       }
     } // fin for
   }
+
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
+    }
+  
 }
